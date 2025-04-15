@@ -132,18 +132,37 @@ current state
             structure).
                 Explicitly (e.g., link and id attributes):
 
-                    Link attributes: Inclusion of hyperlinks within the resource representation. These links explicitly point to other related resources or provide the URIs for performing actions on the current resource.
-                    For example, a representation of an order might include a <link rel="self" href="/orders/123"> and a <link rel="customer" href="/customers/456">.
+                    Link attributes: Inclusion of hyperlinks within the resource
+                    representation. These links explicitly point to other
+                    related resources or provide the URIs for performing actions
+                    on the current resource.
+                    For example, a representation of an order might include a
+                    <link rel="self" href="/orders/123"> and a
+                    <link rel="customer" href="/customers/456">.
 
-                    ID attributes: Resources often have unique identifiers (IDs) within their data structure. While the ID itself isn't the full URI, it's a key piece of information that, combined with the base URI of the resource collection, allows the client to construct the full address of a specific resource.
+                    ID attributes: Resources often have unique identifiers (IDs)
+                    within their data structure. While the ID itself isn't the
+                    full URI, it's a key piece of information that, combined
+                    with the base URI of the resource collection, allows the
+                    client to construct the full address of a specific resource.
 
-                Implicitly (e.g., derived from the media type definition and representation structure):
+                Implicitly (e.g., derived from the media type definition and
+                representation structure):
 
-                    Media type definition: The specification of the media type itself can provide implicit information about how resources are related or how to construct URIs.
-                    For example, a specific field name within the media type might consistently represent a related resource's ID, and the client knows (based on the media type specification) how to form the URI for that related resource.
+                    Media type definition: The specification of the media type
+                    itself can provide implicit information about how resources
+                    are related or how to construct URIs.
+                    For example, a specific field name within the media type
+                    might consistently represent a related resource's ID, and
+                    the client knows (based on the media type specification)
+                    how to form the URI for that related resource.
 
-                    Representation structure: The way the data is structured in the representation can also implicitly convey relationships.
-                    For instance, a nested object within a resource might represent a sub-resource, and the client might have a convention (defined or implied by the API's documentation or the media type) for how to access that sub-resource.
+                    Representation structure: The way the data is structured in
+                    the representation can also implicitly convey relationships.
+                    For instance, a nested object within a resource might
+                    represent a sub-resource, and the client might have a
+                    convention (defined or implied by the API's documentation
+                    or the media type) for how to access that sub-resource.
 
 
         ꜱᴇʟꜰ-ᴅᴇꜱᴄʀɪᴘᴛɪᴠᴇ →
@@ -163,7 +182,8 @@ current state
 
 
 𝚁𝚎𝚜𝚘𝚞𝚛𝚌𝚎 𝙼𝚎𝚝𝚑𝚘𝚍𝚜
-    ○   Used to perform the desired transition between two states of any resource.
+    ○   Used to perform the desired transition between two states of any
+    resource.
     👉   A large number of people wrongly relate resource methods to HTTP
     methods (i.e., GET/PUT/POST/DELETE). Roy Fielding has never mentioned any
     recommendation around which method to use in which condition. All he
@@ -318,7 +338,8 @@ internet
     Problem: Understanding and monitoring interactions in proprietary systems
             can be challenging.
     Solution:
-        Standard Protocols: REST uses standard HTTP, which has well-established monitoring tools and infrastructure. Interactions are easily observable.
+        Standard Protocols: REST uses standard HTTP, which has well-established
+        monitoring tools and infrastructure. Interactions are easily observable.
 
         Statelessness: Statelessness can improve reliability as a server crash
         doesn't impact client sessions.  
