@@ -1,0 +1,91 @@
+╭──────────╮
+│ Pydantic │
+╰──────────╯
+
+○ FastAPI is built on Pydantic
+
+○ What is Pydantic?
+- A data validation "library"
+- Python
+- Uses Type Annotations
+
+• Enforces type hints at runtime
+• User-friendly errors (when data is invalid)
+• Supports vanilla python to define data models (good for starters)
+
+Basic Principle
+	• Define classes with type annotations
+	• Use the classes we defined for parsing and validation
+
+👉 All Pydantic data models should inherit the BaseModel class 
+
+Simple Example
+○ Import the BaseModel class
+○ Import the ValidationError exception
+
+from pydantic import BaseModel, ValidationError
+
+
+dictionary unpack operator (double asterisk)
+
+class Person(BaseModel):
+    age: int
+    name: str
+    is_married: bool
+
+data = {
+    'name': 'John',
+    'age': 20,
+    'is_married': False
+}
+
+
+person = Person(**data)
+
+try:
+    person = Person(**data)
+    # use the data
+ 
+except ValidationError as e:
+    print(e)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

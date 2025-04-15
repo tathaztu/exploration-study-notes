@@ -1,0 +1,384 @@
+Java – Fundamentals
+-------------------
+
+Q 01: Give a few reasons for using Java?
+Q 02: What is the main difference between the Java platform and the other 
+	software platforms?	
+	○	software-only | runs on hardware-based platforms like UNIX, NT etc.
+	○	JVM - any platform | Byte Code
+Q 03: What is the difference between C++ and Java?
+	○ 	Pointers
+	○	Multiple Inheritence
+	○	Finaize vs Desctuctors
+	○	Structures, Unions, Collections
+	○	Memory Mgmt.
+	○	No Global Variables
+
+Q 04: What are the usages of Java packages?
+
+Q 05: Explain Java class loaders? If you have a class in a package, what do you 
+need to do to run it? Explain dynamic class loading?
+	Java Class Loaders and Delegation Model
+	In Java, class loaders are responsible for dynamically loading .class files 
+	into the Java Virtual Machine (JVM) during runtime. They are a crucial part 
+	of the JRE. Java employs a delegation model for class loading to ensure 
+	security and avoid class duplication.
+
+	Delegation Model:
+
+	When a class loader is asked to load a class, it first delegates the request 
+	to its parent class loader. 1  This process continues up the hierarchy until 
+	it reaches the bootstrap class loader. Only if the parent class loader 
+	cannot find or load the class does the current class loader attempt to load 
+	it itself.   
+	
+	Class Loader Hierarchy:
+
+	Java has a hierarchical structure of class loaders:
+
+	Bootstrap Class Loader (Primordial Class Loader):
+
+	The root of the class loader hierarchy.
+	Loads core Java classes from the $JAVA_HOME/jre/lib directory (e.g., rt.jar).
+	Implemented in native code, not a Java class itself. Represented as null in 
+	Java code.
+	Has no parent class loader.
+	Extension Class Loader:
+
+	Child of the bootstrap class loader.
+	Loads classes from the $JAVA_HOME/lib/ext directory or directories specified 
+	by the java.ext.dirs system property.
+	Responsible for loading standard Java extension APIs.
+	Implemented by sun.misc.Launcher$ExtClassLoader.
+	In Java 9 and later, this functionality is largely replaced by the platform 
+	class loader.
+	System Class Loader (Application Class Loader):
+
+	Child of the extension class loader (or platform class loader in Java 9+).
+	Loads application-specific classes from the classpath, which includes 
+	directories and JAR files specified by the CLASSPATH environment variable or 
+	the -classpath command-line option.
+	This is the class loader typically used to load your application's code.
+	Implemented by sun.misc.Launcher$AppClassLoader.
+	Application Class Loader (also known as System Class Loader):
+
+	Loads application-specific classes. As mentioned above, this is often used 
+	interchangeably with the "System Class Loader".
+	When you run a Java application, this class loader is responsible for 
+	finding and loading your project's classes and any third-party libraries 
+	included in your classpath.
+	In summary:
+
+	When the JVM needs to load a class, the request goes to the application 
+	class loader, which delegates to the extension (or platform) class loader, 
+	which in turn delegates to the bootstrap class loader. The bootstrap class 
+	loader first tries to load the core classes. If it can't find the requested 
+	class, the extension/platform class loader tries in its designated paths, 
+	and finally, if still not found, the application class loader searches the 
+	application's classpath. This delegation model ensures that core Java 
+	classes are loaded by the trusted bootstrap class loader and prevents 
+	malicious or duplicate classes from overriding them. 	
+
+𝐌𝐢𝐬𝐜. Say, you have a class named “Pet” in - 
+	A Project folder "c:\myProject" 
+	Package named com.xyz.client
+	Will you be able to compile and run it as it by -
+	c:\myProject> java com.xyz.client.Pet
+	
+	1. 	Set OS CLASSPATH environment variable -> “c:\myProject”
+	2. 	Set OS CLASSPATH environment variable -> “c:/myProject/client.jar”
+		client.jar has Pet.class in the given package structure
+	3. Run it with –cp or –classpath option as shown below:
+		C:\>java –cp c:/myProject com.xyz.client.Pet
+		OR
+		C:\>java -classpath c:/myProject/client.jar com.xyz.client.Pet
+
+𝐌𝐢𝐬𝐜. Class Loaders and Singleton
+	Important: Two objects loaded by different class loaders are never equal 
+	even if they carry the same values, which mean a class is uniquely 
+	identified in the context of the associated class loader. This applies to 
+	singletons too, where each class loader will have its own singleton
+
+Q. Explain static vs. dynamic class loading?
+
+	Static Class Loading					Dynamic Class Loading
+	•	Use the new Operator				•	Use Class.forName(String name)
+	•	Coded to use the class mentioned	•	The class to be loaded can be 
+		after the new keyword					decided at runtime based on 
+	•	Throws NoClassDefFoundException			env., properties, etc.
+		if the Java Runtime cannot find		•	Throws ClassNotFoundException
+		the class
+
+Q. What are “static initializers” or “static blocks with no function names”?
+	○ Executed after class loading
+	○ Executed 𝗯𝗲𝗳𝗼𝗿𝗲 𝗰𝗼𝗻𝘀𝘁𝗿𝘂𝗰𝘁𝗼𝗿 𝗲𝘅𝗲𝗰𝘂𝘁𝗶𝗼𝗻
+
+Q 06: What is the difference between constructors and other regular methods? 
+	What happens if you do not provide a constructor? Can you call one 
+	constructor from another? How do you call the superclass’s constructor?
+	
+	Constructors
+	•	Same name as class' name
+	•	No value returned
+	•	Called only once
+	
+	Q. What happens if you do not provide a constructor?
+	The Java compiler inserts a no-arg compiler
+	
+	Q. Can you call a different constructor in the same class from another?
+	Yes, by using this() syntax.
+
+	public Pet(int id) {
+		this.id = id; // “this” means this object
+	}
+	public Pet (int id, String type) {
+		this(id); // calls constructor public Pet(int id)
+		this.type = type; // ”this” means this object
+	}
+	
+	Q. How to call the superclass constructor? 
+	If a class called “SpecialPet” extends your “Pet” class then you can use the 
+	keyword “super” to invoke the superclass’s constructor.
+
+Misc. how to call a superclass method that is overridden?
+	To call a regular method in the super class use: “super.myMethod( );”
+
+Q 07: What are the advantages of Object Oriented Programming Languages (OOPL)?
+	PIE
+	
+	Polymorphism
+	Inheritence
+	Encapsulation
+
+	Abstraction
+
+Q 08: How does the Object Oriented approach improve software development?
+	○	Re-use of previous work: using implementation inheritance and object 
+	composition
+	○	Real mapping to the problem domainObjects map to real world and represent vehicles, customers, products etc: with encapsulation.
+	○	Modular Architecture: Objects, systems, frameworks etc are the building 
+	blocks of larger systems.
+
+	The increased quality and reduced development time are the by-products of the key benefits discussed above.
+	If 90% of the new application consists of proven existing components then 
+	only the remaining 10% of the code have to be tested from scratch.
+
+
+Q 09: How do you express an ‘is a’ relationship and a ‘has a’ relationship or 	
+explain inheritance and composition? What is the difference between composition 
+and aggregation?
+	○ Is-A: Inheritence
+	○ Has-A: Composition
+	
+	- These allow sub-objects to be placed in the newly created class
+	- Promotes code re-use
+
+	Inheritance is uni-directional. For example House is a Building. But 
+	Building is not a House. Inheritance uses extends key word. Composition: is 
+	used when House has a Bathroom. It is incorrect to say House is a Bathroom. 
+	Composition simply means using instance variables that refer to other 
+	objects. The class House will have an instance variable, which refers to a 
+	Bathroom object.
+	
+	Q. Which one to favor, composition or inheritance? 
+	
+	
+	The guide is that inheritance should be only used when the subclass ‘is a’ superclass.
+	○ Don’t use inheritance just to get code reuse. If there is no ‘is a’ 
+	relationship then use composition for code reuse. Overuse of implementation 
+	inheritance (uses the “extends” key word) can break all the subclasses, if
+	the superclass is modified.
+	
+	○ Do not use inheritance just to get polymorphism. If there is no ‘is a’ relationship and all you want is polymorphism then use interface inheritance with composition
+	
+	
+	What is the difference between aggregation and composition?
+	
+	Aggregation
+	○	Aggregation is an association in which one class belongs to a 
+	collection. This is a part of a whole relationship where a part CAN exist 
+	without a whole.
+	○	Aggregation has a weaker relationship.
+	
+	Composition
+	○	Composition is an association in which one class belongs to a  
+	collection. This is a part of a whole relationship where a part cannot exist 
+	without a whole.
+	○	Composition has a stronger relationship.
+	
+Q 10: What do you mean by polymorphism, inheritance, encapsulation, and dynamic 
+binding?
+	𝗣𝗼𝗹𝘆𝗺𝗼𝗿𝗽𝗵𝗶𝘀𝗺
+	○	One Type - Different forms. 
+	○	Examples 
+		- Shape: Circle, Square, etc.
+		- Car:	Sedan, RV, etc.
+	
+	
+	𝗗𝘆𝗻𝗮𝗺𝗶𝗰 𝗕𝗶𝗻𝗱𝗶𝗻𝗴
+	The process used by object-oriented programming languages to implement 
+	polymorphism is called dynamic binding.
+
+
+	𝗜𝗻𝗵𝗲𝗿𝗶𝘁𝗮𝗻𝗰𝗲
+	
+	○	Inclusion of behavior (methods) and state (variables) of a base class in
+	the derived class
+	○	Shared piece of business logic can be moved from derived classes to the
+	base classes | refactoring process -> Code Reuse, maintainability and avoid
+	code duplication
+	
+	𝗜𝗺𝗽𝗹𝗲𝗺𝗲𝗻𝘁𝗮𝘁𝗶𝗼𝗻 𝗜𝗻𝗵𝗲𝗿𝗶𝘁𝗮𝗻𝗰𝗲, 𝗮.𝗸.𝗮. 𝗖𝗹𝗮𝘀𝘀 𝗜𝗻𝗵𝗲𝗿𝗶𝘁𝗮𝗻𝗰𝗲
+	
+	○	Easy to implement
+	○	Implemented statically at compile-time
+	↓	Cannot be changed at runtime	
+	○	Inherit all or some of the behavior and state
+	↓	Breaks encapsulation —> Future changes are a problem
+	↓	The subclass becomes tightly coupled with the superclass
+	💡	Class Inheritence should be used when the subclasses depend only on the 
+		behavior of the superclass, not on the actual implementation
+	○	Single Inheritence
+	↓	Subclass becomes dependent on the parent class implementation
+		- Becomes a problem especially if part of the inherited implementation is no longer desirable
+		- Change to superclass ripples down to subclasses as well as classes 
+		which use the subclasses
+		
+		
+	𝗜𝗻𝘁𝗲𝗿𝗳𝗮𝗰𝗲 𝗜𝗻𝗵𝗲𝗿𝗶𝘁𝗮𝗻𝗰𝗲, 𝗮.𝗸.𝗮. 𝗧𝘆𝗽𝗲 𝗜𝗻𝗵𝗲𝗿𝗶𝘁𝗮𝗻𝗰𝗲
+	
+	○ 	Specify relationship between otherwise unrelated classes
+	↑	Implementations can be replaced at runtime
+	—> 	Typically specifying a set of common methods | behavioral contract
+	○	Design Paradigm: Code to an interface, not to an implementation
+	○	Loose Coupling
+	○	Multiple Inheritence
+	○	Interface inheritance can achieve code reuse with the help of object
+		composition.	
+	○	Unlike implementation inheritence, this won’t lock you into specific implementations which make subclasses difficult to maintain
+	○	
+	
+	👉 Most design patterns emphasize object composition over inheritance 
+	whenever it is possible. Many times, a design pattern shows a clever way of 
+	solving a common problem through the use of object composition rather then a standard, less flexible, inheritance based solution.
+	
+	Encapsulation – 
+	○	Keeping all related members (variables & methods) together in an object. 
+	○	Specifying as private –> hide the variables and methods. 
+	○	Good encapsulation improves code modularity by preventing objects 
+	interacting with each other in an unexpected way – we can protect variables 
+	from unacceptable values – which in turn makes future development and 
+	refactoring efforts easy
+	○	Important for security and integrity
+
+Q 11: What is design by contract? Explain the assertion construct?
+	○	Obligations of Calling-Method <–> Called-Method
+	⇑	Gets the programmer to think clearly about 
+		- What a function does
+		- Pre-Conditions
+		- Post-Conditions
+		
+		Specifying programming code + 
+		1. Pre-Conditions: System State + Arguments
+		2. Post-Conditions: 
+			Old System State + New System State + Method Arguments + Return Val
+		3. Class invariants - what must be true about each instance of a class. 
+			Internal invariant that can specify the relationships among multiple 
+			attributes, and should be true before and after any method completes
+			
+			For example if you have a class, which deals with negative integers then you define the isNegative() convenient internal method:
+			
+			The isNegative() method should be true before and after any method completes
+
+Q 12: What is the difference between an abstract class and an interface and when should you use them?
+
+	Philosophy behind Abstract Classes
+	○	Base classes should only present an interface for the derived classes
+	○	Prevent self instantiation
+	○	The interface is highlighted by making the Base Class "abstract"
+	
+	The Interface takes this concept a step further by preventing any method or function implementation at all
+	○	Capture similarities among unrelated classes without artificially forcing a class relationship.
+	○	Declare methods that one or more classes are expected to implement.
+	○	Reveal an object's programming interface without revealing its actual implementation.
+	○	Model multiple interface inheritance in Java, which provides some of the 
+	benefits of full on multiple inheritances, a feature that some 
+	object-oriented languages support that allow a class to have more than one
+	superclass.
+
+	Abstract class 							Interface
+	• Have executable methods 				• Have no implementation code. All 
+	and abstract methods. 					methods are abstract.
+	• Can only subclass one abstract 		• A class can implement any number 	
+	class									of interfaces.
+	
+	Q. When to use an abstract class?: 
+	• Implementation inheritance 
+	• Excellent candidates for Application Frameworks. 
+	  Define some default behavior and force/allow subclasses to provide any 
+	  specific behavior. 
+	  
+	Q. When to use an interface?: 
+	• For polymorphic interface inheritance
+	• Client needs just the type and doesn't care about the actual 
+	implementation 
+	• If design changes frequently
+	
+	↑ Reduces coupling 
+	• Code reuse is accomplished using object composition. 
+	
+	Examples: 
+	○ The Spring framework’s dependency injection promotes code to an interface 
+	principle. 
+	○ Interfaces solve the ‘diamond problem’ of traditional multiple inheritance
+	becahse Java only supports multiple interface inheritance and does not 
+	support inheriting multiple classes.
+	
+Q 13: What are Marker Interfaces in Java?
+	○ Interfaces with no defined methods
+	○ Tell the compiler to consider instances of classes, that implement marker 
+	interfaces, differently.
+	○ a.k.a. Tag Interfaces
+	○ Examples:
+		java.io.Serializable, java.lang.Cloneable, etc.
+
+Q 14: What are the uses of Overloading and Overriding?
+	
+	𝑶𝒗𝒆𝒓𝒍𝒐𝒂𝒅𝒊𝒏𝒈							𝑶𝒗𝒆𝒓𝒓𝒊𝒅𝒊𝒏𝒈
+	Define an operation in 𝗱𝗶𝗳𝗳𝗲𝗿𝗲𝗻𝘁	|	Define an operation in 𝗱𝗶𝗳𝗳𝗲𝗿𝗲𝗻𝘁
+	𝘄𝗮𝘆𝘀 for 𝗱𝗶𝗳𝗳𝗲𝗿𝗲𝗻𝘁 𝗱𝗮𝘁𝗮			|	𝘄𝗮𝘆𝘀 for 𝗱𝗶𝗳𝗳𝗲𝗿𝗲𝗻𝘁 𝗼𝗯𝗷𝗲𝗰𝘁 𝘁𝘆𝗽𝗲𝘀
+
+Q 15: Important Classes/Interfaces of the Collection Framework
+
+    ╭──────────────────────────────────────────────────────────────────────────╮
+    │                               Collection                                 │
+    ╰──────────────────────────────────────────────────────────────────────────╯
+    ╭───────────────────────╮       ╭───────────────────╮          		 ╭─────╮
+    │			Set			│		│      List     	│          		 │Queue│
+    ╰───────────────────────╯		╰───────────────────╯          		 ╰─────╯
+	 Ʌ								  Ʌ		 Ʌ	    Ʌ						Ʌ
+     │			   ╭─────────╮        │      │      │      ╭─────────╮	    │
+     │             │SortedSet│        │      │      │      │  Deque  │      │
+     │             ╰─────────╯        │      │      │      ╰─────────╯      │
+     │            		Ʌ             │      │      │			Ʌ           │
+     │   	      		│             │      │      │           │           │
+     │   		╭────────────╮        │      │      │			|           │
+     │          │NavigableSet│        │      │      │      ┌──────────┐     │
+     │          ╰────────────╯        │      │      │      │ArrayDeque│     │
+     │                  Ʌ             │      │      │  	   └──────────┘     │
+	 │                  │             │      │      │		Ʌ               │
+	 │					|             │      │      │       │               │
+┌───────┐            ┌───────┐ ┌─────────┐ ┌─────┐ ┌──────────┐				│
+│HashSet│            │TreeSet│ │ArrayList│ │Stack│ │LinkedList│             │
+└───────┘            └───────┘ └─────────┘ └─────┘ └──────────┘             │
+	 Ʌ                                                                      │
+     │																		|
+┌─────────────┐                                                  ┌─────────────┐
+│LinkedHashSet│                                                  │PriorityQueue│
+└─────────────┘                                                  └─────────────┘
+
+
+
+
+
+

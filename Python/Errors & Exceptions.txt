@@ -1,0 +1,21 @@
+
+Errors:
+	• Syntax Errors 
+	• Exceptions
+
+Syntax Errors⇒ Parsing errors
+	Parser prints
+	• line | token | context | File Name | line #
+
+Exceptions ⇒ Execution time errors
+	• Last Line → 
+		○ What happened? 
+		○ Exception type, not necessarily true for user-defined exceptions
+		○ What caused it?
+	• Preceding lines show the context as a stack trace of source lines
+	***** 	Standard exception names are built-in identifiers (not reserved 
+			keywords).
+
+Possible to write programs that handle selected exceptions
+	try Statement
+	• 

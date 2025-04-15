@@ -1,0 +1,1126 @@
+  ___          _             ___                  _ _
+ / __|_ __ _ _(_)_ _  __ _  / __| ___ __ _  _ _ _(_) |_ _  _
+ \__ \ '_ \ '_| | ' \/ _` | \__ \/ -_) _| || | '_| |  _| || |
+ |___/ .__/_| |_|_||_\__, | |___/\___\__|\_,_|_| |_|\__|\_, |
+     |_|             |___/                              |__/
+
+            1..n                                                1..n
+         ╭───────────────╮                                   ╭───────────────╮
+        ╭┴──────────────╮│          ╭───────────╮           ╭┴──────────────╮│
+ —————> │ Auth. Filter  │╯  —————>  │ Auth.     │  —————>   │ Auth Provider │╯
+        ╰───────┬───────╯           │ Manager   │           ╰───────┬───────╯
+                │                   ╰───────────╯    ╭──────────────┤
+                │                                    │              │
+                ˅                                    ˅              ˅
+        ╭───────────────╮                ╭───────────────╮  ╭───────────────╮
+        │ Security Ctx. │                │ Pwd. Encoder  │  │ User Details  │
+        ╰───────────────╯                ╰───────────────╯  ╰───────┬───────╯
+                                                                    │
+                                                                    │
+                                                                    ˅
+                                                                ╭───────╮
+                                                                │  DB   │
+                                                                ╰───────╯
+
+    * Authenticated Details are stored in the Security Context
+    * Filter Chains → Chain of filters used to do certain actions
+
+Laur Spilca : Spring Security Fundamentals 2022
+‾‾‾‾‾‾‾‾‾‾‾
+•   Spring Security is about Application Level Security; comprises 2 things ─
+    ○   Authentication  ╮       App-Level Security
+    ○   Authorization   ╯‾‾‾‾
+
+
+•   De-Facto security for Spring Applications
+
+
+•   Granted Authority:
+    ○   Authority: What I have. e.g. I have the authority to read, write,
+        delete, etc. Authority states the allowed actions.
+    ○   Role: I am someone, and will be given permissions based on who I am
+
+•   Spring Security allows 2 ways to define Authentication and Authorization
+    rules
+                                Web-Apps        Non Web-Apps
+    ○   Http Basic          │   Filters         Aspects
+    ○   Certificate         │   Aspects
+    ○   JWT (OAuth2)        │
+
+•   Resources: End-Points through which the client calling the server can
+    interact (get data or send data) to the server
+
+•   Defaults
+    ○   The default configuration of Spring Security has two different
+        authentication mechanisms:
+        ▪ Http Basic
+        ▪ Form Login.
+
+        Default Authentication "method" when Spring Boot configures defaults is
+        Http Basic
+
+        Http Basic is a way in which a web app authenticates a user by means of
+        a set of credentials (username and password) that the app gets in the
+        header of the HTTP request. We will have to use the "Authorization"
+        Http Header, and we will have to send the credentials
+        * The Authorization header is used for authentication; the name is not
+        changed since its inception
+        - By default, Spring Security expects the default username (user) with
+        the auto-generated password
+
+        The Authorization Header value is a Base64 Encoded String. We can decode
+        it using any Base64 decoder - e.g. https://www.base64decode.org/. The
+        username and password need to be entered in the following format -
+        <username>:<password>
+
+        Usage:
+        curl -H "Authorization: Basic
+        dXNlcjo5M2EwMWNmMC03OTRiLTRiOTgtODZlZi01NDg2MGYzNmY3ZjM="
+
+        👉 The Authorization value is encoded NOT ENCRYPTED. Encoding and
+        Encrypting are different
+
+    ○   Username: user
+    ○   One pair of [UserName + Password]
+
+Encoding vs. Encrypting vs. Hash Functions
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+    Encoding: A functional transformation; which can be reverted by some means.
+    Does not involve a secret.
+
+    Encryptyng: A transformation which can be reverted only using a "Secret"
+
+    Hash Function: A transformation where
+        ○ Going from the output to the input is IMPOSSIBLE
+        ○ It is possible to determine whether the input and the output are
+        related
+
+        Hash Functions are the preferred way to store passwords
+
+    MD-5 is Deprecated
+        ○ It has been mathematically proven that it is possible to go from the
+        output to the input
+        ○ We will always have the same output form the same input and this can
+        be exploited to figure out the password and thereby making this a
+        vulnerability.
+
+        ○ We can have only one hash function; it should be unique and not the
+        same
+        two hashes; this is called hash crashing. Mathematically possible but
+        theoritically impossible
+
+
+    Q.  Does Http Basic always use Base64 encoding?
+    A.  Yes!
+
+Interface: UserDetailsService
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+•   An object that implements a UserDetailsService interface with Spring
+    Security manages the details about users.
+•   Defines the contract between Spring Security and our Application, using
+    which, Spring Security knows how to get the users
+•   Tells Spring Security where to get the users from
+
+•   The default implementation serves only as a proof of concept and allows us
+    to see that the dependency is in place. The implementation stores the
+    credentials in-memory—the application doesn’t persist the credentials
+
+Password Encoder
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+IMPORTANT: For a basic setup, we had to also include a password encoder. The
+Authentication Provider needs the UserDetailsService and PasswordEncoder
+
+👉 When we replace the default implementation of the UserDetailsService, we
+must also specify a PasswordEncoder.
+
+
+Manage Users
+‾‾‾‾‾‾‾‾‾‾‾‾
+                            ┌───────────────────────┐
+        ╭─────────────────> │ User Details Service  │
+╭───────┴───────╮           └───────────────────────┘
+│ Auth Provider │
+╰───────┬───────╯           ┌───────────────────┐
+        ╰─────────────────> │ Password Enncoder │
+                            └───────────────────┘
+We can have just one Authentication Manager and multiple Authentication
+Provider(s).
+
+If an Authentication Provider uses an Username and Password for Authentication,
+then it needs 2 components — UserDetailsService & Password Encoder
+
+The UserDetailsService has only one method - this method Loads the
+User by Name. We can load the user from a DB, AD, etc.
+
+GrantedAuthority
+    Authorities
+    Roles
+
+╭───────────────────────────────────╮
+│ Lesson 3 - Custom Authentication  │
+╰───────────────────────────────────╯
+
+One of the filters in the filter chain delegates the call to a component called
+Authentication Manager. The Authentication Manager further delegates to
+Authentication providers
+
+Goal:
+    ○ Make the http request make use of a "key" in the process of authentication
+    ○ Requests with a custom defined header, containing the key will be
+    authenticated
+
+javax.servlet.Filter can be called multiple times.
+org.springframework.web.filter.OncePerRequestFilter is called only once
+
+
+addFilterAt(filter, class): Adds a filter at the position of the specified
+filter class, replacing it.
+
+In case we just have just one authentication provider then we can skip it and
+implement the logic in the Authentication Manager
+
+HttpSecurity:
+    - Creates the entire structure consisting of Filters, Authentication
+    Managers, Providers, etc.
+    - Every method called on HttpSecurity configures something
+
+    ○ Makes sense to keep it decoupled and directly in the Spring Context
+
+⚠ Multiple Filters + Same Position:
+If multiple filters have the same position, the order in which they are called
+is not defined.
+
+Customizer.withDefaults():
+    → A Customizer implementation that does nothing
+
+Why is 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 𝐩𝐫𝐞𝐟𝐞𝐫𝐫𝐞𝐝 𝐨𝐯𝐞𝐫 𝐅𝐢𝐥𝐭𝐞𝐫?
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+In Spring Security, the 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 is generally preferred over the
+standard 𝐅𝐢𝐥𝐭𝐞𝐫 interface for request processing within the security context.
+Here's a breakdown of the reasons:
+
+    1.  𝐏𝐫𝐞𝐯𝐞𝐧𝐭𝐢𝐨𝐧 𝐨𝐟 𝐃𝐮𝐩𝐥𝐢𝐜𝐚𝐭𝐞 𝐅𝐢𝐥𝐭𝐞𝐫 𝐄𝐱𝐞𝐜𝐮𝐭𝐢𝐨𝐧:
+
+        * 𝐅𝐢𝐥𝐭𝐞𝐫: A standard 𝐅𝐢𝐥𝐭𝐞𝐫 might be executed multiple times per request
+        in certain scenarios, especially when request dispatching or including
+        resources within the same request occurs (e.g., forward or include
+        dispatches).
+
+        * 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫: This filter guarantees that it will be executed
+        only *once* per request, regardless of the number of internal dispatches
+        or includes. This is crucial for security filters that should perform
+        their logic only once, such as authentication, authorization, or header
+        manipulation. Duplicate executions can lead to unexpected behavior,
+        performance issues, and security vulnerabilities.
+
+    2.  𝐒𝐩𝐫𝐢𝐧𝐠 𝐒𝐞𝐜𝐮𝐫𝐢𝐭𝐲 𝐈𝐧𝐭𝐞𝐠𝐫𝐚𝐭𝐢𝐨𝐧:
+
+        * 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 is designed specifically for Spring Security's
+        filter chain. It integrates seamlessly with Spring Security's internal
+        request processing mechanisms.
+        * It handles the logic of checking if the filter has already been
+        applied, ensuring the "once per request" guarantee.
+
+    3.  𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐀𝐭𝐭𝐫𝐢𝐛𝐮𝐭𝐞 𝐓𝐫𝐚𝐜𝐤𝐢𝐧𝐠:
+
+        * 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 uses a request attribute to track whether it has
+        already been executed. This attribute is checked before the filter's
+        𝐝𝐨𝐅𝐢𝐥𝐭𝐞𝐫𝐈𝐧𝐭𝐞𝐫𝐧𝐚𝐥 method is called. This mechanism is reliable even in
+        complex request scenarios.
+
+    4.  𝐒𝐢𝐦𝐩𝐥𝐢𝐟𝐢𝐞𝐝 𝐈𝐦𝐩𝐥𝐞𝐦𝐞𝐧𝐭𝐚𝐭𝐢𝐨𝐧:
+
+        * 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 provides the 𝐝𝐨𝐅𝐢𝐥𝐭𝐞𝐫𝐈𝐧𝐭𝐞𝐫𝐧𝐚𝐥 method, which
+        simplifies the implementation of your filter logic. You don't need to
+        manually check if the filter has already been executed or handle request
+        dispatching scenarios.
+
+    5.  𝐀𝐯𝐨𝐢𝐝𝐚𝐧𝐜𝐞 𝐨𝐟 𝐒𝐢𝐝𝐞 𝐄𝐟𝐟𝐞𝐜𝐭𝐬:
+
+        * Because of the guaranteed single execution, side effects of the filter
+        are predictable and controlled. For example, if your filter modifies
+        request attributes or session data, you can be sure that these
+        modifications happen only once.
+
+𝐖𝐡𝐞𝐧 𝐚 𝐬𝐭𝐚𝐧𝐝𝐚𝐫𝐝 𝐅𝐢𝐥𝐭𝐞𝐫 𝐦𝐢𝐠𝐡𝐭 𝐛𝐞 𝐮𝐬𝐞𝐝:
+
+While 𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 is generally preferred within Spring Security, a
+standard 𝐅𝐢𝐥𝐭𝐞𝐫 might be suitable in these situations:
+
+    * When you are not working within the Spring Security filter chain.
+    * When you need a filter that should be executed multiple times per request
+    (this is very rare in security related scenarios).
+    * When your filter interacts with web resources outside of the context that
+    spring security controls.
+
+𝐈𝐧 𝐬𝐮𝐦𝐦𝐚𝐫𝐲:
+
+𝐎𝐧𝐜𝐞𝐏𝐞𝐫𝐑𝐞𝐪𝐮𝐞𝐬𝐭𝐅𝐢𝐥𝐭𝐞𝐫 is a specialized filter designed to address the unique
+requirements of Spring Security's request processing. It provides a reliable
+and efficient way to ensure that security-related logic is executed only once
+per request, preventing potential issues and simplifying filter implementation.
+Therefore, it is the preferred choice for most Spring Security
+filter implementations.
+
+
+What is a DSL method with respect to Spring Security?
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+In the context of Spring Security, a DSL (Domain Specific Language)
+method refers to a method that contributes to a fluent, nested
+configuration style, aiming to improve readability and
+expressiveness of security configurations.
+
+Here's a breakdown:
+
+What is a DSL?
+
+    * A DSL is a specialized programming language designed for a
+      specific domain or purpose. In Spring Security, the DSL is
+      used to configure security rules and behaviors.
+    * It provides a more declarative and intuitive way to express
+      configurations compared to traditional imperative programming.
+    * The goal is to make security configurations easier to
+      understand and maintain.
+
+Spring Security's DSL:
+
+    * Spring Security 5 and especially Spring Security 6 have
+      embraced a lambda-based DSL, offering a more concise and
+      readable way to define security configurations.
+    * This DSL is built using nested method calls and lambda
+      expressions, allowing you to chain together various security
+      settings.
+    * The `HttpSecurity` object is central to this DSL, providing
+      methods to configure request authorization, authentication,
+      and other security aspects.
+
+Key Characteristics of Spring Security's DSL Methods:
+
+    * Fluent API: Methods are designed to be chained together,
+      allowing you to build complex configurations in a single,
+      readable statement.
+    * Lambda Expressions: Lambda expressions are used to define
+      configuration blocks, making the code more compact and
+      expressive.
+    * Nested Configuration: Configuration options are organized
+      into nested blocks, reflecting the hierarchical nature of
+      security settings.
+    * Readability: The DSL aims to make security configurations
+      more readable and understandable, even for developers who are
+      not security experts.
+
+Example:
+
+```java
+import org.springframework.context.annotation.Bean;
+import
+org.springframework.context.annotation.Configuration;
+import
+org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import
+org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http)
+    throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasRole("USER")
+                .anyRequest().authenticated()
+            )
+            .formLogin(login -> login
+                .loginPage("/login")
+                .permitAll()
+            )
+            .httpBasic();
+        return http.build();
+    }
+}
+In this example:
+
+* `authorizeHttpRequests()`, `formLogin()`, and `httpBasic()` are
+  DSL methods.
+* Lambda expressions are used within `authorizeHttpRequests()`
+  and `formLogin()` to define configuration blocks.
+* The chained method calls create a fluent and readable
+  configuration.
+
+Benefits of Spring Security's DSL:
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+* Improved Readability: Security configurations become more
+  concise and easier to understand.
+* Reduced Boilerplate Code: The DSL reduces the amount of code
+  required to configure security settings.
+* Enhanced Maintainability: The organized and readable
+  structure makes security configurations easier to maintain
+  and modify.
+* Increased Expressiveness: The DSL allows you to express
+  complex security configurations in a more natural and
+  intuitive way.
+
+
+╭───────────────────────────╮
+│ Lesson 5 - Authorization  │
+╰───────────────────────────╯
+
+
+•   Authorization happens after Authentication
+•   After successful Authentiation, an object containing user information is
+    stored in the Security Context.
+    - This information also contains the role/authorization/granted auth. info
+•   The information is also used by another filter subsequent filter in the
+    filter chain.
+
+
+Authorization can be implemented in 2 ways
+    ○   End Points
+        - Web Application
+        - Filter Chain
+    ○   Method Level
+        - Any method of a Bean
+
+    ○ Matcher Methods: Matches Requests
+    ○ How to apply different authorization rules
+
+Rules
+    anyRequest().authenticated()
+    anyRequest().permitAll()
+        Qs. Why does permitAll allow unauthenticated requests but disallows
+        requests that fail authentication?
+        Ans. Requests that fail authentication are sent back from the
+        authentication layer itself.
+    anyRequest().denyAll()
+    anyRequest().hasAuthority()
+    anyRequest().hasAnyAuthority()
+    anyRequest().hasRole()
+    anyRequest().hasAnyRole()
+
+.authorities() vs. .roles()
+    ○   .authorities() use the role arguments as-is.
+    ○   .roles() prefix the String "ROLE_" before the values. The following are
+        equivalent
+        // authz.anyRequest().hasRole("ADMIN")
+        // authz.anyRequest().hasAuthority("ROLE_ADMIN")
+
+.anyRequest() | .mvcMatchers() | .andMatchers() | regexMatchers()
+
+Http Error Codes: 🧠
+    401 - Unauthorized  | Authentication Failure
+    401 - Forbidden     | Authentication Succeeded
+
+/demo/** means everything after /demo/ will be acceptable
+
+Q. What would happen in the scenario where a user is rejected by an
+authorization rule for an end point that does not exist?
+A. This scenario is possible when the endpoint is specified as a pattern and
+there is, possibly, a partial match.
+
+👉 .antMatchers are risky; they need very specific configuration for all
+scenarios. You have to provide all the configurations.
+e.g. .antMatchers("/test/test1") would ignore all endpoints that do not match
+the pattern. As such, "/test/test1/" would be an allowed site
+
+Method Level Authorization
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+Information in the Security Context is used by Filter Level and Method Level
+Authorization
+
+Any mechanism that has an aspect, behind the scenes, in Spring, usually needs to
+be enabled
+
+@EnableMethodSecurity
+
+•   Pre-Post Annotations
+    @PreAuthorize
+    @PostAuthorize
+    @PreFilter
+    @PostFilter
+
+•   Secure Enabled
+
+•   JSR
+
+
+Pre Authorize vs. Post Authorize
+
+In Spring Security, both @PreAuthorize and @PostAuthorize are used to secure
+methods using Spring Expression Language (SpEL), but they differ in when the
+authorization check is performed:
+
+* @PreAuthorize:
+    * Checks the given SpEL expression ➡️ before the method execution.
+    * If the expression evaluates to true ✅, the method is allowed to execute.
+    * If the expression evaluates to false ❌, a SecurityException is thrown,
+    and the method execution is prevented.
+    * Common use case: Verifying user roles, permissions, or input parameters
+    before allowing access to a method.
+
+* @PostAuthorize:
+    * Checks the SpEL expression ➡️ after the method has been executed.
+    * It has access to the return value of the method through the returnObject
+    variable in the SpEL expression.
+    * If the expression evaluates to true ✅, the method execution completes
+    normally.
+    * If the expression evaluates to false ❌, a SecurityException is thrown.
+    * Common use case: Filtering or validating the method's return value based
+    on security criteria.
+
+Key Differences
+
+| Feature         @PreAuthorize           @PostAuthorize
+| -------         --------------          --------------
+| When          | ➡️ Before exec         ➡️ After exec
+| Param Access  | ✅ Yes, via #varName   ✅ Yes, via #varName
+| Result Access | ❌ No access           ✅ Can access
+| Use Cases     | ✅ Check before        ✅ Validate after
+| SpEL          | Uses #                  Uses returnObject
+
+Code Example:
+
+@Service
+public class MyService {
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String sensitiveOperation(String data) {
+        // Only admins can execute this method
+        return "Sensitive data: " + data;
+    }
+
+    @PostAuthorize("returnObject.contains(principal.username)")
+    public String getUserData(String username) {
+        // Returns data, but only the user's own data is allowed (checked after
+        execution)
+        return username + "'s data";
+    }
+}
+
+Q. What would happen if the authorization rules differ on the filters and
+methods?
+A. The filter rule gets invoked first and then the method level annotations
+get applied. That means, if something fails on the filters, then it fails
+irrespective of the method configuration.
+
+•   Filters cannot access parameter values, whereas aspects can
+
+•   @PostFilter
+    - The Return value should be Collection or Array
+    - The Returned object would immutable
+
+╭───────────────────────╮
+│  𝗟𝗲𝘀𝘀𝗼𝗻 𝟵 - 𝗢𝗔𝘂𝘁𝗵 𝟮   │
+╰───────────────────────╯
+
+•   Problem Statement
+    ○ Most Users use Multiple Application
+    ○ Apps within an organization need not have different credentials for each
+    user, per application
+
+•   4 Actors —
+    ○ Authorization Server  - authentication/authorization component
+                            - client and user (if present)
+    ○ User (ℎ𝑜𝑚𝑜 𝑠𝑎𝑝𝑖𝑒𝑛)
+    ○ Client (mobile application, react, angular, etc.)
+    ○ Resource Server (backend)
+
+                                                    ╭────────────────╮
+                   Get Token╭─────────────────>     | Authorization  │
+                          by│ ╭────────────────     |     Server     |
+(Optional)        Grant Type│ V     Token           ╰────────────────╯
+╭────────╮              ╭───┴────╮              ╭─────────────────╮𝘈𝘱𝘱𝘭𝘺
+│  User  │ ——————————>  │ Client │  ——————————> │ Resource Server │𝘈𝘶𝘵𝘩𝘰𝘳𝘪𝘻𝘢𝘵𝘪𝘰𝘯
+╰────────╯              ╰────────╯              ╰─────────────────╯𝘙𝘶𝘭𝘦𝘴
+   _☻_                      💻
+    |
+   / \
+
+
+    ○ Token has privileges according to what was allocated to the user
+    ○ Authorization rules are applied at the Resource Server level, using
+    Filters, PreAuthorize, PostAuthorize, etc.
+    ○ Authorization server - manage Users/Clients in a Generic way
+
+•   Steps
+    1. User/Client gets a Token using a Grant Type
+    2. Resource Server process and validate the Token
+
+
+**𝐎𝐀𝐮𝐭𝐡 𝟐.𝟎 𝐚𝐧𝐝 𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧𝐬:**
+* OAuth 2.0 is an authorization framework that enables applications to obtain
+limited access to a user's data without sharing the user's credentials.
+* An access token is a credential that represents the authorization granted by
+the user. It allows the application to access protected resources on behalf of
+the user.
+
+𝐆𝐫𝐚𝐧𝐭 𝐓𝐲𝐩𝐞
+A "Grant Type" is a Specific Method to obtain an access token from an OAuth 2.0
+authorization server. OAuth 2.0 defines several grant types, each designed for
+different scenarios.
+
+**𝐆𝐫𝐚𝐧𝐭 𝐓𝐲𝐩𝐞𝐬:**
+Grant types are the different ways an application can request an access token.
+Each grant type specifies how the application should authenticate itself and
+provide the necessary authorization information.
+
+Here are some common grant types:
+
+1.  **𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧 𝐂𝐨𝐝𝐞 𝐆𝐫𝐚𝐧𝐭:**
+    * This is the most common and secure grant type.
+    * It involves a multi-step process:
+        * The user is redirected to the authorization server to grant permission
+          ○ The user first lets the server know about the desired action
+          ○ The redirection is to the login page
+          ○ The login page is provided/written/implemented by the authorization
+          server
+        * The authorization server returns an authorization code to the app.
+        * The application exchanges the authorization code for an access token.
+        * The page to which the client is redirected to after the login is
+        successful, is known as the redirection page and is already registered
+        on the server
+    * This grant type is suitable for web applications
+      and mobile applications.
+
+2.  ⚠️ **𝐈𝐦𝐩𝐥𝐢𝐜𝐢𝐭 𝐆𝐫𝐚𝐧𝐭:** -  Deprecated, DO NOT USE
+    * This grant type is less secure and is generally
+      discouraged.
+    * It returns the access token directly from the
+      authorization server to the application.
+    * It's suitable for client-side applications (e.g.,
+      single-page applications) that cannot securely
+      store client secrets.
+    * This has been largely superceded by the
+      authorization code grant with PKCE.
+
+3.  ⚠️ **𝐑𝐞𝐬𝐨𝐮𝐫𝐜𝐞 𝐎𝐰𝐧𝐞𝐫 𝐏𝐚𝐬𝐬𝐰𝐨𝐫𝐝 𝐂𝐫𝐞𝐝𝐞𝐧𝐭𝐢𝐚𝐥𝐬 𝐆𝐫𝐚𝐧𝐭:** - Deprecated, DO NOT USE
+    * This grant type allows the application to obtain an
+      access token by directly providing the user's
+      username and password.
+    * It's suitable for trusted applications that have
+      a close relationship with the user.
+    * However, it's generally discouraged because it
+      requires the application to handle user credentials.
+
+4.  **𝐂𝐥𝐢𝐞𝐧𝐭 𝐂𝐫𝐞𝐝𝐞𝐧𝐭𝐢𝐚𝐥𝐬 𝐆𝐫𝐚𝐧𝐭:**
+    * This grant type allows the application to obtain an
+      access token using its own client credentials
+      (client ID and client secret).
+    * It's suitable for server-to-server communication
+      where there is no user context.
+    * This is often used for applications that need to
+      access their own resources.
+
+5.  **𝐑𝐞𝐟𝐫𝐞𝐬𝐡 𝐓𝐨𝐤𝐞𝐧 𝐆𝐫𝐚𝐧𝐭:**
+    * This grant type allows the application to obtain a
+      new access token using a refresh token.
+    * Refresh tokens are long-lived credentials that
+      can be used to obtain new access tokens without
+      requiring the user to re-authorize.
+    * This is used to maintain long lived sessions.
+
+𝐑𝐞𝐝𝐢𝐫𝐞𝐜𝐭 𝐔𝐑𝐈 (𝐔𝐧𝐢𝐟𝐨𝐫𝐦 𝐑𝐞𝐬𝐨𝐮𝐫𝐜𝐞 𝐈𝐝𝐞𝐧𝐭𝐢𝐟𝐢𝐞𝐫)**, also sometimes
+called a callback URL, is a critical component in the OAuth
+2.0 authorization flow. It's the URL where the
+authorization server sends the user back after they've
+granted or denied permission to the application.
+
+Here's a breakdown of its purpose and importance:
+
+**𝐏𝐮𝐫𝐩𝐨𝐬𝐞:**
+* **𝐑𝐞𝐝𝐢𝐫𝐞𝐜𝐭𝐢𝐨𝐧 𝐀𝐟𝐭𝐞𝐫 𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧:**
+    * After the user interacts with the authorization
+      server (e.g., logging in and granting
+      permissions), the server needs to know where to
+      send the user back to. The redirect URI
+      specifies this destination.
+* **𝐏𝐚𝐬𝐬𝐢𝐧𝐠 𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧 𝐂𝐨𝐝𝐞 𝐨𝐫 𝐓𝐨𝐤𝐞𝐧:**
+    * The authorization server includes essential
+      information, such as the authorization code
+      (in the authorization code grant) or the access
+      token (in the implicit grant, which is not
+      recommended anymore), as parameters in the
+      redirect URI.
+* **𝐒𝐞𝐜𝐮𝐫𝐢𝐭𝐲 𝐌𝐞𝐚𝐬𝐮𝐫𝐞:**
+    * The redirect URI acts as a security measure to
+      prevent unauthorized applications from
+      intercepting authorization codes or tokens. The
+      authorization server only sends these
+      credentials to the registered redirect URI.
+
+**𝐊𝐞𝐲 𝐂𝐡𝐚𝐫𝐚𝐜𝐭𝐞𝐫𝐢𝐬𝐭𝐢𝐜𝐬 𝐚𝐧𝐝 𝐂𝐨𝐧𝐬𝐢𝐝𝐞𝐫𝐚𝐭𝐢𝐨𝐧𝐬:**
+* **𝐑𝐞𝐠𝐢𝐬𝐭𝐫𝐚𝐭𝐢𝐨𝐧:**
+    * The redirect URI must be registered with the
+      authorization server beforehand. This ensures
+      that the server only redirects to trusted URLs.
+* **𝐄𝐱𝐚𝐜𝐭 𝐌𝐚𝐭𝐜𝐡:**
+    * In most cases, the redirect URI provided in the
+      authorization request must exactly match the
+      registered URI.
+* **𝐒𝐞𝐜𝐮𝐫𝐢𝐭𝐲:**
+    * It's crucial to use HTTPS for redirect URIs to
+      protect the sensitive information being
+      transmitted.
+    * For native applications, or mobile apps,
+      custom schemes can be used, but must be
+      carefully implemented.
+* **𝐃𝐲𝐧𝐚𝐦𝐢𝐜 𝐔𝐑𝐈𝐬:**
+    * Some authorization servers allow the use of
+      wildcards or patterns in redirect URIs, but
+      this should be used with caution, as it can
+      weaken security.
+* **𝐏𝐊𝐂𝐄 (𝐏𝐫𝐨𝐨𝐟 𝐊𝐞𝐲 𝐟𝐨𝐫 𝐂𝐨𝐝𝐞 𝐄𝐱𝐜𝐡𝐚𝐧𝐠𝐞):**
+    * When using the Authorization code grant, it is
+      strongly recommended that PKCE is
+      implemented. PKCE helps mitigate
+      authorization code interception attacks,
+      especially in mobile and single-page
+      applications.
+
+┌───────────────────────────────┐
+│Authorization Code Grant Flow  │
+└───────────────────────────────┘
+
+    1.  The application redirects the user to the authorization server,
+        including the redirect URI in the request.
+    2.  The user grants or denies permission.
+    3.  The authorization server redirects the user back to the specified
+        redirect URI, including the authorization code as a query parameter.
+    4.  The application then exchanges the authorization code for an access
+        token by making a server-side request (post) to the authorization
+        server.
+
+    - The Redirect URI needs to be provided by the client and needs to be
+    previously known by the server
+
+
+    PKCE: Client Credentials are relatively unsafe.
+
+    Use something else other than the client credential
+    Challenge   -> Random Info.
+    Verifier    -> Hash (Random Info.)
+    This is used during the first redirect to the Authorization Server
+
+    𝐏𝐊𝐂𝐄 (𝐏𝐫𝐨𝐨𝐟 𝐊𝐞𝐲 𝐟𝐨𝐫 𝐂𝐨𝐝𝐞 𝐄𝐱𝐜𝐡𝐚𝐧𝐠𝐞) is a security extension to the
+    OAuth 2.0 authorization code grant. It's designed to prevent
+    authorization code interception attacks, particularly in
+    public clients like mobile apps and single-page applications
+    (SPAs).
+
+    Here's how PKCE works:
+
+    𝐂𝐨𝐝𝐞 𝐕𝐞𝐫𝐢𝐟𝐢𝐞𝐫:
+        The client application generates a cryptographically random string
+        called the "code verifier."
+    𝐂𝐨𝐝𝐞 𝐂𝐡𝐚𝐥𝐥𝐞𝐧𝐠𝐞:
+        The client then transforms the code verifier into a "code challenge" by
+        applying a one-way cryptographic hash function (typically SHA-256).
+    𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭:
+        When the client sends the authorization request to the authorization
+        server, it includes the code challenge and the method used to create
+        it (e.g., "S256").
+    𝐀𝐮𝐭𝐡𝐨𝐫𝐢𝐳𝐚𝐭𝐢𝐨𝐧 𝐂𝐨𝐝𝐞:
+        The authorization server stores the code challenge.
+        Upon user authorization, the server issues an authorization code.
+    𝐓𝐨𝐤𝐞𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭:
+        When the client exchanges the authorization code for an access token, it
+        must include the original code verifier.
+    𝐕𝐞𝐫𝐢𝐟𝐢𝐜𝐚𝐭𝐢𝐨𝐧:
+        The authorization server then generates its own code challenge from the
+        provided code verifier and compares it to the code challenge it received
+        during the authorization request.
+        If they match, the server issues the access token.
+    𝐖𝐡𝐲 𝐏𝐊𝐂𝐄 𝐢𝐬 𝐈𝐦𝐩𝐨𝐫𝐭𝐚𝐧𝐭:
+
+    Protection Against Interception:
+        Even if an attacker intercepts the authorization code, they cannot use
+        it to obtain an access token without the code verifier.
+        Enhanced Security for Public Clients:
+        PKCE is especially crucial for public clients that cannot securely store
+        client secrets.
+        Mitigation of Authorization Code Injection:
+        PKCE helps to defend against malicious applications attempting to inject
+        their own authorization code into the flow.
+
+┌───────────────────────────────┐
+│ Client Credentials Grant Flow │
+└───────────────────────────────┘
+
+    ○   There is no user
+    ○   There is a backend component and it needs to authenticate
+    ○   Other examples - Kubernetes, Monitoring tool, etc.
+
+
+    -   Client sends its credentials
+
+    ❗   If there are end points that use the client credentials grant type, then
+        only those end-points that are identified to be a client should only be
+        allowed to use the client credential token
+
+┌───────────────────────┐
+│  Refresh Token Grant  │
+└───────────────────────┘
+
+    𝐑𝐞𝐟𝐫𝐞𝐬𝐡 𝐓𝐨𝐤𝐞𝐧 𝐖𝐨𝐫𝐤𝐟𝐥𝐨𝐰:
+
+    𝐈𝐧𝐢𝐭𝐢𝐚𝐥 𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧 𝐆𝐫𝐚𝐧𝐭:
+
+    The client application obtains an access token and a refresh token from the
+    authorization server, usually during the authorization code grant flow.
+    The refresh token is a long-lived credential.
+
+    𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧 𝐔𝐬𝐚𝐠𝐞:
+    The client uses the access token to access protected resources on the
+    resource server.
+    Access tokens are typically short-lived for security.
+
+    𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧 𝐄𝐱𝐩𝐢𝐫𝐚𝐭𝐢𝐨𝐧:
+    The access token eventually expires.
+
+    𝐑𝐞𝐟𝐫𝐞𝐬𝐡 𝐓𝐨𝐤𝐞𝐧 𝐑𝐞𝐪𝐮𝐞𝐬𝐭:
+    When the access token expires, the client sends a request to the
+    authorization server's token endpoint, including the refresh token.
+    The client authenticates itself to the authorization server using its client
+    credentials.
+
+    𝐑𝐞𝐟𝐫𝐞𝐬𝐡 𝐓𝐨𝐤𝐞𝐧 𝐕𝐚𝐥𝐢𝐝𝐚𝐭𝐢𝐨𝐧:
+    The authorization server validates the refresh token.
+    The server ensures the refresh token is valid, not revoked, and belongs to
+    the client.
+
+    𝐍𝐞𝐰 𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧 𝐈𝐬𝐬𝐮𝐚𝐧𝐜𝐞:
+    If the refresh token is valid, the authorization server issues a new access
+    token and, optionally, a new refresh token.
+    The old refresh token might be invalidated, or reused, depending on the
+    server's policy.
+
+    𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧 𝐔𝐬𝐚𝐠𝐞 (𝐑𝐞𝐧𝐞𝐰𝐞𝐝):
+    The client uses the new access token to access protected resources.
+
+    𝐑𝐞𝐟𝐫𝐞𝐬𝐡 𝐓𝐨𝐤𝐞𝐧 𝐒𝐭𝐨𝐫𝐚𝐠𝐞:
+    The client securely stores the refresh token for future use.
+    This is critical, as a compromised refresh token allows prolonged access.
+
+    𝐏𝐮𝐫𝐩𝐨𝐬𝐞:
+    Allows the client to obtain new access tokens without requiring the user to
+    re-authenticate.
+    Improves user experience by minimizing interruptions.
+    Extends the lifespan of user sessions while maintaining security.
+
+
+❗🧠 The client application never get access to the user credentials while
+getting the access tokens for the user
+
+
+❗   JWT is just an implementation of OAuth 2 tokens
+
+•   Type of Tokens
+    ○ Opaque - No data
+        - Some garbled string
+        - Authorization Server will implement an Introspection Endpoint which
+        can be used by the resource server to get information form such tokens
+    ○ Non-Opaque tokens - Contain Data. Example - JWT
+
+    𝗜𝗻𝘁𝗿𝗼𝘀𝗽𝗲𝗰𝘁𝗶𝗼𝗻 𝗘𝗻𝗱𝗽𝗼𝗶𝗻𝘁: An endpoint which gets a token and returns
+    details about that token, including validity, relevant info. about
+    client and user that will be used by the resource server to apply auth
+    rules
+
+    𝐓𝐨𝐤𝐞𝐧 𝐓𝐲𝐩𝐞𝐬:
+
+    𝐎𝐩𝐚𝐪𝐮𝐞 𝐓𝐨𝐤𝐞𝐧𝐬:
+    These tokens are strings of characters without any discernible structure
+    or meaning to the resource server.
+    The resource server cannot directly interpret the token's content.
+    To get information, the resource server must contact the authorization
+    server to validate the token and retrieve associated claims.
+    This offers better security as internal information is not exposed.
+
+    𝐍𝐨𝐧-𝐎𝐩𝐚𝐪𝐮𝐞 𝐓𝐨𝐤𝐞𝐧𝐬 (𝐉𝐖𝐓𝐬):
+    JSON Web Tokens (JWTs) are self-contained tokens encoded in JSON format.
+    They contain claims (information about the user or application) that are
+    digitally signed.
+    The resource server can verify the signature and extract the claims
+    without contacting the authorization server.
+    This improves performance but requires careful key management.
+
+    𝐈𝐃 𝐓𝐨𝐤𝐞𝐧𝐬:
+    These are specifically used for identity verification in OpenID Connect
+    (OIDC).
+    They are usually JWTs and contain information about the authenticated user.
+    They are intended for the client application, not necessarily the resource
+    server, although a resource server may use them to verify identity.
+
+    𝐍𝐨𝐧-𝐈𝐃 𝐓𝐨𝐤𝐞𝐧𝐬 (𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧𝐬):
+    These tokens grant access to protected resources.
+    They can be opaque or JWTs, depending on the authorization server's
+    implementation.
+    They are used to authorize requests to the resource server.
+    They contain information about the granted permissions or scopes.
+
+    𝐇𝐨𝐰 𝐑𝐞𝐬𝐨𝐮𝐫𝐜𝐞 𝐒𝐞𝐫𝐯𝐞𝐫𝐬 𝐆𝐞𝐭 𝐈𝐧𝐟𝐨𝐫𝐦𝐚𝐭𝐢𝐨𝐧:
+
+    𝐎𝐩𝐚𝐪𝐮𝐞 𝐓𝐨𝐤𝐞𝐧𝐬:
+    The resource server sends the opaque token to the authorization server's
+    introspection endpoint.
+    The authorization server returns a JSON response containing the token's
+    validity and associated claims.
+
+    𝐉𝐖𝐓𝐬 (𝐍𝐨𝐧-𝐎𝐩𝐚𝐪𝐮𝐞):
+    The resource server verifies the JWT's signature using the authorization
+    server's public key.
+    If the signature is valid, the resource server extracts the claims from
+    the JWT payload.
+
+    𝐈𝐃 𝐓𝐨𝐤𝐞𝐧𝐬:
+    The resource server might verify the ID token's signature to confirm the
+    user's identity.
+    The resource server may use information from the ID token to make
+    authorization decisions.
+
+    𝐀𝐜𝐜𝐞𝐬𝐬 𝐓𝐨𝐤𝐞𝐧𝐬:
+    The resource server uses the access token to determine if the client is
+    authorized to access the requested resource.
+    The resource server may validate the scopes contained in the access token
+    to check if the client has the required permissions.
+    The resource server may use the access token to retrieve user information,
+    either from the access token itself(in the case of a JWT), or from the
+    authorization server.
+
+•   𝐎𝐩𝐞𝐧𝐈𝐃 𝐂𝐨𝐧𝐧𝐞𝐜𝐭
+
+    ○ A protocol built over the OAuth 2 specification
+    ○ a.k.a. 𝗢𝗜𝗗𝗖
+    ○ Restricts the liberty of the OAuth 2 specification by a bit, introducing
+    a few changes. The major changes are —
+        ▪ Specific values for the scopes (such as 𝙋𝙧𝙤𝙛𝙞𝙡𝙚 or 𝙊𝙥𝙚𝙣𝙄𝘿).
+        ▪ The use of an extra token named 𝗜𝗗 𝗧𝗼𝗸𝗲𝗻, used to store the details
+        about the identity of the user and client to whom the token was issued.
+        ▪ Usually the term Grant Type is also referred to as 𝙁𝙡𝙤𝙬 when
+        discussing it in terms of OIDC, while the Authorization Server is
+        commonly called the 𝙄𝙙𝙚𝙣𝙩𝙞𝙩𝙮 𝙋𝙧𝙤𝙫𝙞𝙙𝙚𝙧 or 𝙄𝘿𝙋
+
+
+᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽
+᯽┌─────────────────────────────────────────────────────────────────────────┐᯽
+᯽│  Spring Security in Action, Second Edition - Laurențiu Spilcă - 2024    |᯽
+᯽└─────────────────────────────────────────────────────────────────────────┘᯽
+᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽᯽
+
+╭─────────────────────────────────────────╮
+│ Chapter 9 - Configuring CSRF Protection │
+╰─────────────────────────────────────────╯
+
+•   CSRF attacks assume that a user is logged into a web application. The
+    attacker tricks users into opening a page containing scripts that execute
+    actions in the same application the user was working on. Because the user
+    has already logged in (as we’ve assumed from the beginning), the forgery
+    code can now impersonate the user and do actions on their behalf.
+
+•   How do we protect our users from such scenarios? CSRF protection aims to
+    ensure that only the frontend of web applications can perform mutating
+    operations (by convention, HTTP methods other than GET, HEAD, TRACE, or
+    OPTIONS). Then a foreign page, like the one in our example, can’t act on
+    behalf of the user.
+
+•   How can we achieve this? What you know for sure is that before being able to
+    do any action that could change data, a user must send a request using HTTP
+    GET to see the web page at least once. When this happens, the application
+    generates a unique token. The application now accepts only requests for
+    mutating operations (POST, PUT, DELETE, etc.) that contain this unique value
+    in the header.
+
+    The application considers that knowing the token’s value is proof that it is
+    the app itself making the mutating request and not another system.
+    Any page containing mutating calls, such as POST, PUT, DELETE, and so on,
+    should receive through the CSRF token the response, and the page must use
+    this token when making mutating calls.
+
+•   CsrfFilter:
+    ○ The starting point of CSRF protection
+    ○ Filter in the filter chain
+    ○ Intercepts requests
+        - Allows HTTP methods: GET, HEAD, TRACE, and OPTIONS
+        - All other requests
+            → Require a valid CSRF token in the header
+            → If token does not exist or contains an invalid/expired token value
+              then the Request would be rejected and Response status HTTP 403
+              Forbidden would be sent
+    💡Adds the generated CSRF token to the HTTP Request attribute named _𝙘𝙨𝙧𝙛
+
+•   What is this token, and where does it come from?
+    These tokens are nothing more than string values
+
+•   CsrfTokenRepository:
+    ○ The CsrfFilter uses a component named CsrfTokenRepository to manage the
+      CSRF token values that generate new tokens, store tokens, and eventually
+      invalidate these.
+    ○ By default, 𝘁𝗵𝗲 𝗖𝘀𝗿𝗳𝗧𝗼𝗸𝗲𝗻𝗥𝗲𝗽𝗼𝘀𝗶𝘁𝗼𝗿𝘆 𝘀𝘁𝗼𝗿𝗲𝘀 𝘁𝗵𝗲 𝘁𝗼𝗸𝗲𝗻 𝗼𝗻 𝘁𝗵𝗲 𝗛𝗧𝗧𝗣 𝗦𝗲𝘀𝘀𝗶𝗼𝗻
+      and generates the tokens as random string values. In most cases, this is
+      enough, but you can use your own implementation of CsrfTokenRepository.
+
+
+ Request
+ ——————► ┌───────────────┐ ——————►  ┌────────────┐ ——————►  ┌───────────┐
+         │Previous Filter|          │ CsrfFilter │          │Next Filter│
+ ◄—————— └───────────────┘ ◄——————  └────────────┘ ◄——————  └───────────┘
+ Response                                 │
+                                          │
+                                          ▼
+                                ┌───────────────────┐
+                                │CsrfTokenRepository|
+                                └───────────────────┘
+
+
+•   After Implementation of Ex-1
+
+    C:\>curl -X POST http://localhost:8080/hello
+    -H "Cookie: JSESSIONID=DCDCF145A4CB79C287DAE9A4FC80C39F"
+    -H "X-CSRF-TOKEN: i2gNvppEVCqRiuvkbUlI7E9XWVaQjm...."
+
+    Post Hello
+    C:\>
+
+
+•   For the default form login, Spring Security correctly applies CSRF
+    protection for us. The framework takes care of adding the CSRF token to the
+    login request.
+
+📌 [PENDING] : Customizing CSRF Protection
+
+    Configuring CSRF Protection Paths
+
+        Using Paths:
+        ‾‾‾‾‾‾‾‾‾‾‾‾
+        http.csrf(
+            customizer -> customizer.ignoringRequestMatchers("/ciao")
+        )
+
+        Using Req. Matchers:
+        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+        HandlerMappingIntrospector i = new HandlerMappingIntrospector();
+        MvcRequestMatcher r = new MvcRequestMatcher(i, "/ciao");
+        c.ignoringRequestMatchers(r);
+
+        Using RegEx Req. Matchers:
+        ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+        String pattern = ".*[0-9].*";
+        String httpMethod = HttpMethod.POST.name();
+        RegexRequestMatcher r = new RegexRequestMatcher(pattern, httpMethod);
+        c.ignoringRequestMatchers(r);
+
+
+    👉 By default, the application stores CSRF tokens in the HTTP session on
+    the server side.
+    This simple approach is suitable for small applications, but it’s not great
+    for applications that serve a large number of requests and that require
+    horizontal scaling. The HTTP session is stateful and reduces the scalability
+    of the application.
+
+    Custom Token Magmt.
+    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    👉 Spring Security offers three contracts that you need to implement to
+    Customize Token Management
+    ➤ CsrfToken: Describes the CSRF token itself
+    ➤ CsrfTokenRepositor: Describes the object that creates, stores, and loads
+    CSRF tokens
+    ➤ CsrfTokenRequestHandler: Describes the object that manages the way in
+    which the generated CSRF token is set upon the HTTP request
+
+
+╭───────────────────────────────╮
+│ Chapter 10 - Configuring CORS │
+╰───────────────────────────────╯
+
+What is CORS?
+    If a Web-Application, which is hosted on domain "mysite.com" tries to access
+a resource in a different site, say - "othersite.com", then the browser will, by
+default, prevent that.
+CORS is a mechanism, by which this default behavior can be overridden.
+
+
+•   Implemented on (and by) the domain that other domains are trying to access
+•   Works based on Http Headers
+•   Important Http Headers
+
+📌 [PENDING]
+[TODO] Reformat
+[TODO] Include content from Gemini Search
+
+Access-Control-Allow-Origin: Answers the question "Who is allowed to talk to 
+me?" (Specifies the allowed domains).  
+Access-Control-Allow-Methods: Answers the question "What actions are they 
+allowed to perform?" (Specifies the allowed HTTP verbs).  
+Access-Control-Allow-Headers: Answers the question "What extra information can 
+they send in their requests?" (Specifies the allowed non-standard HTTP 
+headers).
+
+Can be applied on individual method levels
+Can be applied at security chain level
+
+
+[Tatha: 04/06/2025] ❗   Switching to the second edition, book, because Spring
+Security is currently running v. 6
+╭───────────────────────────────────────────────────────────╮
+│ Chapter 14 - Implementing an Oauth 2 Authorization Server │
+╰───────────────────────────────────────────────────────────╯
+
+    → Authorization Code
+    → Client Credentials
+    → Opaque Tokens
+    → Introspection
+
+•	The Spring Security Authorization server is the de facto way to implement 
+	an authorization server using Spring today.
+•   The default Auth. Server Configuration implementation issues non-opaque
+    tokens.
+•	Main components of the OAuth2 Authorization Server
+	1. Configuration Filter for Protocol Endpoints
+		- These are settings that are specific to the Authorization Server
+		- These settings include customizations
+	2. Configuration Filter for Authentication
+		- Authentication
+		- Authorization
+		- CSRF
+		- CORS
+	3. User Details 
+		- UserDetailsService + Pwd. Encoder
+	4. Client Details Mgmt.
+		- The authorization server uses a component called 
+		'RegisteredClientRepository' to manage the client credentials and other 
+		details.
+	5. Key-Pairs Mgmt.
+		- Private and Public key management for Non-Opaque tokens
+		- Uses a key-source component
+	6. The general app settings
+		- Implemented using the 'AuthorizationServerSettings' component
+
+•	🧠 Important Interfaces 🧠
+
+	UserDetails
+	UserDetailsService
+
+	RegisteredClient
+	RegisteredClientRepository
+
+**	applyDefaultSecurity(): Utility Method | Minimal Configurations
+**	The default path to the login web page in a Spring web app is "/login"
+** 	In case you want a client to be able to use multiple grant types, you need 
+	to add the intended grant types using the .authorizationGrantType() method
+	for each grant - i.e. by calling it multiple times
+**	Similarly, by repeatedly calling the redirectUri() method, you can specify 
+	multiple allowed redirect URIs.
+
+
+
+
+
+
+•   http.formLogin() - tell Spring Security to configure a login form for us
+
+

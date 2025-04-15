@@ -1,0 +1,270 @@
+𝐖𝐡𝐚𝐭 𝐢𝐬 𝐊𝐚𝐟𝐤𝐚?
+
+A very powerful and widely used event streaming platform
+
+	Distributed Event Streaming Platform
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	•	Handle real-time data feeds, continuous flow of data
+	• 	Offers publish, subscribe, store and process stream of records
+	• 	High scalability, fault tolerance 
+	
+	Key Capabilities
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	•	Pub-Sub
+	•	Storage
+		- Stores streams of records
+		- Preserves order of events
+	•	Real time stream processing
+		→ Intercommunication of data between systems
+		→ Can handle massive amounts of data
+	•	Event-Driven Architectures
+		→ Event Driven Microservice Architectures
+	•	Use Cases:
+		○ Real-time analytics
+		○ Fraud detection
+		○ Log aggregation
+		○ Stream processing
+		○ Website activity tracking
+		○ Financial transaction processing
+		○ IoT data collection.
+
+𝐊𝐞𝐲 𝐂𝐨𝐧𝐜𝐞𝐩𝐭𝐬
+
+	•	Topics: Categories, feeds to which records are published
+	•	Partition: 
+		○	Break-down of a Topic to managable size pieces
+		○ 	Scalability | Parallelism
+		○	Continually growsing, ordered, immutable sequence of records
+	•	Brokers:
+		-	A Kafka cluster requires 1 or more broker(s)
+		○	Servers that comprise the Kafka cluster
+		○	Store the data
+
+	•	Producers
+		▪ Applications that publish (write) data to Kafka topics
+		▪ Choosing the Topic and corresponding Partition to send records to
+	•	Consumers:
+		▪ Applications that subscribe to (read) data from Kafka topics. 
+		▪ Track their position in each partition by maintaining an offset.
+
+	•	Consumer Groups:
+		- Consumers can be organized into consumer groups 
+		- Allows parallel consumption of data
+		- Load Balancing | One consumer within a group per partition
+
+	•	Kafka Connect:
+		- Framework 
+		- Connects Kafka with external systems, - DB, data-sources, sinks, etc. 
+		- Simplifies the process of importing and exporting data.
+	
+	•	Kafka Streams:
+		- Library for building stream processing applications. 
+		- Process and transform data streams in real-time.
+	
+	•	KRaft (Kafka Raft metadata mode):
+		- New consensus mechanism that removes the Zookeeper dependancy. It is now recomended to deploy Kafka clusters using KRaft mode.
+
+
+𝐋𝐞𝐚𝐝𝐞𝐫 𝐚𝐧𝐝 𝐈𝐒𝐑
+
+	𝕃𝕖𝕒𝕕𝕖𝕣
+	‾‾‾‾‾‾‾
+	𝐏𝐚𝐫𝐭𝐢𝐭𝐢𝐨𝐧 𝐋𝐞𝐚𝐝𝐞𝐫𝐬𝐡𝐢𝐩:
+		○ Each partition within a Kafka topic has one designated leader 
+		replica.
+		○ All read and write requests for that partition are handled by 
+		this leader.
+		○ The leader is responsible for maintaining the authoritative 
+		version of the partition's log.
+	
+	𝐑𝐨𝐥𝐞:
+		○ The leader receives data from producers and distributes it to the 
+		follower replicas.
+		○ It also serves read requests from consumers.
+		○ This centralized handling simplifies data consistency.
+	
+	𝕀𝕊ℝ (𝕀𝕟-𝕊𝕪𝕟𝕔 ℝ𝕖𝕡𝕝𝕚𝕔𝕒𝕤)
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	𝐑𝐞𝐩𝐥𝐢𝐜𝐚𝐭𝐢𝐨𝐧 𝐚𝐧𝐝 𝐒𝐲𝐧𝐜𝐡𝐫𝐨𝐧𝐢𝐳𝐚𝐭𝐢𝐨𝐧:
+		○ Kafka replicates partitions across multiple brokers to ensure 
+		data redundancy.
+		○ The ISR is a set of replicas that are "in sync" with the leader. 
+		This means they have kept up with the leader's log.
+	𝐈𝐦𝐩𝐨𝐫𝐭𝐚𝐧𝐜𝐞:
+		○ The ISR is crucial for data durability. If the leader fails, a 
+		new leader is elected from the ISR.
+		○ Only replicas in the ISR are eligible for leader election, 
+		minimizing the risk of data loss.
+		○ Kafka tracks which replicas are in the ISR and removes any that 
+		fall behind (e.g., due to slow network or broker issues).
+	𝐌𝐚𝐢𝐧𝐭𝐚𝐢𝐧𝐢𝐧𝐠 𝐈𝐒𝐑:
+		○ Kafka maintains the ISR through information gathered from the 
+		follower replicas. When a follower replica, keeps up to date with 
+		the leader it remains in the ISR. If a follower falls behind, it 
+		will be removed from the ISR.
+	
+	Summary:
+
+	The leader is the primary replica that handles all reads and writes for 
+	a partition.
+	The ISR is the set of replicas that are currently synchronized with the 
+	leader, ensuring data consistency and enabling fault tolerance.
+	These components are essential for Kafka's ability to provide reliable 
+	and highly available data streaming.
+
+𝐑𝐨𝐥𝐞 𝐨𝐟 𝐙𝐨𝐨𝐊𝐞𝐞𝐩𝐞𝐫
+
+Prior to Kafka version 2.8, and fully removed in version 4.0, Apache
+Kafka heavily relied on Apache ZooKeeper for several critical
+coordination and management tasks within the Kafka cluster. Think of
+ZooKeeper as the central nervous system for the Kafka brokers. Here's a
+breakdown of its purposes:
+
+	𝟭. 𝗕𝗿𝗼𝗸𝗲𝗿 𝗠𝗮𝗻𝗮𝗴𝗲𝗺𝗲𝗻𝘁:
+
+		Broker Registration: 
+		When a Kafka broker starts up, it registers itself with ZooKeeper. This 
+		allows other brokers and clients to discover the available brokers in 
+		the cluster.
+		
+		Cluster Membership: 
+		ZooKeeper maintains a dynamic list of all active brokers in the Kafka 
+		cluster. If a broker goes down or a new one joins, ZooKeeper notifies 
+		the other brokers about this change in topology.
+	
+	𝟮. 𝗖𝗼𝗻𝘁𝗿𝗼𝗹𝗹𝗲𝗿 𝗘𝗹𝗲𝗰𝘁𝗶𝗼𝗻:
+
+		Leader Election for the Controller: 
+		One of the Kafka brokers is elected as the "controller." This controller 
+		is responsible for managing partition leadership changes, topic 
+		creation/deletion, and reassigning partitions. ZooKeeper plays a crucial 
+		role in electing this controller. If the current controller fails, 
+		ZooKeeper facilitates a new election among the remaining brokers.
+	
+	
+	𝟯. 𝗧𝗼𝗽𝗶𝗰 𝗮𝗻𝗱 𝗣𝗮𝗿𝘁𝗶𝘁𝗶𝗼𝗻 𝗠𝗮𝗻𝗮𝗴𝗲𝗺𝗲𝗻𝘁:
+
+		Topic Configuration: 
+		ZooKeeper stores metadata about Kafka topics, including the number of 
+		partitions, replication factor, and any configuration overrides.
+	
+		Partition State: 
+		ZooKeeper tracks the state of each partition, including which broker is 
+		the current leader and which brokers are the in-sync replicas (ISRs).
+	
+	𝟰. 𝗖𝗼𝗻𝘀𝘂𝗺𝗲𝗿 𝗚𝗿𝗼𝘂𝗽 𝗠𝗮𝗻𝗮𝗴𝗲𝗺𝗲𝗻𝘁 (𝗳𝗼𝗿 𝗼𝗹𝗱𝗲𝗿 𝗰𝗼𝗻𝘀𝘂𝗺𝗲𝗿 𝗔𝗣𝗜𝘀):
+
+		Consumer Registration: 
+		Older Kafka consumer APIs (before version 0.10) would register 
+		themselves with ZooKeeper.
+	
+		Offset Storage: 
+		ZooKeeper was also used to store the consumption offsets 
+		for each consumer group, indicating how far each consumer had read in 
+		each partition. Note: Modern Kafka consumers (0.10+) store their offsets 
+		within Kafka itself in a dedicated internal topic (__consumer_offsets), 
+		reducing the dependency on ZooKeeper for this specific task.
+	
+	𝟱. 𝗖𝗼𝗻𝗳𝗶𝗴𝘂𝗿𝗮𝘁𝗶𝗼𝗻 𝗮𝗻𝗱 𝗖𝗼𝗼𝗿𝗱𝗶𝗻𝗮𝘁𝗶𝗼𝗻:
+
+		Centralized Configuration: 
+		ZooKeeper acts as a centralized repository for cluster-wide configurations.
+	
+		Notifications: 
+		ZooKeeper provides a watch mechanism that allows Kafka brokers to be 
+		notified of any changes in the metadata it manages. This enables timely 
+		reactions to events like broker failures or topic modifications.
+	
+		Access Control Lists (ACLs): 
+		ZooKeeper can store ACLs that define which users or applications have 
+		permission to read or write to specific topics.
+	
+	In essence, ZooKeeper provided the necessary distributed
+	coordination and consensus services that Kafka needed to manage its
+	cluster state, elect leaders, and keep all the brokers in sync.
+
+	𝕋𝕙𝕖 𝕊𝕙𝕚𝕗𝕥 𝔸𝕨𝕒𝕪 𝕗𝕣𝕠𝕞 ℤ𝕠𝕠𝕂𝕖𝕖𝕡𝕖𝕣 (𝕂ℝ𝕒𝕗𝕥 𝕄𝕠𝕕𝕖)
+	▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔
+
+	It's important to note that Kafka is actively moving away from its
+	dependency on ZooKeeper with the introduction of KRaft (Kafka Raft
+	metadata mode). This new consensus mechanism integrates metadata
+	management directly into the Kafka brokers themselves, eliminating the
+	need for a separate ZooKeeper cluster.
+
+	As of Kafka version 3.5, ZooKeeper is deprecated, and Kafka 4.0 will
+	not support ZooKeeper at all. The KRaft mode simplifies the
+	architecture, reduces operational complexity, and improves performance
+	and security.
+
+	Therefore, while ZooKeeper was historically crucial for Kafka, its role
+	is being phased out in favor of a self-managed metadata quorum within
+	the Kafka cluster.
+
+
+𝐂𝐚𝐧𝐧𝐨𝐭 𝐦𝐨𝐝𝐢𝐟𝐲 𝐑𝐞𝐩𝐥𝐢𝐜𝐚𝐭𝐢𝐨𝐧-𝐅𝐚𝐜𝐭𝐨𝐫
+
+	Once a topic is created in Apache Kafka, you cannot directly change its 
+	replication factor. This is a significant design decision with implications for data durability and consistency. The following are the reasons behind this limitation along with the workarounds:
+
+
+	𝗖𝗼𝗺𝗽𝗹𝗲𝘅𝗶𝘁𝘆 𝗼𝗳 𝗗𝗮𝘁𝗮 𝗥𝗲𝗱𝗶𝘀𝘁𝗿𝗶𝗯𝘂𝘁𝗶𝗼𝗻
+	Changing the replication factor after topic creation would necessitate a 
+	potentially massive data redistribution across the Kafka brokers. This 
+	process would be:
+		𝑻𝒊𝒎𝒆-𝒄𝒐𝒏𝒔𝒖𝒎𝒊𝒏𝒈: Especially for large topics with significant data 
+		volumes.
+		𝑹𝒆𝒔𝒐𝒖𝒓𝒄𝒆-𝒊𝒏𝒕𝒆𝒏𝒔𝒊𝒗𝒆: It would put a heavy load on the network, disk I/O, 
+		and CPU of the brokers.
+		𝑪𝒐𝒎𝒑𝒍𝒆𝒙 𝒕𝒐 𝒎𝒂𝒏𝒂𝒈𝒆: Ensuring data consistency and preventing data loss 
+		during this redistribution would be a non-trivial engineering challenge. 
+		Handling failures during the process would add further complexity.
+
+	𝗜𝗺𝗽𝗮𝗰𝘁 𝗼𝗻 𝗣𝗮𝗿𝘁𝗶𝘁𝗶𝗼𝗻 𝗟𝗲𝗮𝗱𝗲𝗿𝘀𝗵𝗶𝗽 𝗮𝗻𝗱 𝗜𝗦𝗥: 
+	Altering the replication factor would directly affect the number of replicas 
+	for each partition. This would require recalculating and potentially 
+	reassigning partition leaders and the In-Sync Replica (ISR) set for all 
+	affected partitions. 
+	This process needs careful coordination to avoid disruptions.
+
+	𝗣𝗼𝘁𝗲𝗻𝘁𝗶𝗮𝗹 𝗳𝗼𝗿 𝗜𝗻𝗰𝗼𝗻𝘀𝗶𝘀𝘁𝗲𝗻𝗰𝗶𝗲𝘀
+	Allowing dynamic changes to the replication factor could introduce 
+	complexities 
+	in maintaining strong consistency guarantees, especially during the 
+	transition period.
+
+	𝗦𝗶𝗺𝗽𝗹𝗶𝗰𝗶𝘁𝘆 𝗼𝗳 𝗜𝗻𝗶𝘁𝗶𝗮𝗹 𝗗𝗲𝘀𝗶𝗴𝗻:
+	The initial design of Kafka prioritized simplicity and performance for its 
+	core publish-subscribe functionality. Allowing dynamic replication factor 
+	changes would have added significant complexity to the core architecture.
+
+𝐖𝐨𝐫𝐤𝐚𝐫𝐨𝐮𝐧𝐝𝐬 𝐟𝐨𝐫 𝐂𝐡𝐚𝐧𝐠𝐢𝐧𝐠 𝐭𝐡𝐞 𝐑𝐞𝐩𝐥𝐢𝐜𝐚𝐭𝐢𝐨𝐧 𝐅𝐚𝐜𝐭𝐨𝐫
+
+	Since you cannot directly modify the replication factor of an existing topic, you need to employ workarounds to achieve the desired outcome:
+
+	𝗖𝗿𝗲𝗮𝘁𝗲 𝗮 𝗡𝗲𝘄 𝗧𝗼𝗽𝗶𝗰 𝘄𝗶𝘁𝗵 𝘁𝗵𝗲 𝗗𝗲𝘀𝗶𝗿𝗲𝗱 𝗥𝗲𝗽𝗹𝗶𝗰𝗮𝘁𝗶𝗼𝗻 𝗙𝗮𝗰𝘁𝗼𝗿:
+
+	•	This is the most common and recommended approach.
+	• 	Create a new topic with the same configuration as the original topic 	
+		(number of partitions, etc.) but with the desired replication factor.
+	•	Migrate the data from the old topic to the new topic. This can be done 	
+		using various methods:
+		▫	𝑲𝒂𝒇𝒌𝒂 𝑴𝒊𝒓𝒓𝒐𝒓𝑴𝒂𝒌𝒆𝒓 (𝒗𝒆𝒓𝒔𝒊𝒐𝒏 1): A tool specifically designed for mirroring topics between Kafka clusters. It can also be used to copy data within the same cluster.
+		▫	𝑲𝒂𝒇𝒌𝒂 𝑴𝒊𝒓𝒓𝒐𝒓𝑴𝒂𝒌𝒆𝒓 2 (𝑪𝒐𝒏𝒏𝒆𝒄𝒕-𝒃𝒂𝒔𝒆𝒅): The newer version of MirrorMaker built on Kafka Connect, offering more flexibility and features.
+		▫ 	𝑪𝒖𝒔𝒕𝒐𝒎 𝑪𝒐𝒏𝒔𝒖𝒎𝒆𝒓/𝑷𝒓𝒐𝒅𝒖𝒄𝒆𝒓 𝑨𝒑𝒑𝒍𝒊𝒄𝒂𝒕𝒊𝒐𝒏:: You can write a custom application that consumes data from the old topic and produces it to the new topic.
+	• 	Once the migration is complete and verified, you can switch your consumers and producers to use the new topic and eventually delete the old one.
+
+	𝗠𝗮𝗻𝘂𝗮𝗹 𝗣𝗮𝗿𝘁𝗶𝘁𝗶𝗼𝗻 𝗥𝗲𝗮𝘀𝘀𝗶𝗴𝗻𝗺𝗲𝗻𝘁 (𝗔𝗱𝘃𝗮𝗻𝗰𝗲𝗱 𝗮𝗻𝗱 𝗥𝗶𝘀𝗸𝘆)
+
+	•	Kafka provides tools for manually reassigning partitions between brokers. While this can indirectly help in achieving a higher replication factor, it's a complex and error-prone process that requires careful planning and execution.
+	•	You would need to manually move partitions to brokers that don't currently host replicas of those partitions.
+	•	This method is generally not recommended for simply changing the replication factor and is more suited for rebalancing partitions across the cluster.
+
+	𝗜𝗺𝗽𝗹𝗶𝗰𝗮𝘁𝗶𝗼𝗻𝘀 𝗼𝗳 𝘁𝗵𝗲 𝗟𝗶𝗺𝗶𝘁𝗮𝘁𝗶𝗼𝗻:
+
+	•	𝑷𝒍𝒂𝒏𝒏𝒊𝒏𝒈 𝒊𝒔 𝑪𝒓𝒖𝒄𝒊𝒂𝒍: You need to carefully consider the required level of data durability and fault tolerance when creating a topic and set the replication factor accordingly.
+	•	𝑫𝒂𝒕𝒂 𝑴𝒊𝒈𝒓𝒂𝒕𝒊𝒐𝒏 𝑶𝒗𝒆𝒓𝒉𝒆𝒂𝒅: Changing the effective replication factor involves data migration, which can be time-consuming and resource-intensive.
+	•	𝑶𝒑𝒆𝒓𝒂𝒕𝒊𝒐𝒏𝒂𝒍 𝑪𝒐𝒎𝒑𝒍𝒆𝒙𝒊𝒕𝒚: Managing data migration adds to the operational overhead of maintaining the Kafka cluster.
+
+
+In summary, the inability to directly change the replication factor of a Kafka topic after creation is a deliberate design choice rooted in the complexity of data redistribution, potential inconsistencies, and the initial architectural focus on core streaming functionality. The recommended approach to achieve a different replication factor is to create a new topic with the desired configuration and migrate the data from the old topic.

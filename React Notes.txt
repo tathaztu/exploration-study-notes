@@ -1,0 +1,261 @@
+1. 	How a button click in a Form on an HTML page submits the form?
+Ans. 
+	<button type="submit"> or <input type="submit">: This is the crucial
+	element. When clicked, it triggers the form submission process.
+	
+	If the button has no type assigned to it, and it is inside of a form, it 
+	will default to type="submit".
+
+
+2.	Hook
+
+			React Features 	- e.g. State, Lifecycle
+				↑
+				│
+			(React Hook)	- Special Function
+				↑
+				│
+			Functional Component
+			
+	Before hooks, function components were primarily for displaying data
+	(presentational). If you needed state (data that changes) or lifecycle
+	methods (like when a component loads), you had to use class components.   
+	Hooks allow you to use state and other React features, like lifecycle 
+	methods, in function components.
+
+	This makes function components much more powerful.   
+	
+	They enable you to use React state and lifecycle features without writing 
+	class components.
+
+	Examples of Common Hooks:
+		• useState: Lets you add state to function components.
+		• useEffect: Lets you perform side effects in function components     
+		  (e.g., data fetching, subscriptions).
+		• useContext: Lets you access React's context API.
+
+3. ❗Chef Claude: Unknown Error on console on clicking auto-fill options
+4. ❗Chef Claude: Error calling WS - X-API, etc.
+5.	Advanced React	
+	○	Internal workings
+	○	Routing
+	○	Common Patterns
+
+	Reusability
+	- Children
+	- Compound
+	- Context
+	- Composition
+	- Render Props
+	- Custom Hooks
+	
+	React Router 6
+	- Routing
+	- Navigation
+	- Layout & Index Routes
+	- Nested Routes
+	- Routes & Search paramters
+	- Protected Routes
+	
+	
+	Performance
+	- Rendering
+	- Dev Tools
+	- Code Splitting
+	- Lazy Init *
+	- Memoization
+	- useMemo
+	- useCallback()
+
+
+
+
+
+
+Other Notes
+———————————
+
+
+○ How to handle page refresh?
+○ How to make sure the DOM is not tampered
+○ Other important aspects of UI
+
+
+
+• The word "async" before a function means one simple thing: a function always 
+returns a promise. Other values are wrapped in a resolved promise automatically.
+
+
+LinkedIn Post - Sai Ram Somanabonia
+-----------------------------------
+
+If I am taking your React Interview, I’m asking you these 30 questions 100%:
+
+1. What are the limitations of React in building large-scale applications?
+
+2. How does React manage the Virtual DOM, and what are the benefits?
+
+3. Can React Hooks fully replace Redux for state management? Explain why or 
+why not.
+
+4. What are the best practices for managing state in large React applications?
+
+5. How would you optimize performance in a React app with large component 
+trees?
+
+6. Explain React's Strict Mode and its impact on development.
+
+7. How can you prevent unnecessary re-renders in React functional components?
+
+8. Describe the key differences between functional and class components in 
+React.
+
+9. What is the significance of the React Fiber architecture?
+
+10. How does React handle side effects, and how can you manage them 
+effectively?
+
+11. Explain the differences between `useMemo()` and `useCallback()` in React.
+
+12. How would you implement dynamic form handling and validation in React?
+
+13. What is lazy loading in React, and how does it improve application 
+performance?
+
+14. How would you handle errors in a React app, and what is the role of error 
+boundaries?
+
+15. What are the benefits of server-side rendering (SSR) in React applications?
+
+16. How do you handle styling in React components? Discuss different 
+approaches.
+
+17. How would you pass data between sibling components in React without using 
+Redux?
+
+18. Explain the use case of `useEffect()` for fetching data from an API.
+
+19. How do you handle asynchronous operations in React using `async/await` or 
+Promises?
+
+20. How would you re-render a component when the window is resized?
+
+21. Describe how React Context API can be used for state management in an app.
+
+22. What is the role of React Router, and how does it work with dynamic 
+routing?
+
+23. Explain the concept of controlled and uncontrolled components in React.
+
+24. How would you optimize React app performance when handling large lists or 
+grids?
+
+25. Explain the difference between shallow and deep comparison in React's 
+`shouldComponentUpdate`.
+
+26. How do you handle asynchronous code execution and state updates in React?
+
+27. How would you implement custom hooks to abstract logic in React?
+
+28. What are higher-order components (HOCs) in React, and how are they used?
+
+29. How would you implement a search feature with debouncing in React?
+
+30. Explain React's reconciliation process and how it updates the DOM 
+efficiently.
+
+
+--------------------------------------------------------------------------------
+
+UI optimization in React applications focuses on enhancing rendering 
+performance and responsiveness. Several strategies can be employed to achieve 
+this:
+Memoization:
+Utilizing React.memo, useMemo, and useCallback can prevent unnecessary 
+re-renders of components and functions by caching results.
+Virtualization:
+For rendering large lists, libraries like react-window or react-virtualized 
+efficiently render only the visible items, significantly improving performance.
+Code Splitting:
+Implementing code splitting with React.lazy and Suspense allows loading 
+components on demand, reducing the initial load time.
+Functional Components and Hooks:
+Functional components are generally simpler and faster than class components. 
+Hooks provide a way to manage state and side effects efficiently. 
+Minimize Re-renders:
+Techniques like using shouldComponentUpdate (for class components) or 
+React.memo (for functional components) can prevent unnecessary re-renders.
+Production Build:
+Always use the production build for deployment, as it is optimized for 
+performance.
+Caching:
+Caching frequently accessed data can reduce redundant calculations and improve 
+performance. Libraries like reselect can be used for memoizing selectors in 
+Redux applications.
+UseTransition Hook:
+This hook allows marking state updates as non-blocking transitions, enabling 
+React to defer rendering for these updates and improving UI responsiveness.
+Image Optimization:
+Optimizing and caching images can significantly improve loading times, 
+especially in image-heavy applications.
+Avoid Inline Functions:
+Creating functions within the render method can lead to unnecessary 
+re-renders. Define functions outside the render method or use useCallback.
+By implementing these optimization techniques, developers can build more 
+efficient and responsive React applications.
+
+
+React.dev
+
+👉 We strongly recommend using Strict Mode alongside React’s ESLint plugin to 
+help your codebase follow the Rules of React.
+
+
+Scrimba: Build Reusable Components - Cassidy Williams
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+╭───────────────╮
+│ Fundamentals	│
+╰───────────────╯
+
+•	React is a Blueprint | knows how to Render
+•	React-DOM uses the Blueprint (React) to build
+•	createElement lets you create a React element. It serves as an alternative 
+	to writing JSX.
+	React.createElement(type, props, ...children)
+	
+	e.g. 
+	let text = 'Add'
+	const reactElement = <button>{text}</button>
+	≍	
+	React.createElement('button', null, text)
+	React.createElement('button', null, (()=>text)())
+
+•	"children" prop is about rendering by position
+•	"children" prop can be used to represent child elements and can also be used
+	as an attribute
+•	<Button children={element} />	
+
+    Step 1: React.createElement(Button, { children: element })
+	
+•	<Button>{element}</Button>
+    
+	Step 1: React.createElement(Button, {}, element)
+    Step 2: React.createElement(Button, { children: element })
+•	<Button>
+		{element}
+		{element2}
+		{stuff.map(() => {element3and4})}
+    </Button>
+	React.createElement(Button, {}, element, element2, [element3, element4])
+	React.createElement(
+		Button, 
+		{children: [element, element2, [element3, element4]]}
+	)
+•	Reusable components can take advantage of 
+	○ children
+	○ props
+		▪ Passing Value
+		▪ Passing Functions
+		▪ Spreading directly in the component
+	○ Custom Events

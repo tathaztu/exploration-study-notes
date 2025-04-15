@@ -1,0 +1,8 @@
+
+
+• Way of Structuring Data inside the RAM
+• Arrays are stored in contiguous memory locations
+• Static arrays are of fixed size
+• For Time Complexity the importance is HOW QUICKLY is the data growing and
+for this reason, 𝑂(𝑥.𝑛) is generalized as 𝑂(𝑛) - we don't care about the 
+constant vs. 𝑂(𝑛ˣ)

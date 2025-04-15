@@ -1,0 +1,33 @@
+realpython.com
+https://realpython.com/python-list
+
+•	One of the most relevant characteristics of lists is that they’re mutable 
+data types. This feature deeply impacts their behavior and use cases. For 
+example, mutability implies that lists aren’t hashable, so you can’t use them 
+as dictionary keys.
+
+>>> def fibonacci_generator(stop):
+...     current_fib, next_fib = 0, 1
+...     for _ in range(0, stop):
+...         fib_number = current_fib
+...         current_fib, next_fib = next_fib, current_fib + next_fib
+...         yield fib_number
+...
+
+>>> fibonacci_generator(10)
+<generator object fibonacci_generator at 0x10692f3d0>
+
+>>> list(fibonacci_generator(10))
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+
+Calling fibonacci_generator() directly returns a generator iterator object that allows you to iterate over the numbers in the Fibonacci sequence up to the index of your choice. However, you don’t need an iterator in your code. You need a list. A quick way to get that list is to wrap the iterator in a call to list(), as you did in the final example.
+
+This technique comes in handy when you’re working with functions that return iterators, and you want to construct a list object out of the items that the iterator yields. The list() constructor will consume the iterator, build your list, and return it back to you.
+
+Note: You can also use the literal syntax and the iterable unpacking operator (*) as an alternative to the list() constructor.
+
+Here’s how:
+
+>>> [*fibonacci_generator(10)]
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+In this example, the iterable unpacking operator consumes the iterator, and the square brackets build the final list of numbers. However, this technique is less readable and explicit than using list().

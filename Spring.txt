@@ -1,0 +1,423 @@
+   _____            _             
+  / ____|          (_)            
+ | (___  _ __  _ __ _ _ __   __ _ 
+  \___ \| '_ \| '__| | '_ \ / _` |
+  ____) | |_) | |  | | | | | (_| |
+ |_____/| .__/|_|  |_|_| |_|\__, |
+        | |                  __/ |
+        |_|                 |___/ 
+
+•	Spring is a Framework
+• 	Always start at - https://spring.io/projects
+•	Spring is designed to be modular; we add dependencies as needed - both - in
+the code, as well as the pom - and this greatly reduces the footprint of the
+application
+
+• 	Spring Core
+	
+	○ Spring Context
+	○ Spring AOP
+	○ SpEL
+
+•	Spring MVC
+•	Spring Data Access
+•	Spring Testing
+
+
+•	Spring is Modular in Design
+•	Java Reflection should not be considered as a functionality which exhibits 
+slowness
+
+┌───────────────────────┐
+│  Inversion of Control	│
+└───────────────────────┘
+
+• 	Something else controls your code
+•	Control gets "inverted" - it shifts from the application to "something else"
+•	The Framework controls the application and not the opposite
+•	Implemented by - Dependency Injection and Aspects
+•	Why? 
+	Spring attaches capabilities to Application
+	Spring augments the application using IoC
+
+
+➤	Need of a Framework 
+
+• 	Do we always need a framework?
+-	Do we need a chainsaw to cut a loaf of bread?
+-	Some public frameworks have vulnerabilities
+-	Small scale projects may not always require frameworks
+-	Is it mostly custom? 
+
+
+Dependency Injection
+————————————————————
+•	Dependency Injection (DI) is ONE of the ways in which IoC is implemented
+•	DI is a way in which we give a framework, control over our instances and 
+tell the framework how the instances are related to one another
+•	DI is a technique involving the framework setting a value into a specific 
+field or parameter.
+
+AOP
+——
+AOP is used to gain control over the attributes, characteristics & methods of 
+the instances
+
+• 	Spring Bean
+	- An instance of an object that Spring can control/see
+	- A special Java object
+
+•	Spring Context
+	○ By default, Spring doesn't know any of the objects created in the 
+	application
+	○ All the instance(s) in the application, that a given framework can control
+	○ In Spring, the context is described by the ApplicationContext interface
+
+	Dependency:
+	groupId: 	org.springframework
+	artifactId: spring-context
+	
+	🧠 spring-context is the required for Context, DI, etc.
+	🧠 spring-context is the minimum capability required for a spring 
+	application
+	regardless of other used dependencies, e.g. Transactions, Logging, etc.
+	○ E.g. Old Impl: FileSystemXmlApplicationContext,  
+	ClassPathXmlApplicationContext
+	○ E.g. New Impl: AnnotationConfigApplicationContext
+	
+	AnnotationConfigApplicationContext is the contract implementation of the
+	ApplicationConfig for the definition of a Spring Context via Annotations 
+	and that's why it is called AnnotationConfigApp...Ctx...
+
+Typically in an IoC, the Dependency Injection mechanism depends on the context.
+Information about the object(s) is required before it can control dependency,
+behavior, etc.
+
+•	What is a Bean? 
+	Something that is added to the Spring Context.
+	A Bean is added to the context by the configuration(s) made by the 
+	programmer
+    👉 A @Bean can only reside in a @Configuration class
+
+
+• 	Bean vs. Component
+	@Bean gives you explicit control over bean creation, while stereotype 
+	annotations streamline the process of automatically registering your 
+	components as beans.
+	
+•	Programmatic addition to the Context is another option but is not as common
+
+Beans 
+	- Objects who need to be augmented with certain capabilities - transaction,
+	observability, authorization, etc.
+
+
+Can POJOs have any limitations?
+	- Limitations: Depend on the way the Bean(s) are configured
+
+
+•	@Configuration Class
+	- We can have multiple @Configuration classes
+	- Normally there is just one
+	
+
+	Example of a Programmatic configration
+	
+	@Configuration
+	public class ProjectConfig {
+	
+		@Bean
+		public Parrot parrot() {
+			var parrot = new Parrot();
+			parrot.setName("Yago");
+			return parrot;
+		}
+	
+	}
+	
+	
+	var context = AnnotationConfigApplicationContext(Parrot.class)
+	
+	Qs. What is the standard for the name of the Parrot behavior?
+	Ans.For Spring Beans, there is an exception wherein the names of the methods
+	do not start with a verb, like getParrot or createParrot.
+	Every instance has a name and ID and can have multiple aliases.
+	@Bean methods can be named whatever we want; however, Beans created with 
+	@Bean annotation will always be recognized by the method name and 
+	therefore, normally, for Spring Beans, verbs are avoided in the method name.
+
+📚From the Docs 🍃🍃
+	An ApplicationContext provides:
+
+	- ListableBeanFactory → Bean factory methods for accessing app. components  
+	- ResourceLoader → The ability to load file resources in a generic fashion 
+	- ApplicationEventPublisher → The ability to publish events to registered 
+	  listeners. 
+	- MessageSource → The ability to resolve messages, supporting i18n. 
+	- Inheritance from a parent context. Definitions in a descendant context 
+	  will always take priority. This means, for example, that a single parent 
+	  context can be used by an entire web application, while each servlet has 
+	  its own child context that is independent of that of any other servlet.
+
+❗💡Can we have more than one application context?
+	
+	👉 DO NOT!!
+	○ This can create complications.
+	○ Contexts can inherit one another.
+	○ Applications having multiple contexts usually don't end up well
+
+
+•	Can a bean placed in a context be used anywhere and is it the same instance?
+	○ The instance depends on the configuration and type of the bean
+	○ The bean can be used anywhere
+
+•	Stereotype Annotations
+
+	@Component
+	@Service
+	@Repository
+	@Controller
+
+•	@Component
+
+	If a class is marked as a @Component, then there has to be a component-scan
+
+•	Differences
+    ┌─────────────────────────────────────┬────────────────────────────────────┐
+    │   @Bean                             │     Stereotype Annotations         │
+    ├─────────────────────────────────────┼────────────────────────────────────┤
+    │   • Control is full & fine grained  │ • Control is available only after  │
+    │                                     │   the Bean is created              │
+    │   • Multiple instances of one class │ • Only one instance in this way    │
+    │   • Can create instances of system  │ • Applicability is limited to      │
+    │     classes, e.g. String, Integer,  │   class(es) that the applicaiton   │
+    │     etc.                            │   owns                             │
+    │   • Verbose compared to @Component  │ • Simple, semantic and meaningful  │
+    │                                     │                                    │
+    └─────────────────────────────────────┴────────────────────────────────────┘
+	
+	👉 Although Stereotype and Singleton both are known to create only one 
+	instance in the context, they are not the same
+	
+	👉 Although Stereotype beans can be instantiated with the constructor, it
+	is still recommended to use "post construct" because of several reasons,
+	some of which are - separation of concerns, ease of testing, dealing with a
+	parameterized constructor, etc.
+
+	👉 💡 Stereotype Annotations should be the first choice. If the class 
+	doesn't belong to our code-base or if we need multiple beans of the same 
+	class then we should @Bean
+
+💡	What is the preferred method to add a dependency when configuring a @Bean in 
+	a @Configuration class - DI or programmatically calling the bean definition
+	method of the dependent component?
+	
+	Ans. Prefer DI
+	○ Calling the method works only if the bean definition method is present in
+	the same class
+	○ Better for unit testing
+
+┌────────────────────────────────────────────────┐
+│  Chapter # 3. Spring Context: Wiring of Beans  │
+└────────────────────────────────────────────────┘
+
+Dependency Injection & Wiring of Beans
+	Dependency Injection is focused on getting references out of the context and
+	putting putting them as an attribute (field) of another bean.
+	
+	This is essentially estabilishing relationships between beans.
+
+	This is a declarative way of telling the framework that we want to push the
+	reference of a particular bean form the Context to another Bean
+
+	All the beans in which relationships are set should be in the context
+
+	It does not matter how the beans were configured - i.e. whether they were 
+	marked as @Beans or whether they were marked as Stereotypes - in order to 
+	form relationships among one another
+
+	👉 If a bean method calls another bean method then the AOP interceptors kick
+	in and make sure that only one instance of the Bean is returned
+
+┌─○─○─○─○─○─○─┐
+│  Autowiring │
+└─○─○─○─○─○─○─┘
+
+	This technique is used to "link" beans in the Spring Context when we have 
+	the ability to change the class, which defines the object, into which we
+	want Spring to inject the Dependency
+	This is done by marking the property of the object where we want Spring to 
+	inject the dependency, in the class which defines the object
+
+	@Autowired annotation is no longer used in the @Configuration class because
+	Spring does not require the annotation to inject dependencies anymore.
+	
+	Therefore @Autowired annotation is only seen in Stereotype annotations.
+	
+	DI and Autowiring is achieved using Java Reflection
+
+	🧠💡
+	One of the main reasons why we don't Autowire fields is because it limits 
+	our ability to mark it as final
+	* IntelliJ also recommends against field injection
+
+	Q. Can we use auto-wire inside a @Service class? 
+	A. Of course! 
+    
+	
+    Note: for Autowiring to work, the instance just needs to reside in the 
+	Spring Context. The instance can be in the context using @Bean, 
+	@ComponentScan techniques, programmatically, etc.
+    The technique doesn't matter; all that matters is that the instance should 
+	just be present in the context
+
+
+•	Autowiring on setter methods is considered verbose
+
+Automatic @Autowire
+	➤ Newer versions of Spring ─ starting with 4.3 ─ inject dependencies 
+	automatically in scenarios where, for example, there is just an all args 
+	constructor, which means that the dependencies need to be injected for the 
+	respective bean to work
+
+	Creating an immutable bean is a good practice; helps minimize issues. This
+	is a practice that is followed for most of the beans in Spring.
+	
+	The idea is that when Spring tries to create a bean and finds that there is
+	a dependency, and if there is a single constructor with the dependency as a
+	parameter, then it tries to find a reference of that type in the context. If
+	it finds a bean in the context, then it uses that or else it tries to create
+	one. If there is no reference in the context of that class or if there is an
+	issue in creation then it throws an exception.
+	
+	➤ Exception - Rare case where we are dealing with multiple constructors
+
+•	Advantages of using autowiring on constructors
+	○ We can use automatic code generation tools like Lombok and reduce the
+	verbosity of code; this is because we can skip the auto-wire annotation 
+	completely
+	○ Immutability
+	○ Creating 'mocks' for the Parrot
+
+╭─────────────────────────╮
+│  Circular Dependencies  │
+╰─────────────────────────╯
+
+•	Remedy: Refactor and De-Couple the code so that there are no circular 		
+	dependencies between each other
+	
+	Circular dependency does not happen with field injection because it first 
+	creates the instances and then creates the value
+	
+	Circular Dependencies reveal a Design Issue
+	
+	Circular Dependencies are generally exposed when we use field injections
+
+
+Loose Coupling - Common Use Cases
+	○	Different Environments
+	○	Mocking
+
+
+🧠 Abstract Classes are NOT the way in which contracts are specified in the Java
+world. Abstract classes are an accumulation of behavior from several interfaces,
+without having to repeat them.
+Contracts are always specified through interfaces
+
+
+Service classes - implement the business logic and also represent the complete 
+transformation of data from one form to another
+
+Repository classes - storing data
+
+Decoupling are mostly required for classes where the implementation needs to be 
+replaced or presented with multiple choices
+
+👉 Standard for Implementing an Interface/Contract
+
+	○ 	Appending Impl at the end of the implementation class
+	○ 	Append the contract name at the end of a concrete class
+		Examples:
+		EmailService 	← OutlookEmailService
+						← GoogleEmailService
+						← AppleEmailService
+	○ 	
+	
+
+Stereotypes like Controller, Service and Repositories add a "Documentation"
+layer to an application
+
+👉 Stereotype annotations should only be placed on Conrete types. Stereotype 
+annotations tell the Spring Container to create an instance of the class below.
+
+
+┌────────────────────────────┐
+│ Bean Scopes and Lifecycles │
+└────────────────────────────┘
+
+•	Bean Lifecycle concepts are required for memory management
+•	Focus is on how and when Spring creates the beans
+
+Singleton Bean
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾ 
+	- Not related to the Singleton Design Pattern
+	- There can be multiple instances of the same type in the context
+	  This behavior conflicts with the definition of "Singleton Pattern"
+	- A unique name for a unique bean
+	- Whenever we fetch a "singleton" bean by its name, we get the same instance
+	- Spring creates a singleton bean when it loads the context and assigns 
+	  the bean a name (sometimes also referred to as bean ID).
+	
+	🧠 Never use mutable attributes on Singleton instances because there can 
+	be race conditions, wherein multiple threads try to modify the Bean at the 
+	same time
+	
+	○ By default, Singleton bean instantiation is eager. Beans are created when
+	the ApplicationContext is instantiated with the respective configuration
+
+
+Prototype Bean
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	- New Instance everytime we lookup a bean in the Application Context
+
+
+┌───────┐
+│  AOP  │
+└───────┘
+
+Examples of services provided with Aspects:
+	○ Security - Pre Authorize, Post Authorize
+	○ Transactions
+	○ Logging
+	○ Circuit-Breaking
+
+
+Aspects
+	○ Aspect: 	"What" 	- Piece of logic attached to method(s)
+	○ Advice: 	"When" 	- Before, After, Instead Of 
+	○ PointCut:	"Which" - What all methods
+	
+	Join Point - an event which triggers an Aspect; in the Spring world, it is 
+	always a method call
+
+Aspects are implemented using proxies. Spring never gives us the reference to 
+the actual bean. Instead, it provides us with a proxy which intercepts method
+calls and manages the aspect logic. We can think of the proxy as an object which
+contains a reference to the object in the memory
+
+	a. 	Add @AspectJAutoProxy to the @Configuration class
+	b. 	Create the implementation class and add an instance in the Spring Ctx.
+		The implementation class needs to be marked as @Aspect; the method 
+		needs to be annotated as ??????
+		
+		The @Aspect annotation does not mark the class as a bean; it needs to be
+		configured as such.
+		The @Aspect class is not automatically treated as a Bean becuase Spring 
+		wants to decouple the Bean and Aspect capabilities. The developer can
+		choose the way — configuration or stereotyping — the bean needs to be 
+		defined
+	c. 	Join Points - around, before, after, after returning, after throwing
+
+Annotations were introduced in Java 1.5 | They are an enhanced marker interface
+@Retention(RetentionPolicy.RUNTIME) - makes the annotation visible during 
+runtime

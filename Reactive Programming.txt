@@ -1,0 +1,342 @@
+
+
+•   Process is Heavy-Weight | Unit of Resources
+•   Thread: A process has at least one thread | Unit of Execution
+•   Every Thread has its own Stack Memory - a place where it's data is stored
+    during context switches
+
+𝐏𝐫𝐨𝐛𝐥𝐞𝐦 𝐒𝐭𝐚𝐭𝐞𝐦𝐞𝐧𝐭
+▔▔▔▔▔▔▔▔▔▔
+
+•   CPU is very expensive ($$)
+    Try to use CPU as much as you can!
+•   Microservices Architecture often entails several network calls.
+    Network calls are slow > Threads remain idle
+    Developers create multiple threads compensate and maximize CPU Utilization
+•   Threads are Expensive!
+•   Expensive = Heavy/Consumes Memory
+
+👉   There was a need to make Network Calls more efficient without wasting System
+    resources
+
+𝙸/𝙾 𝙲𝚊𝚕𝚕𝚜
+‾‾‾‾‾‾‾‾‾‾
+IO (Inbound / Outbound) | Desc.                                     Complexity
+Blocking + Sync         : Current thread is blocked             |   1 (least)
+Async                   : Delegated to a different Thread       |   2
+Non-Blocking            : Current thread will be notified       |   3
+Non-Blocking + Async    : A different thread will be notified   |   4 (most)
+
+📌 Reactive Programming model simplifies the Non-Blocking + Async communication
+
+𝙲𝚘𝚖𝚖𝚞𝚗𝚒𝚌𝚊𝚝𝚒𝚘𝚗 𝙿𝚊𝚝𝚝𝚎𝚛𝚗𝚜
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+Reactive Programming allows us 4 kinds of Communication Patterns
+
+Request     |        Request        |   Streaming Request   |   Streaming
+ ↓   ↑      |         ↓    ⇡        |          ⇣    ↑       |     ⇣   ⇡
+Response    |   Streaming Response  |        Response       |   Streaming
+                   (Stock Prices)         (Apple Watch)       (Online Gaming)
+
+𝚁𝚎𝚊𝚌𝚝𝚒𝚟𝚎 𝚂𝚝𝚛𝚎𝚊𝚖 𝚂𝚙𝚎𝚌𝚒𝚏𝚒𝚌𝚊𝚝𝚒𝚘𝚗𝚜
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+Why?
+    • Immediate Updates
+    • Streaming <—> Streaming
+    • Server should notify client about update(s)
+
+Reactive Streams:
+🧠   Standard for Asynchronous Stream Processing with Non-Blocking Back Pressure.
+
+    Process streams of messages in a non-blocking and asynchronous manner while
+    handling back-pressure
+
+💡   Observer Design Pattern
+
+URL: https://www.reactive-streams.org
+
+👉   Observe and React to the stream of Data
+
+                    ┌───────────────────────────────────────────────────────┐
+                    │   public interface Publisher<T> {                     │
+            ┌──────>│       public void subscribe(Subscriber <? super T> s);│
+            ╎       │   }                                                   │
+            ╎       └───────────────────────────────────────────────────────┘
+            ╎                                           Ʌ
+            ╎                                           │
+┌───────────────────────────────────┐                   │
+│   public interface Subscription { │                   │
+│       public void request(long n);│                   │
+│       public void cancel();       │                   │
+│   }                               │                   │
+└───────────────────────────────────┘                   │
+            Ʌ                                           │
+            │                                           │
+            │               ┌───────────────────────────────────────────────┐
+            │               │   public interface Subscriber<T> {            │
+            │               │       public void onSubscribe(Subscription s);│
+            └───────────────│       public void onNext(T t);                │
+                            │       public void onError(Throwable t);       │
+                            │       public void onComplete();               │
+                            │   }                                           │
+                            └───────────────────────────────────────────────┘
+
+
+The processor class acts as both Publisher and Subscriber
+
+public interface Processor<T, R> extends Subscriber<T>, Publisher<R> {
+}
+
+We can have a hierarchy like, e.g.
+    Publisher ╌╌╌ Processor ╌╌╌ Processor ╌╌╌ Subscriber
+
+𝗥𝗲𝗮𝗰𝘁𝗼𝗿 - https://projectreactor.io
+
+Reactor is a fully non-blocking, reactive programming library for building
+efficient and scalable applications on the JVM, based on the Reactive Streams
+specification.
+It provides composable APIs (Flux for 0-N items and Mono for 0-1 item) to manage
+asynchronous data streams with backpressure support.
+
+𝙿𝚞𝚋𝚕𝚒𝚜𝚑𝚎𝚛 𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎𝚛 𝙲𝚘𝚖𝚖𝚞𝚗𝚒𝚌𝚊𝚝𝚒𝚘𝚗
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+
+            🔗   Publisher.subscribe(Subscriber)
+            ---------------------------------------->
+Subscriber                                              Publisher
+            <----------------------------------------
+                Subscriber.onSubscribe(𝘚𝘶𝘣𝘴𝘤𝘳𝘪𝘱𝘵𝘪𝘰𝘯)
+
+                    𝘚𝘶𝘣𝘴𝘤𝘳𝘪𝘱𝘵𝘪𝘰𝘯.request(long n)
+            ---------------------------------------->
+Subscriber                  ◀────▶                      Publisher
+            <----------------------------------------
+                    Subscriber.next(T) .. n-Times
+
+
+🛑   End of Association
+
+                    Subscriber.onError(Throwable)
+Subscriber  <----------------------------------------   Publisher
+
+                    Subscriber.onComplete()
+Subscriber  <----------------------------------------   Publisher
+
+                    𝘚𝘶𝘣𝘴𝘤𝘳𝘪𝘱𝘵𝘪𝘰𝘯.cancel()
+Subscriber  ---------------------------------------->   Publisher
+
+
+𝚃𝚎𝚛𝚖𝚒𝚗𝚘𝚕𝚘𝚐𝚒𝚎𝚜
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+• Publisher
+    Source  | Ovservable | Upstream   | Producer
+• Subscriber
+    Sink    | Observer   | Downstream | Consumer
+• Processor
+    Operator
+
+
+𝚁𝚞𝚕𝚎𝚜 𝚘𝚏 𝚁𝚎𝚊𝚌𝚝𝚒𝚟𝚎 𝙿𝚛𝚘𝚐𝚛𝚊𝚖𝚖𝚒𝚗𝚐
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+•   Subscriber has to subscribe and request for the producer to produce items.
+    The idea is to be lazy
+•   Subscriber can cancel anytime.
+•   If there are no Subscribers left, then the Producer will not produce anything
+•   Producer will produce items via. onNext
+•   Producer will call onComplete after emitting 0...N data.
+
+    According to the 𝗥𝗲𝗮𝗰𝘁𝗶𝘃𝗲 𝗦𝘁𝗿𝗲𝗮𝗺𝘀 𝗦𝗽𝗲𝗰𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻, a 𝙿𝚞𝚋𝚕𝚒𝚜𝚑𝚎𝚛 stream must
+    call the 𝚘𝚗𝙲𝚘𝚖𝚙𝚕𝚎𝚝𝚎() signal to its 𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎𝚛 when it has successfully
+    transmitted all the data and there are no more elements to emit.
+
+    This signals the end of the stream and indicates that the Subscriber will
+    not receive any further 𝚘𝚗𝙽𝚎𝚡𝚝() calls from this Publisher.
+
+    In Reactor, both 𝙵𝚕𝚞𝚡 (for streams of 0 .. N elements) and 𝙼𝚘𝚗𝚘 (for
+    streams of 0 or 1 element) will emit an 𝚘𝚗𝙲𝚘𝚖𝚙𝚕𝚎𝚝𝚎() signal under normal
+    completion scenarios after all data has been emitted.
+
+• Producer will call onError when something breaks
+• Producer will not invoke anything after onComplete/onError
+
+
+  ____                 _
+ |  _ \ ___  __ _  ___| |_ ___  _ __
+ | |_) / _ \/ _` |/ __| __/ _ \| '__|
+ |  _ <  __/ (_| | (__| || (_) | |
+ |_| \_\___|\__,_|\___|\__\___/|_|
+
+
+    ┌───────────────────────────────────────────────────────┐
+    │   public interface Publisher<T> {                     │
+    │       public void subscribe(Subscriber <? super T> s);│ 𝗣𝘂𝗯𝗹𝗶𝘀𝗵𝗲𝗿
+    │   }                                                   │
+    └─────────────────────────┬─┬───────────────────────────┘
+                ╭─────────────╯ ╰───────────╮
+                │                           │
+                │                           │
+                │                           │
+                ˅                           ˅
+            ╭───────────╮               ╭───────────╮
+            │  Mono<T>  │               │  Flux<T>  │
+            ╰───────────╯               ╰───────────╯
+            • O or 1 item               • 0 .. N items
+            • onComplete / onError      • onComplete / onError
+            • No Stream                 • Stream of messages
+            • No Back-Pressure          • Back-Pressure (produce more than
+            • Light-Weight Publisher      what can be consumed)
+            • Request-Response model    • Many additional methods related to
+                                          stream processing
+
+
+    Both Mono and Flux can handle records in a Non-Blocking and Asynchronous
+    manner
+
+    𝗥𝗲𝗮𝗰𝘁𝗶𝘃𝗲 𝗦𝘁𝗿𝗲𝗮𝗺𝘀 𝗮𝗿𝗲 𝗶𝗻𝗵𝗲𝗿𝗲𝗻𝘁𝗹𝘆 𝗟𝗮𝘇𝘆.  
+
+    Operations within a Reactive Streams Pipeline are not executed until a
+    Subscriber actively subscribes to the Publisher and starts requesting data.
+    The following reasons explain the behavior -
+
+    𝗡𝗼 𝗦𝘂𝗯𝘀𝗰𝗿𝗶𝗽𝘁𝗶𝗼𝗻, 𝗡𝗼 𝗪𝗼𝗿𝗸: Until a Subscriber calls the subscribe() method on
+    a Publisher, the Publisher does not start producing or processing any data.
+
+    𝗢𝗽𝗲𝗿𝗮𝘁𝗼𝗿 𝗙𝘂𝘀𝗶𝗼𝗻: Reactive Streams implementations (like Reactor and RxJava)
+    often employ operator fusion techniques. This can optimize the execution by
+    combining multiple operators into a single step, which only happens when the
+    stream is actually consumed.  
+
+    𝗗𝗲𝗺𝗮𝗻𝗱-𝗗𝗿𝗶𝘃𝗲𝗻: The Subscriber controls the rate at which it receives data
+    by making explicit requests (using the request(n) method). The Publisher
+    only produces and pushes data in response to this demand. This pull-based
+    backpressure mechanism further reinforces the lazy nature.
+
+    Reactive Streams set up a blueprint for data processing, but the actual
+    processing is deferred until there's a consumer actively pulling the data
+    through the pipeline. This lazy evaluation is crucial for efficiency,
+    especially when dealing with potentially large or infinite streams of data.
+
+    ╔═══════╗
+    ║  Mono ║
+    ╚═══════╝
+
+    𝗠𝗼𝗻𝗼<𝗧> 𝗷𝘂𝘀𝘁(𝗧 𝗱𝗮𝘁𝗮)
+
+    ○   A common use case of this method would be to create a Mono type
+    Publisher to match the parameter(s) of a method which requires a Publisher,
+    in place of the "data".
+    ○   Use 'just' when the values we need to send, need to be in the memory
+
+    𝗠𝗼𝗻𝗼.𝘀𝘂𝗯𝘀𝗰𝗿𝗶𝗯𝗲(𝗙𝘂𝗻𝗰𝘁𝗶𝗼𝗻𝗮𝗹 𝗜𝗻𝘁𝗲𝗿𝗳𝗮𝗰𝗲(𝘀))
+
+    ○   The request method to the Subscription is automatically created by the
+    Reactor runtime based on the method call.
+
+    𝗠𝗼𝗻𝗼.𝗳𝗿𝗼𝗺𝗦𝘂𝗽𝗽𝗹𝗶𝗲𝗿(𝗦𝘂𝗽𝗽𝗹𝗶𝗲𝗿<? 𝗲𝘅𝘁𝗲𝗻𝗱𝘀 𝗧> 𝘀𝘂𝗽𝗽𝗹𝗶𝗲𝗿)
+
+    ○   Delay compute intensive operation
+    ○   Supports any supplier
+
+    𝗠𝗼𝗻𝗼.𝗳𝗿𝗼𝗺𝗖𝗮𝗹𝗹𝗮𝗯𝗹𝗲(𝗖𝗮𝗹𝗹𝗮𝗯𝗹𝗲<? 𝗲𝘅𝘁𝗲𝗻𝗱𝘀 𝗧> 𝘀𝘂𝗽𝗽𝗹𝗶𝗲𝗿)
+
+    ○   The callable interface is a very old interface and has existed
+    ○   JavaDocs
+
+        A task that returns a result and may throw an exception. Implementors
+        define a single method with no arguments called call.
+
+        The Callable interface is similar to Runnable, in that both are designed
+        for classes whose instances are potentially executed by another thread.
+
+        A Runnable, however, does not return a result and cannot throw a checked
+        exception.
+
+        Callable throws Exception whereas Supplier throws RuntimeException
+
+    ○   Callable has a throws clause | Supplier doesn't
+
+    𝗠𝗼𝗻𝗼.𝗳𝗿𝗼𝗺𝗥𝘂𝗻𝗻𝗮𝗯𝗹𝗲(𝗥𝘂𝗻𝗻𝗮𝗯𝗹𝗲 𝗿𝘂𝗻𝗻𝗮𝗯𝗹𝗲)
+
+    ○   Perform a task and return an Mono.Empty after the Runnable, that is
+        passed as a parameter has been executed
+
+    𝗠𝗼𝗻𝗼.𝗳𝗿𝗼𝗺𝗙𝘂𝘁𝘂𝗿𝗲(𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗮𝗯𝗹𝗲𝗙𝘂𝘁𝘂𝗿𝗲<? 𝗲𝘅𝘁𝗲𝗻𝗱𝘀 𝗧> 𝗳𝘂𝘁𝘂𝗿𝗲)
+
+    ○   Integrate existing asynchronous operations that are based on
+        CompletableFuture into a Reactor-based reactive pipeline.
+
+    ○   If the CompletableFuture completes successfully with a value, the Mono
+        will emit that value as an onNext() signal followed by an onComplete()
+        signal.
+
+    ○   If the CompletableFuture completes without a value (i.e., a
+        CompletableFuture<Void>), the Mono will simply emit an onComplete()
+        signal.
+
+    ❗   CompletableFuture is not lazy. If Mono.fromFuture is associated with a
+        CompletableFuture and there is no association with a subscriber, then
+        that is not a Lazy computation because the computation of the
+        CompletableFuture code will start immediately.
+
+        Mono
+            .fromFuture(getName());
+
+        private static CompletableFuture<String> getName() {
+            return CompletableFuture.supplyAsync(() -> {
+                logger.info("Get Name from CompletableFuture");
+                return Util.faker().name().firstName();
+            });
+        }
+
+    ○   CompletableFuture can be made to execute with a delay by using it in the
+        form of a Supplier
+
+        Mono
+            .fromFuture(()-> getName());
+
+    𝗠𝗼𝗻𝗼.𝗱𝗲𝗳𝗲𝗿(𝗦𝘂𝗽𝗽𝗹𝗶𝗲𝗿<? 𝗲𝘅𝘁𝗲𝗻𝗱𝘀 𝗠𝗼𝗻𝗼<? 𝗲𝘅𝘁𝗲𝗻𝗱𝘀 𝗧>> 𝘀𝘂𝗽𝗽𝗹𝗶𝗲𝗿)
+
+    ○   Defer the invocation of the Publisher
+
+
+    𝗟𝗼𝗼𝗽𝗥𝗲𝘀𝗼𝘂𝗿𝗰𝗲𝘀
+
+    𝚛𝚎𝚊𝚌𝚝𝚘𝚛.𝚗𝚎𝚝𝚝𝚢.𝚛𝚎𝚜𝚘𝚞𝚛𝚌𝚎𝚜.𝙻𝚘𝚘𝚙𝚁𝚎𝚜𝚘𝚞𝚛𝚌𝚎𝚜
+
+    ╭───────────────────────────────╮
+    │ Non Blocking IO (Simplified)  │
+    ╰───────────────────────────────╯
+
+    𝗜𝗻𝗯𝗼𝘂𝗻𝗱
+                [6]     [5]     [4]                 ╭>╮         [3]
+    ──────────────────────────────────────>         ↑ │     -------------->
+    <──────────────────────────────────────         │ ↓     <--------------
+                                                    ╰<╯         [1]
+                𝗢𝘂𝘁𝗯𝗼𝘂𝗻𝗱                        𝗘𝘃𝗲𝗻𝘁 𝗟𝗼𝗼𝗽
+                                                   𝘛𝘩𝘳𝘦𝘢𝘥
+    • Send the first Request | Don't sit idle
+    • Pick the next Request
+
+    ╔═══════╗
+    ║ Flux  ║
+    ╚═══════╝
+
+	○	𝗟𝗼𝗴 𝗨𝗻𝗯𝗼𝘂𝗻𝗱𝗲𝗱: 
+		Requesting for Integer.MAX_VALUE number of items cause the Log() method of Flux to print 'unbounded'
+	○	The log method can only print what is happening between its producer and
+		its subscriber
+	○	𝗙𝗹𝘂𝘅 𝗳𝗿𝗼𝗺 𝗦𝘁𝗿𝗲𝗮𝗺𝘀
+		When creating a Flux from Streams, we need to be aware that Streams are
+		invalidated when they end
+	○	Flux Interval
+		This carries on until explicitly told to stop
+	○	𝗙𝗹𝘂𝘅.𝗱𝗲𝗳𝗲𝗿
+		Delay Execution. Operates similar to Supplier, Callable & Runnable.
+	○	Mono <—> Flux
+
+
+
+

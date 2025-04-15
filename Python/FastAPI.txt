@@ -1,0 +1,59 @@
+
+Concurrency and async / await
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+○	await can only be used inside of functions created with async def
+	...
+	async def <function-name>():
+		<var> = await <do-something>()
+
+
+• 	Type Hints → Type Annotations
+•	special syntax that allow declaring the type of a variable
+ editors and tools can give you better support.
+
+
+
+
+❓ If your application (somehow) doesn't have to communicate with anything else and wait for it to respond, use async def.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

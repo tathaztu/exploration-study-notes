@@ -1,0 +1,96 @@
+
+
+
+"range" & "xrange"
+	• Iterate over a list of charcters
+	• Range returns a new list
+	• XRange returns an iterator | faster
+
+Blocks
+
+	○ Organize
+	○ Order
+	○ Reuse
+	○ Make Readable
+
+	Structure: Block Head 
+	• Block Keyword
+	• Block Name
+	• Parameter(s)
+	
+	Structure: Block Line
+	• Python Code
+	• Block(s)
+	
+	
+	block_head:
+		1st block line
+		2nd block line
+		...
+
+
+init()
+The __init__() function, is a special function that is called when the class is 
+being initiated.
+
+
+Dictionary
+	○ Data type similar to arrays
+	○ Keys + Values 
+	○ Keys 
+		• Access Values
+		• The "type" of a key includes any type of object (a string, a number, a 
+		list, etc.)
+	○ Iteration
+		for key, value in dictionary.items():
+			print (key + " " + value)
+	○ Delete an Item
+		dictionary.pop(key)
+		OR
+		del dictionary[key]
+
+Modules & Packages
+
+Module: 
+	○ Piece of software for a specific purpose
+	○ Python Modules 
+		• Files with a .py extn
+		• Module name = File name
+		• Function(s), class(es), variable(s), etc.
+
+Importing Modules
+
+	○ Import Directive
+		- Search local directory → file with the 'import' directive (default)
+		- If not found, look for built in modules
+	○ Import Process
+		- A .pyc file (Python Compiled File) is created, if not present
+		• Python Compiled File
+			File with python bytecode
+			Reusable - Python does need to parse the .py file again
+			Compilation process is transparent to the user
+	○ Usage
+		- Import Module: e.g. 								import draw
+		- Use . (dot) operator to invoke function: e.g.		draw.draw_game()
+
+Importing Module Objects ⇒ Current Namespace
+
+A namespace is a system where every object is named and accessible in Python.
+
+	○ Use the 'from' command
+		- from <module-name> import <object-name>
+		- from <module-name> import *
+	○ The . (dot) operator is not needed in this approach
+	○ Example
+		# game.py
+		# import the draw module
+		from draw import draw_game
+
+		def main():
+			result = play_game()
+			draw_game(result)
+	○ Notes
+		• No need to mention the module name along with the . (dot) operator
+		• Because a namespace can have only one object with a particular name, 
+		we need to be wary of possible conflicts
+		

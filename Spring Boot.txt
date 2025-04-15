@@ -1,0 +1,87 @@
+
+		☆☆ Spring Boot ☆☆
+		———————————————————
+
+
+• 	Spring Initializer
+	https://start.spring.io
+
+	Configure/Download a spring boot project
+
+
+		🪶🪶 Maven 🪶🪶
+		—————————————————
+• 	Helps programmers manage their projects and everything they need to build
+	their programs
+	
+	○	Transitive Dependencies
+	○	Builds
+	○	Tests
+
+	○ 	mvnw - wrapper
+	○	Phases
+			Defaults - clean, default & site
+		
+		Phase 
+			- Life Cycle
+			- Consist of Goals
+		
+		Goal is specific
+		Life Cycle → order of goal(s)
+	
+	○ 	Phase: clean
+		- pre-clean
+		- clean
+		- post-clean
+
+	○ 	Phase: default
+		- compile
+		- test
+		- package
+		- verify
+	
+	○ 	Maven Workflow
+	
+	○	How to run a Spring-Boot project?
+		- IDE
+		- Build a Jar using Maven and run the Jar
+			java -jar <jar file name>
+		- Using the Spring-Boot plugin
+			mvn spring-boot:run
+
+
+		☆☆ Spring Boot ☆☆
+		———————————————————
+
+
+• 	Spring Application Layers
+	○	Presentation
+	○	Service
+	○ 	Persistence
+
+	The presentation layer should never talk directly to the persistence layer
+
+•	Modularity
+
+•	Component Scanning 
+	- A process that starts when the application starts-up
+	- Look throughout the project → Beans and where Beans are Needed
+	○ Injects required dependencies as a part of the process and this is known
+	as Auto-Wiring
+	○ Starts at a particular point in the project hierarchy and works its way 
+	down the tree
+	○ Traditionally, in Spring, we need to tell the application the starting
+	point using the @ComponentScan annotation. In the Spring-Boot world, we 
+	start from the class which is marked as @SpringBootApplication. The
+	@SpringBootApplication annotation contains the @ComponentScan annotation
+
+•	Auto-Configuration
+
+	Process that Spring Boot uses when it starts up to provide "sensible" 
+	defaults and create dependencies
+	
+	Spring Boot "Starters" are a collection of Dependencies, each of which is 
+	tailored to solve a particular problem
+	
+• 	
+	

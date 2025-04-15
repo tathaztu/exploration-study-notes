@@ -1,0 +1,14 @@
+Pydantic Version
+	pip show pydantic
+	
+	from importlib.metadata import version
+	print(f"Pydantic version: {version('pydantic')}")
+	
+	import pydantic
+	print(f"Pydantic version: {pydantic.__version__}")
+
+
+Install requirements.txt
+	py -m pip install -r requirements.txt
+
+Set-ExecutionPolicy RemoteSigned

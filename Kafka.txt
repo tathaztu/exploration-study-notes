@@ -1,0 +1,316 @@
+	██   ██  █████  ███████ ██   ██  █████  
+	██  ██  ██   ██ ██      ██  ██  ██   ██ 
+	█████   ███████ █████   █████   ███████ 
+	██  ██  ██   ██ ██      ██  ██  ██   ██ 
+	██   ██ ██   ██ ██      ██   ██ ██   ██
+
+	Jay Kreps, who co-created Kafka at LinkedIn, chose the name "Kafka" after 
+	the author Franz Kafka because he was impressed by Kafka's writing and saw 
+	the platform as a system optimized for writing data streams.
+	Franz Kafka was a Bohemian novelist and short story writer known for his complex and often surreal narratives. He had a peculiar affinity with messages and communication, as evidenced by his short story "Message from the Emperor"
+
+╭───────────────────────────────────────────────────────────────╮
+│   Udemy: Mastering Apache Kafka: From Beginners to Advanced	│
+╰───────────────────────────────────────────────────────────────╯
+
+•	Data [Push + Pull] | Amazon, NetFlix | Report Generation - ELK, etc.
+•	Msg. Systems | What and Why Kafka 	| ZooKeeper + Kafka | 
+	Components - Producer + Consumer 	| Clusters - Kafka + ZooKeeper
+
+
+											  ╭────➤ [C1]
+						╭───────────────────╭╮╯		
+						│ Kafka	   			││─────➤ [C2]
+	┌───────────┐		│					││	
+	│ Producer  │—————➤	│					││─────➤ [C3]
+	└───────────┘		│ Container/Broker  ││╮		
+						╰───────────────────╰╯╰────➤ [C4]
+
+	Producer: 	A component producing "something"
+	Kafka:		a.k.a. Container/Broker | a Server | Topic - Store + Process + 	
+				Push | Configuration(s) for Topics
+	Consumer:	A component consuming "something" | One, Some or All
+
+	Messaging Systems
+	
+		○	Queueing: 
+			- Producer → Produce + Push 
+			- One msg. per Consumer
+			- Chance of Data-Loss
+		○	Pub-Sub:
+			- Producers: 1 .. n
+			- Consumers: 1 .. n
+			- Each message → Broadcast to all 
+			- Data-Redundancy | Higher memory consumption
+
+•	ZooKeeper Setup
+	- ZooKeeper works on the ideology of clusters
+	- Download from Apache > Extract > Make 3 Copies; each will serve an 
+	individual cluster in a 3-Node cluster
+	- Data + Logs will be separate | Easy to troubleshoot
+	
+	○ Download
+	❗apache-zookeeper-3.x.x-bin.tar.gz
+	❗IMPORTANT: 	
+		Make sure you download the archive with the word bin in it or
+		else zkServer.cmd will throw the following error -
+		Error: Could not find or load main class 
+		org.apache.zookeeper.server.quorum.QuorumPeerMain
+	
+	○ Open the ZooKeeper directory
+	- Create 2 folders 
+		○ data: Metadata to interact with Kafka
+		○ logs
+	
+	○ Open the conf directory for all 3 nodes > make following changes
+	- dataDir: Data Directory for this Node
+	- clientPort: Client Port for this Node
+	- 3 entries for individual nodes
+	<key>=<ip>:<internal virtual port>:<Kafka-ZooKeeper Interaction Port>
+	- Rename zoo_sample.cfg to zoo.cfg
+	
+	○ Open the data directory
+	- Create a file called "myid"
+	- ZooKeeper node needs a unique id
+	- The "myid" file allows only a single character
+	
+	Make sure JAVA_HOME env. variable is set
+	
+	○ Server Port
+	⚠❗IMPORTANT: 	
+	For ZooKeeper 3.5.0 onwards, we need to set the admin server ports in case
+	we are setting up a clustered environment, in order to avoid port conflicts.
+	
+	Ref: 
+	http://www.liferaysavvy.com/2021/07/enable-admin-server-in-zookeeper.html
+	
+	Node # 1
+	admin.serverPort=9191
+
+	Node # 2
+	admin.serverPort=9292
+
+	Node # 3
+	admin.serverPort=9393
+	
+	○ From a command terminal
+	- Run bin\zkServer.cmd on Node # 1
+	👉 You may get warnings which may look like errors. A closer observation 
+	will show that the ports that are printed only belong to nodes 2 and 3.
+	ZooKeeper is trying to talk to nodes 2 and 3, which it is expecting to be a
+	part of the cluster but it is unable to find them because nodes 2 and 3 are 
+	not yet started. 
+	- Run bin\zkServer.cmd on Nodes # 2 & 3
+
+• 	Kafka Setup
+	
+	○ Download a Kafka Binary lesser than kafka_2.13-4.0.0
+	⚠ kafka 2.13-4.0.0 and above support KRaft mode. Will deal with this later
+	
+	○ Create a folder named as kafka-logs in the Kafka folder
+	
+	○ Create 3 folders, each one will belong to one of three nodes
+	
+	○ Configuration
+		- 	Go to the config folder
+		- 	We will create one property file per node
+			Make 3 copies of the server.properties file:
+			server_1.properties, server_2.properties, server_3.properties
+		- 	The following properties need to be set
+			▪ broker.id: Unique | Represents Individual Node
+			▪ listeners: <type of data>://<host>:<port>
+			▪ log.dirs: Log folder(s)
+			▪ zookeeper.connect
+	❓	-	[04/04/2025] The path string for log files need to be changed in the 
+			log4j.properties file. The forward-slash (/) needs to be changed 
+			to back-slash in all the files that are generated.
+	○ Start
+		-	Open a command line in the Kafka folder > go to the bin\windows dir
+		-	Run bin\windows\kafka-server-start.bat config\server1.properties
+		-	Run for servers 2 & 3
+				bin\windows\kafka-server-start.bat config\server2.properties
+				bin\windows\kafka-server-start.bat config\server3.properties
+				
+•	Kafka Topic
+	○	Producer	→ Produces Data/Messages
+					→ Sends to Kafka Broker
+	○	Topic 		→ A box/container in the Kafka Broker 
+					- Holds the data
+					- Processes/Transforms the data (per. business logic)
+					- Sends the data to the Consumer
+	
+	𝐂𝐫𝐞𝐚𝐭𝐢𝐧𝐠 𝐚 𝐓𝐨𝐩𝐢𝐜
+		- Open cmd.
+		- Run: 
+		bin\windows\kafka-topics.bat --create ^
+		--bootstrap-server localhost:9093, localhost:9094, localhost:9095 ^
+		--replication-factor 3 --partitions 1 --topic test
+		
+		> Created topic test.
+		
+	𝐂𝐫𝐞𝐚𝐭𝐞 𝐎𝐩𝐭𝐢𝐨𝐧𝐬
+		--create : This indicates that we are creating is a new topic (-- 
+				   delete is for deleting)
+		--bootstrap-server : All the nodes in our cluster
+		--partitions : Large amount of data, that would be received by 
+			Kafka, is handled efficiently through partitioning. 
+			A topic is divided into multiple partitions
+			Thus a partition can be called a "sub-set" of a Topic
+		--replication-factor : Number of Nodes to which Kafka should 
+			replicate data. This cannot exceed the total amount of nodes 
+			available in the cluster
+			❗Kafka does not allow changing the replication-factor once the
+			Topic has been created
+		
+	𝐋𝐢𝐬𝐭 𝐓𝐨𝐩𝐢𝐜𝐬
+		bin\windows\kafka-topics.bat --list ^
+		--bootstrap-server localhost:9093, localhost:9094, localhost:9095
+		
+		> test
+	
+	𝐃𝐞𝐬𝐜. 𝐓𝐨𝐩𝐢𝐜𝐬
+		bin\windows\kafka-topics.bat --describe ^
+		--bootstrap-server localhost:9093, localhost:9094, localhost:9095 ^
+		--topic test
+
+•	Producing & Consuming messages using console producer/consumer
+
+	Producer
+	▔▔▔▔▔
+	- Open a cmd in the Kafka root dir
+	- Run: 
+		>bin\windows\kafka-console-producer.bat --broker-list localhost:9093, 
+		localhost:9094, localhost:9095 --topic test
+	
+	🧠 NOTE: This one uses --broker-list instead of --bootstrap-server
+
+	Consumer
+	▔▔▔▔▔
+	- Open a cmd in the Kafka root dir
+	- Run: 
+		>bin\windows\kafka-console-consumer.bat --bootstrap-server 
+		localhost:9093, localhost:9094, localhost:9095 --topic test 
+		--from-beginning
+
+•	When things go wrong | Implications of Kafka & ZK
+	
+	○	If a ZK node goes down, then 
+		- The rest of the ZK nodes are intimated immediately
+		- Kafka Servers, whose with metadata was on this ZK node report 
+		error(s)
+
+
+•	Is it true that we cannot change the replication-factor for a Topic after it
+	has been created?
+	
+
+	This statement is ɴᴏᴛ ᴇɴᴛɪʀᴇʟʏ ᴀᴄᴄᴜʀᴀᴛᴇ as of more recent Kafka
+	versions. While it was true for earlier versions, Kafka now ᴅᴏᴇs ᴀʟʟᴏᴡ
+	ɪɴᴄʀᴇᴀsɪɴɢ the replication factor of an existing topic. However,
+	ᴅᴇᴄʀᴇᴀsɪɴɢ the replication factor after topic creation is ɴᴏᴛ
+	ᴅɪʀᴇᴄᴛʟʏ sᴜᴘᴘᴏʀᴛᴇᴅ through standard administrative tools.
+
+	Here's a more detailed breakdown:
+
+	𝗜𝗻𝗰𝗿𝗲𝗮𝘀𝗶𝗻𝗴 𝘁𝗵𝗲 𝗥𝗲𝗽𝗹𝗶𝗰𝗮𝘁𝗶𝗼𝗻 𝗙𝗮𝗰𝘁𝗼𝗿:
+
+	Sᴜᴘᴘᴏʀᴛᴇᴅ: Kafka provides mechanisms to increase the replication factor of 
+	an existing topic. This is a common operation performed to improve the fault 
+	tolerance and data durability of a topic.
+	
+	Hᴏᴡ ɪᴛ's ᴅᴏɴᴇ: You can use the kafka-configs.sh or kafka-topics.sh 
+	command-line tools (depending on the Kafka version) along with the --alter 
+	and --config options to modify the replication.factor for a specific topic.
+	
+	Pʀᴏᴄᴇss: When you increase the replication factor, Kafka will start 
+	replicating the existing partitions to the newly assigned brokers. This 
+	process happens online without interrupting the availability of the topic.
+	
+	𝗗𝗲𝗰𝗿𝗲𝗮𝘀𝗶𝗻𝗴 𝘁𝗵𝗲 𝗥𝗲𝗽𝗹𝗶𝗰𝗮𝘁𝗶𝗼𝗻 𝗙𝗮𝗰𝘁𝗼𝗿:
+
+	Nᴏᴛ Dɪʀᴇᴄᴛʟʏ Sᴜᴘᴘᴏʀᴛᴇᴅ: There is no direct administrative command or 
+	configuration option to simply decrease the replication factor of a topic 
+	after it has been created.
+	
+	𝗥𝗲𝗮𝘀𝗼𝗻𝘀 𝗳𝗼𝗿 𝘁𝗵𝗲 𝗟𝗶𝗺𝗶𝘁𝗮𝘁𝗶𝗼𝗻:
+
+	Dᴀᴛᴀ Lᴏss Rɪsᴋ: Decreasing the replication factor inherently means that 
+	fewer copies of the data will exist. If one of the remaining replicas 
+	fails, there's a higher risk of data loss. Kafka prioritizes data safety 
+	and likely avoids a direct command that could easily lead to accidental 
+	data loss.
+
+	Cᴏᴍᴘʟᴇxɪᴛʏ ᴏғ Sʜʀɪɴᴋɪɴɢ Rᴇᴘʟɪᴄᴀs: Implementing a safe and efficient 
+	mechanism to decommission replicas and ensure data consistency during a 
+	decrease in replication factor is complex. It would involve carefully 
+	transferring leadership and ensuring all remaining replicas have the 
+	complete data.
+
+	𝗪𝗼𝗿𝗸𝗮𝗿𝗼𝘂𝗻𝗱𝘀 𝗳𝗼𝗿 𝗗𝗲𝗰𝗿𝗲𝗮𝘀𝗶𝗻𝗴 𝗥𝗲𝗽𝗹𝗶𝗰𝗮𝘁𝗶𝗼𝗻 𝗙𝗮𝗰𝘁𝗼𝗿 (𝘄𝗶𝘁𝗵 𝗰𝗮𝘂𝘁𝗶𝗼𝗻):
+
+	Mᴀɴᴜᴀʟ Pᴀʀᴛɪᴛɪᴏɴ Rᴇᴀssɪɢɴᴍᴇɴᴛ: You could potentially use the 
+	kafka-reassign-partitions.sh tool to manually move partitions from brokers 
+	you want to decommission. This is a complex and error-prone process that 
+	requires careful planning and execution.
+
+	Cʀᴇᴀᴛɪɴɢ ᴀ Nᴇᴡ Tᴏᴘɪᴄ: The safest and often recommended approach is to 
+	create a new topic with the desired lower replication factor and then 
+	migrate the data from the old topic to the new one. This allows for 
+	controlled data transfer and verification.
+
+	𝗦𝘂𝗺𝗺𝗮𝗿𝘆:
+
+	You ᴄᴀɴ increase the replication factor of an existing Kafka topic.
+	You ᴄᴀɴɴᴏᴛ directly decrease the replication factor of an existing Kafka 
+	topic using standard administrative tools due to the risk of data loss and 
+	the complexity involved. Workarounds exist but should be used with extreme 
+	caution.
+	
+
+•	Creating a new topic
+
+	bin\windows\kafka-topics.bat --create 
+	--bootstrap-server localhost:9003,localhost:9094,localhost:9095 
+	--topic test-1 --partitions 1 -- replication-factor 3
+	
+	> [2025-04-10 01:47:44,693] WARN [AdminClient clientId=adminclient-1] 
+	Connection to node -1 (localhost/127.0.0.1:9003) could not be established. 
+	Node may not be available. (org.apache.kafka.clients.NetworkClient)
+
+	> Created topic test-1.
+
+
+•	Increase Partition Count
+
+	bin\windows\kafka-topics.bat --alter --topic test-1 --partitions 2
+	--bootstrap-server localhost:9093,localhost:9094,localhost:9095
+	
+👉 	Kafka guarantees ordering of events only within the scope of a single 
+	partition
+
+┌───────────────────────────┐
+│ (Re)Balancing Kafka Nodes	│
+└───────────────────────────┘
+
+Scenario:
+	• Add a Producer to the Topic "test-1"
+	• Add a Consomer to the Topic "test-1"
+	• Produce <—> Consume messages
+	• Alter behavior of "test-1"
+
+Current status of Topic "test-1"
+--------------------------------
+Topic: test-1   TopicId: A_dsX0k3TxWKJTEGsybVaQ PartitionCount: 2       ReplicationFactor: 3    Configs:
+        Topic: test-1   Partition: 0    Leader: 𝟮       Replicas: 2,1,3 Isr: 2,1,3      Elr: N/A        LastKnownElr: N/A
+        Topic: test-1   Partition: 1    Leader: 𝟯       Replicas: 3,2,1 Isr: 3,2,1      Elr: N/A        LastKnownElr: N/A
+
+Note that Topic "test-1" is associated with Leaders 2 & 3
+- We will terminate Leader 2
+
+❗From this point onwards, the course did not help much. Switching!
+
+
+
+╭───────────────────────────────────────────────────────────────────────╮
+│  Udemy: Kafka Event Driven Microservices With Java + Spring [Part-1]	│
+╰───────────────────────────────────────────────────────────────────────╯

@@ -1,0 +1,24 @@
+
+
+PEP - Coding Style
+	• All imports on top; each has its own line
+	• Indentation → Spaces instead of Tabs | Python 3 disallows a mix of 
+	spaces and tabs
+	• Four spaces per indentation
+	• Limit lines to 79 characters
+	• 72 characters for docstrings/comments
+	• Separate functions and classes by 2 blank lines
+	• Separate methods within classes by one blank line
+	• No spaces around function calls, indexes, keyword arguments
+
+
+False = bool:false, None, empty, empty parantheses, sq. brackets and curly braces, empty set and range operators and 0
+Objects → Overriding
+	len function
+	bool function
+
+
+Strings vs. Bytes
+
+	Strings: 	Sequence of Unicode Characters
+	Bytes:		Raw 8 bit values

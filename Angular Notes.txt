@@ -1,0 +1,226 @@
+
+☆☆ Angular ☆☆
+———————————————
+
+👉 It's just Angular
+
+•	Why Angular?
+		
+		○ Fast Loading
+		○ Fast Development
+		○ Commonly used features -
+			- Validation Library
+			- Routing
+			- Compoment bases 
+		○ Community
+	
+	
+•	Angular 19 Setup on Windows
+	
+		○ Install Node
+		○ Install Angular CLI
+		○ Install Angular App
+	
+•	Run:
+		> npm i -g @angular/cli
+	
+		> added 273 packages in 8s
+		
+		> ng version
+		
+		
+		Link: https://angular.dev/installation#example-1
+		-g 	: Global Level: Not limited to the folder we are running the 
+		command from
+		ng version: This command is used to validate the installation
+
+┌───────────────────────┐
+│  Create New Project	│
+└───────────────────────┘
+	
+	> ng new angular-tut
+	> cd angular-tut
+	> code .
+	
+	The last command opens the project in VSCode
+	
+•	Run the project
+		> ng serve
+	
+	
+•	Entry Point File
+	
+	src\app\app.component.html
+	
+┌───────────────────────────────────────┐
+│  Angular 19 File & Folder Structure	│
+└───────────────────────────────────────┘
+	
+	○ Important files and folders
+	○ Files unrelated to Angular
+	○ Code flow
+	○ Folder uses
+	
+᯽ 	package.json
+᯽ 	tsconfig.json vs. tsconfig.app.json vs. tsconfig.spec.json
+	
+	- Used to configure the TypeScript compiler (tsc) and serve distinct 
+	purposes
+
+	tsconfig.json (Base Configuration):
+
+		Purpose
+		-------
+		○ TypeScript - Base configuration 
+		○ Contains common settings that apply to the entire project
+		○ Defines the overall TypeScript compiler options, such as target 
+		JavaScript version, module system, and other general settings.
+		
+		Contents
+		--------
+		○ It often includes settings like:
+		○ ompilerOptions: Specifies the compiler's behavior.
+		○ include or exclude: Defines which files should be included or 
+		excluded from compilation.
+		
+		Role
+		----
+		○ It acts as the foundation for other tsconfig files in the project.
+		○ tsconfig.app.json and tsconfig.spec.json often extend or override 
+		the settings defined in tsconfig.json.
+
+	tsconfig.app.json (Application Configuration):
+
+		Purpose
+		-------
+		○ This file is specifically for configuring the TypeScript compiler 
+		for your application's source code.
+		○ Typically extends the tsconfig.json file and adds or overrides 
+		settings relevant to the application's build process.
+		
+		Contents
+		--------
+		○ It might include settings like:
+			extends: Specifies that it extends the tsconfig.json file.
+			files: Lists the specific files to be compiled for the application.
+			exclude: Specifies files to exclude that are specific to the 
+			application build.
+		○ Often contains settings related to AOT (Ahead-of-Time) compilation 
+		in Angular projects.
+		
+		Role
+		----
+		○ It ensures that your application code is compiled with the 
+		appropriate settings for production or development builds.
+		○ It is used to define the settings that are used when building the 
+		main application.
+		
+	tsconfig.spec.json (Testing Configuration):
+
+		Purpose
+		-------
+		○ Designed for configuring the TypeScript compiler for unit tests.
+		○ It extends the tsconfig.json file and may override settings to suit 
+		the testing environment.
+		
+		Contents
+		--------
+		○ It might include settings like:
+			extends: Specifies that it extends the tsconfig.json file.
+			files: Lists the specific files to be compiled for the tests.
+			include: specifies where the test files are located.
+		○ Settings related to test frameworks (e.g., Jasmine, Karma).
+		
+		Role
+		----
+		○ Ensures that your test code is compiled with the necessary settings 
+		for running unit tests.
+		○ Isolates the test compilation from the application compilation.
+		
+		Relationship
+		------------
+		○ tsconfig.app.json and tsconfig.spec.json typically inherit settings 
+		from tsconfig.json using the extends property.
+		○ This inheritance allows you to maintain common settings in 
+		tsconfig.json and customize settings for specific build targets 
+		(application and tests) in the other files.
+
+᯽ 	package-lock.json
+	
+	○ Captures the precise dependency tree of your project at a specific moment
+	○ Scenario
+		A teammate clones your repository.
+		They run npm install.
+		npm uses package-lock.json to install the exact same versions of 
+		express and lodash that you installed, ensuring consistency.
+
+•	node_modules
+	This folder contains all the packages that are required for the project. 
+	It is recommended not to upload this folder to your repository because 
+	there are times the size of the folders exceed 1GB
+
+•	index.html
+	First html file that is loaded
+
+•	main.ts
+	First ts file that is loaded
+	
+┌───────────────────────┐
+│  App Loading Process	│
+└───────────────────────┘
+
+	1. 	./angular.json contains 
+		projects\<project-name>\architect\build\options\browser
+		
+		Its value is generally "src/main.ts"
+	2. 	main.ts bootstraps a component
+	3. 	The component knows the page to load
+
+
+？	How is the relationship between app.component.ts and app.component.html 	
+	files created?  
+	In the component object - using the "templateUrl" property
+
+? 	Limitations of using Javascript in Interpolation
+
+	○ Cannot declare properties, variables
+	○ Cannot change the variables; no increment, decrement operators
+
+• 	Angular CLI
+	○ What is it?
+	○ How to find all it's commands
+	○ Important commands
+
+┌───────────────┐
+│  Angular CLI	│
+└───────────────┘
+
+	○ Command Line Tool using which we can develop - create, build, test, and 
+	deploy Angular applications.
+	
+	https://angular.dev/cli
+	https://angular.dev/api
+	
+	Important Commands
+	> ng version
+	> ng new <app-name> 
+	> ng generate component login
+	> ng generate pipe testPipe
+	> ng help
+	> ng update
+	
+┌───────────────┐
+│  Components	│
+└───────────────┘
+
+•	Essential building blocks
+•	Can be nested
+•	Can be reused
+
+the <component-name>.component.ts file has the selector name
+
+• 	Shortened form to create a component
+
+	ng g c <component-name>
+
+•	
