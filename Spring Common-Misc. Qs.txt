@@ -1,0 +1,191 @@
+
+• Lazy State Initialization
+
+• How to avoid circular dependencies in spring?
+
+╭───────────────────────────────────────────────╮
+│ @Conditional Vs @ConditionalOnBean in Spring 	│
+╰───────────────────────────────────────────────╯
+
+❓️What is @Conditional annotation ?
+
+✅️The @Conditional annotation in Spring Framework is used to conditionally 
+register a bean or configuration class based on certain conditions. It allows 
+you to control the creation of beans dynamically at runtime based on the 
+evaluation of specific conditions.
+
+🟣❓️Where to Use @Conditional?
+You can use @Conditional in the following scenarios:
+
+🔹️Environment-Specific Beans: To load beans based on the environment (e.g., dev, 
+test, prod).
+
+🔹️Feature Flags: To enable or disable features based on configuration.
+
+🔹️Library or Framework Compatibility: To load beans only if certain libraries or
+ frameworks are present in the classpath.
+🔹️Custom Conditions: To implement custom logic for bean creation
+
+🟣❓️How to Use @Conditional❓️
+
+🔹️Create a Condition Class: Implement the Condition interface and override the 
+matches method.
+🔹️Apply @Conditional: Use the @Conditional annotation on a @Bean method or a 
+@Configuration class, passing the condition class as an argument.
+
+📌Real-Time Use Case :
+Let’s say you have a logging service, and you want to use a FileLogger in 
+production and a ConsoleLogger in development.
+
+
+2️⃣❓️What is @ConditionalOnBean annotation❓️
+
+✅️@ConditionalOnBean is a specialized conditional annotation provided by Spring 
+Boot (part of the spring-boot-autoconfigure module). It is used to conditionally 
+register a bean only if a specific bean or beans are already present in the 
+Spring context. This is useful when you want to ensure that a bean is created 
+only if its dependencies or related beans are available.
+
+🟣❓️Where to Use @ConditionalOnBean❓️
+
+🔹️Dependent Beans: When a bean depends on another bean and should only be 
+created if the dependency is present.
+🔹️Auto-Configuration: In Spring Boot auto-configuration classes, where certain 
+beans should only be created if specific conditions are met
+🔹️Feature Toggles: To enable or disable features based on the presence of 
+certain beans
+
+🟣❓️How to Use @ConditionalOnBean ?
+
+🔹️Apply to a @Bean Method: Use @ConditionalOnBean on a @Bean method to 
+conditionally register the bean.
+🔹️Apply to a @Configuration Class: Use @ConditionalOnBean on a @Configuration 
+class to conditionally load the entire configuration.
+🔹️Specify the Bean Type or Name: You can specify the type or name of the bean 
+that must exist for the condition to be satisfied
+
+📌Real-Time Use Case
+
+🌳Let’s say you have a NotificationService that depends on a EmailService. 
+You want to create the NotificationService bean only if the EmailService bean is 
+present in the Spring context.
+
+╭─────────────────╮
+│ Spring Profiles │
+╰─────────────────╯
+
+•	Map beans to different profiles
+	- Bootstrap beans based on profiles
+	- Unique set of beans based on a profile
+•	Marking a Bean
+	○	Format
+	
+		@Profile(<profile name(s) | condition(s)>)
+		public class <class name>...
+	
+	○	Variants
+	
+		@Profile(<profile name>)
+		@Profile(!<profile name>)
+		@Profile(<profile name 1> & <profile name 2> ...)
+		@Profile(!<profile name 1> & !<profile name 2> ...)
+
+		XML
+		<beans profile=<profile name 1>>
+			<bean id=<id> 
+			  class=<fully qualified class name> />
+		</beans>
+•	Setting Profiles
+		
+		○	WebApplicationInitializer Interface
+			
+			@Override
+			public void onStartup(ServletContext servletContext) 
+				throws ServletException {
+		 
+				servletContext.setInitParameter(
+				  "spring.profiles.active", <profile name>);
+			}
+	
+		○	ConfigurableEnvironment
+		
+			@Autowired
+			private ConfigurableEnvironment env;
+			...
+			env.setActiveProfiles(<profile name>);
+		
+		○	web.xml
+			<context-param>
+				<param-name>contextConfigLocation</param-name>
+				<param-value>/WEB-INF/app-config.xml</param-value>
+			</context-param>
+			<context-param>
+				<param-name>spring.profiles.active</param-name>
+				<param-value><profile name></param-value>
+			</context-param>
+		
+		○	JVM System Parameter
+			
+			-Dspring.profiles.active=<profile name>
+		
+		○	Environment Variable
+		
+			export spring_profiles_active=<profile name>
+		
+		○	Maven Profile
+			
+			Step 1: pom.xml
+			‾‾‾‾‾‾
+			spring.profiles.active property
+
+			<profiles>
+				<profile>
+					<id><profile name 1></id>
+					<activation>
+						<activeByDefault>true</activeByDefault>
+					</activation>
+					<properties>
+						<spring.profiles.active><profile name 1></spring.profiles.active>
+					</properties>
+				</profile>
+				<profile>
+					<id><profile name 2></id>
+					<properties>
+						<spring.profiles.active><profile name 2></spring.profiles.active>
+					</properties>
+				</profile>
+			</profiles>
+			
+			Step 2: application.properties
+			‾‾‾‾‾‾
+			The value inside the "spring.profiles.active" tag will be used to 
+			replace @spring.profiles.active@ placeholder in 
+			application.properties:
+
+			spring.profiles.active=@spring.profiles.active@
+			
+			Step 3: Enable filtering in pom.xml
+			‾‾‾‾‾‾
+			filtering in pom.xml:
+			
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
+				...
+			</build>
+			
+			Step 4: -P parameter for maven
+			‾‾‾‾‾‾
+			mvn clean package -Pprod
+			
+	NOTE: There are skipped areas here 
+❗	Refer: https://www.baeldung.com/spring-profiles
+	
+👉	We can configure different data sources for dev and production profiles by 
+using two files named 
+	○ application-dev.properties
+	○ application-production.properties
