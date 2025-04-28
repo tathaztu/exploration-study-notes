@@ -171,7 +171,8 @@ Enabling Transaction Abilities
 
             Why is Non-Repeatable Read a problem?
 
-            Inconsistent Calculations, Business Logic Errors, Auditing Issues and other similar.
+            Inconsistent Calculations, Business Logic Errors, Auditing Issues
+            and other similar.
 
             How REPEATABLE_READ Solves the Non-Repeatable Read Problem:
 
@@ -205,11 +206,15 @@ Enabling Transaction Abilities
                 This time, it will now see 6 customers, including the newly
                 inserted one.
 
-            The newly inserted customer is the "phantom" row because it appeared between the two identical query executions within Transaction A due to the action of another committed transaction.  
+            The newly inserted customer is the "phantom" row because it appeared
+            between the two identical query executions within Transaction A due
+            to the action of another committed transaction.  
 
             Why is Phantom Read a problem?
 
-            Phantom reads can disrupt the consistency and correctness of transactions, especially those that involve: Business Rule Enforcement, Data Aggregation and Referential Integrity Checks
+            Phantom reads can disrupt the consistency and correctness of
+            transactions, especially those that involve: Business Rule
+            Enforcement, Data Aggregation and Referential Integrity Checks
 
 
 ○   Isolation Levels
@@ -294,7 +299,9 @@ Enabling Transaction Abilities
 
             When to use SERIALIZABLE:
 
-            SERIALIZABLE is typically reserved for critical transactions where absolute data consistency is paramount and the potential performance impact is acceptable. Examples include:
+            SERIALIZABLE is typically reserved for critical transactions where
+            absolute data consistency is paramount and the potential performance
+            impact is acceptable. Examples include:
 
             ➤   Financial transactions where accuracy is crucial (e.g.,
                 transferring large sums of money).
