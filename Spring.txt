@@ -1,188 +1,195 @@
-   _____            _             
-  / ____|          (_)            
- | (___  _ __  _ __ _ _ __   __ _ 
+   _____            _
+  / ____|          (_)
+ | (___  _ __  _ __ _ _ __   __ _
   \___ \| '_ \| '__| | '_ \ / _` |
   ____) | |_) | |  | | | | | (_| |
  |_____/| .__/|_|  |_|_| |_|\__, |
         | |                  __/ |
-        |_|                 |___/ 
+        |_|                 |___/
 
-•	Spring is a Framework
-• 	Always start at - https://spring.io/projects
-•	Spring is designed to be modular; we add dependencies as needed - both - in
+
+Notes from - 𝐒𝐩𝐫𝐢𝐧𝐠 𝐒𝐭𝐚𝐫𝐭 𝐇𝐞𝐫𝐞 by 𝐋𝐚𝐮𝐫𝐞𝐧ț𝐢𝐮 𝐒𝐩𝐢𝐥𝐜ă
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+•   Spring is a Framework
+•   Always start at - https://spring.io/projects
+•   Spring is designed to be modular; we add dependencies as needed - both - in
 the code, as well as the pom - and this greatly reduces the footprint of the
 application
 
-• 	Spring Core
-	
-	○ Spring Context
-	○ Spring AOP
-	○ SpEL
+•   Spring Core
 
-•	Spring MVC
-•	Spring Data Access
-•	Spring Testing
+    ○ Spring Context
+    ○ Spring AOP
+    ○ SpEL
+
+•   Spring MVC
+•   Spring Data Access
+•   Spring Testing
 
 
-•	Spring is Modular in Design
-•	Java Reflection should not be considered as a functionality which exhibits 
+•   Spring is Modular in Design
+•   Java Reflection should not be considered as a functionality which exhibits
 slowness
 
 ┌───────────────────────┐
-│  Inversion of Control	│
+│  Inversion of Control │
 └───────────────────────┘
 
-• 	Something else controls your code
-•	Control gets "inverted" - it shifts from the application to "something else"
-•	The Framework controls the application and not the opposite
-•	Implemented by - Dependency Injection and Aspects
-•	Why? 
-	Spring attaches capabilities to Application
-	Spring augments the application using IoC
+•   Something else controls your code
+•   Control gets "inverted" - it shifts from the application to "something else"
+•   The Framework controls the application and not the opposite
+•   Implemented by - Dependency Injection and Aspects
+•   Why?
+    Spring attaches capabilities to Application
+    Spring augments the application using IoC
 
 
-➤	Need of a Framework 
+➤   Need of a Framework
 
-• 	Do we always need a framework?
--	Do we need a chainsaw to cut a loaf of bread?
--	Some public frameworks have vulnerabilities
--	Small scale projects may not always require frameworks
--	Is it mostly custom? 
+•   Do we always need a framework?
+-   Do we need a chainsaw to cut a loaf of bread?
+-   Some public frameworks have vulnerabilities
+-   Small scale projects may not always require frameworks
+-   Is it mostly custom?
 
 
-Dependency Injection
-————————————————————
-•	Dependency Injection (DI) is ONE of the ways in which IoC is implemented
-•	DI is a way in which we give a framework, control over our instances and 
+┌──────────────────────┐
+| Dependency Injection |
+└──────────────────────┘
+
+•   Dependency Injection (DI) is ONE of the ways in which IoC is implemented
+•   DI is a way in which we give a framework, control over our instances and
 tell the framework how the instances are related to one another
-•	DI is a technique involving the framework setting a value into a specific 
+•   DI is a technique involving the framework setting a value into a specific
 field or parameter.
 
-AOP
-——
-AOP is used to gain control over the attributes, characteristics & methods of 
+𝗔𝗢𝗣
+———
+
+AOP is used to gain control over the attributes, characteristics & methods of
 the instances
 
-• 	Spring Bean
-	- An instance of an object that Spring can control/see
-	- A special Java object
+•   Spring Bean
+    - An instance of an object that Spring can control/see
+    - A special Java object
 
-•	Spring Context
-	○ By default, Spring doesn't know any of the objects created in the 
-	application
-	○ All the instance(s) in the application, that a given framework can control
-	○ In Spring, the context is described by the ApplicationContext interface
+•   Spring Context
+    ○ By default, Spring doesn't know any of the objects created in the
+    application
+    ○ All the instance(s) in the application, that a given framework can control
+    ○ In Spring, the context is described by the ApplicationContext interface
 
-	Dependency:
-	groupId: 	org.springframework
-	artifactId: spring-context
-	
-	🧠 spring-context is the required for Context, DI, etc.
-	🧠 spring-context is the minimum capability required for a spring 
-	application
-	regardless of other used dependencies, e.g. Transactions, Logging, etc.
-	○ E.g. Old Impl: FileSystemXmlApplicationContext,  
-	ClassPathXmlApplicationContext
-	○ E.g. New Impl: AnnotationConfigApplicationContext
-	
-	AnnotationConfigApplicationContext is the contract implementation of the
-	ApplicationConfig for the definition of a Spring Context via Annotations 
-	and that's why it is called AnnotationConfigApp...Ctx...
+    Dependency:
+    groupId:    org.springframework
+    artifactId: spring-context
+
+    🧠 spring-context is the required for Context, DI, etc.
+    🧠 spring-context is the minimum capability required for a spring
+    application
+    regardless of other used dependencies, e.g. Transactions, Logging, etc.
+    ○ E.g. Old Impl: FileSystemXmlApplicationContext,
+    ClassPathXmlApplicationContext
+    ○ E.g. New Impl: AnnotationConfigApplicationContext
+
+    AnnotationConfigApplicationContext is the contract implementation of the
+    ApplicationConfig for the definition of a Spring Context via Annotations
+    and that's why it is called AnnotationConfigApp...Ctx...
 
 Typically in an IoC, the Dependency Injection mechanism depends on the context.
 Information about the object(s) is required before it can control dependency,
 behavior, etc.
 
-•	What is a Bean? 
-	Something that is added to the Spring Context.
-	A Bean is added to the context by the configuration(s) made by the 
-	programmer
+•   What is a Bean?
+    Something that is added to the Spring Context.
+    A Bean is added to the context by the configuration(s) made by the
+    programmer
     👉 A @Bean can only reside in a @Configuration class
 
 
-• 	Bean vs. Component
-	@Bean gives you explicit control over bean creation, while stereotype 
-	annotations streamline the process of automatically registering your 
-	components as beans.
-	
-•	Programmatic addition to the Context is another option but is not as common
+•   Bean vs. Component
+    @Bean gives you explicit control over bean creation, while stereotype
+    annotations streamline the process of automatically registering your
+    components as beans.
 
-Beans 
-	- Objects who need to be augmented with certain capabilities - transaction,
-	observability, authorization, etc.
+•   Programmatic addition to the Context is another option but is not as common
+
+Beans
+    - Objects who need to be augmented with certain capabilities - transaction,
+    observability, authorization, etc.
 
 
 Can POJOs have any limitations?
-	- Limitations: Depend on the way the Bean(s) are configured
+    - Limitations: Depend on the way the Bean(s) are configured
 
 
-•	@Configuration Class
-	- We can have multiple @Configuration classes
-	- Normally there is just one
-	
+•   @Configuration Class
+    - We can have multiple @Configuration classes
+    - Normally there is just one
 
-	Example of a Programmatic configration
-	
-	@Configuration
-	public class ProjectConfig {
-	
-		@Bean
-		public Parrot parrot() {
-			var parrot = new Parrot();
-			parrot.setName("Yago");
-			return parrot;
-		}
-	
-	}
-	
-	
-	var context = AnnotationConfigApplicationContext(Parrot.class)
-	
-	Qs. What is the standard for the name of the Parrot behavior?
-	Ans.For Spring Beans, there is an exception wherein the names of the methods
-	do not start with a verb, like getParrot or createParrot.
-	Every instance has a name and ID and can have multiple aliases.
-	@Bean methods can be named whatever we want; however, Beans created with 
-	@Bean annotation will always be recognized by the method name and 
-	therefore, normally, for Spring Beans, verbs are avoided in the method name.
+
+    Example of a Programmatic configration
+
+    @Configuration
+    public class ProjectConfig {
+
+        @Bean
+        public Parrot parrot() {
+            var parrot = new Parrot();
+            parrot.setName("Yago");
+            return parrot;
+        }
+
+    }
+
+
+    var context = AnnotationConfigApplicationContext(Parrot.class)
+
+    Qs. What is the standard for the name of the Parrot behavior?
+    Ans.For Spring Beans, there is an exception wherein the names of the methods
+    do not start with a verb, like getParrot or createParrot.
+    Every instance has a name and ID and can have multiple aliases.
+    @Bean methods can be named whatever we want; however, Beans created with
+    @Bean annotation will always be recognized by the method name and
+    therefore, normally, for Spring Beans, verbs are avoided in the method name.
 
 📚From the Docs 🍃🍃
-	An ApplicationContext provides:
+    An ApplicationContext provides:
 
-	- ListableBeanFactory → Bean factory methods for accessing app. components  
-	- ResourceLoader → The ability to load file resources in a generic fashion 
-	- ApplicationEventPublisher → The ability to publish events to registered 
-	  listeners. 
-	- MessageSource → The ability to resolve messages, supporting i18n. 
-	- Inheritance from a parent context. Definitions in a descendant context 
-	  will always take priority. This means, for example, that a single parent 
-	  context can be used by an entire web application, while each servlet has 
-	  its own child context that is independent of that of any other servlet.
+    - ListableBeanFactory → Bean factory methods for accessing app. components
+    - ResourceLoader → The ability to load file resources in a generic fashion
+    - ApplicationEventPublisher → The ability to publish events to registered
+      listeners.
+    - MessageSource → The ability to resolve messages, supporting i18n.
+    - Inheritance from a parent context. Definitions in a descendant context
+      will always take priority. This means, for example, that a single parent
+      context can be used by an entire web application, while each servlet has
+      its own child context that is independent of that of any other servlet.
 
 ❗💡Can we have more than one application context?
-	
-	👉 DO NOT!!
-	○ This can create complications.
-	○ Contexts can inherit one another.
-	○ Applications having multiple contexts usually don't end up well
+
+    👉 DO NOT!!
+    ○ This can create complications.
+    ○ Contexts can inherit one another.
+    ○ Applications having multiple contexts usually don't end up well
 
 
-•	Can a bean placed in a context be used anywhere and is it the same instance?
-	○ The instance depends on the configuration and type of the bean
-	○ The bean can be used anywhere
+•   Can a bean placed in a context be used anywhere and is it the same instance?
+    ○ The instance depends on the configuration and type of the bean
+    ○ The bean can be used anywhere
 
-•	Stereotype Annotations
+•   Stereotype Annotations
 
-	@Component
-	@Service
-	@Repository
-	@Controller
+    @Component
+    @Service
+    @Repository
+    @Controller
 
-•	@Component
+•   @Component
 
-	If a class is marked as a @Component, then there has to be a component-scan
+    If a class is marked as a @Component, then there has to be a component-scan
 
-•	Differences
+•   Differences
     ┌─────────────────────────────────────┬────────────────────────────────────┐
     │   @Bean                             │     Stereotype Annotations         │
     ├─────────────────────────────────────┼────────────────────────────────────┤
@@ -195,128 +202,128 @@ Can POJOs have any limitations?
     │   • Verbose compared to @Component  │ • Simple, semantic and meaningful  │
     │                                     │                                    │
     └─────────────────────────────────────┴────────────────────────────────────┘
-	
-	👉 Although Stereotype and Singleton both are known to create only one 
-	instance in the context, they are not the same
-	
-	👉 Although Stereotype beans can be instantiated with the constructor, it
-	is still recommended to use "post construct" because of several reasons,
-	some of which are - separation of concerns, ease of testing, dealing with a
-	parameterized constructor, etc.
 
-	👉 💡 Stereotype Annotations should be the first choice. If the class 
-	doesn't belong to our code-base or if we need multiple beans of the same 
-	class then we should @Bean
+    👉 Although Stereotype and Singleton both are known to create only one
+    instance in the context, they are not the same
 
-💡	What is the preferred method to add a dependency when configuring a @Bean in 
-	a @Configuration class - DI or programmatically calling the bean definition
-	method of the dependent component?
-	
-	Ans. Prefer DI
-	○ Calling the method works only if the bean definition method is present in
-	the same class
-	○ Better for unit testing
+    👉 Although Stereotype beans can be instantiated with the constructor, it
+    is still recommended to use "post construct" because of several reasons,
+    some of which are - separation of concerns, ease of testing, dealing with a
+    parameterized constructor, etc.
+
+    👉 💡 Stereotype Annotations should be the first choice. If the class
+    doesn't belong to our code-base or if we need multiple beans of the same
+    class then we should @Bean
+
+💡   What is the preferred method to add a dependency when configuring a @Bean in
+    a @Configuration class - DI or programmatically calling the bean definition
+    method of the dependent component?
+
+    Ans. Prefer DI
+    ○ Calling the method works only if the bean definition method is present in
+    the same class
+    ○ Better for unit testing
 
 ┌────────────────────────────────────────────────┐
 │  Chapter # 3. Spring Context: Wiring of Beans  │
 └────────────────────────────────────────────────┘
 
 Dependency Injection & Wiring of Beans
-	Dependency Injection is focused on getting references out of the context and
-	putting putting them as an attribute (field) of another bean.
-	
-	This is essentially estabilishing relationships between beans.
+    Dependency Injection is focused on getting references out of the context and
+    putting putting them as an attribute (field) of another bean.
 
-	This is a declarative way of telling the framework that we want to push the
-	reference of a particular bean form the Context to another Bean
+    This is essentially estabilishing relationships between beans.
 
-	All the beans in which relationships are set should be in the context
+    This is a declarative way of telling the framework that we want to push the
+    reference of a particular bean form the Context to another Bean
 
-	It does not matter how the beans were configured - i.e. whether they were 
-	marked as @Beans or whether they were marked as Stereotypes - in order to 
-	form relationships among one another
+    All the beans in which relationships are set should be in the context
 
-	👉 If a bean method calls another bean method then the AOP interceptors kick
-	in and make sure that only one instance of the Bean is returned
+    It does not matter how the beans were configured - i.e. whether they were
+    marked as @Beans or whether they were marked as Stereotypes - in order to
+    form relationships among one another
+
+    👉 If a bean method calls another bean method then the AOP interceptors kick
+    in and make sure that only one instance of the Bean is returned
 
 ┌─○─○─○─○─○─○─┐
 │  Autowiring │
 └─○─○─○─○─○─○─┘
 
-	This technique is used to "link" beans in the Spring Context when we have 
-	the ability to change the class, which defines the object, into which we
-	want Spring to inject the Dependency
-	This is done by marking the property of the object where we want Spring to 
-	inject the dependency, in the class which defines the object
+    This technique is used to "link" beans in the Spring Context when we have
+    the ability to change the class, which defines the object, into which we
+    want Spring to inject the Dependency
+    This is done by marking the property of the object where we want Spring to
+    inject the dependency, in the class which defines the object
 
-	@Autowired annotation is no longer used in the @Configuration class because
-	Spring does not require the annotation to inject dependencies anymore.
-	
-	Therefore @Autowired annotation is only seen in Stereotype annotations.
-	
-	DI and Autowiring is achieved using Java Reflection
+    @Autowired annotation is no longer used in the @Configuration class because
+    Spring does not require the annotation to inject dependencies anymore.
 
-	🧠💡
-	One of the main reasons why we don't Autowire fields is because it limits 
-	our ability to mark it as final
-	* IntelliJ also recommends against field injection
+    Therefore @Autowired annotation is only seen in Stereotype annotations.
 
-	Q. Can we use auto-wire inside a @Service class? 
-	A. Of course! 
-    
-	
-    Note: for Autowiring to work, the instance just needs to reside in the 
-	Spring Context. The instance can be in the context using @Bean, 
-	@ComponentScan techniques, programmatically, etc.
-    The technique doesn't matter; all that matters is that the instance should 
-	just be present in the context
+    DI and Autowiring is achieved using Java Reflection
+
+    🧠💡
+    One of the main reasons why we don't Autowire fields is because it limits
+    our ability to mark it as final
+    * IntelliJ also recommends against field injection
+
+    Q. Can we use auto-wire inside a @Service class?
+    A. Of course!
 
 
-•	Autowiring on setter methods is considered verbose
+    Note: for Autowiring to work, the instance just needs to reside in the
+    Spring Context. The instance can be in the context using @Bean,
+    @ComponentScan techniques, programmatically, etc.
+    The technique doesn't matter; all that matters is that the instance should
+    just be present in the context
+
+
+•   Autowiring on setter methods is considered verbose
 
 Automatic @Autowire
-	➤ Newer versions of Spring ─ starting with 4.3 ─ inject dependencies 
-	automatically in scenarios where, for example, there is just an all args 
-	constructor, which means that the dependencies need to be injected for the 
-	respective bean to work
+    ➤ Newer versions of Spring ─ starting with 4.3 ─ inject dependencies
+    automatically in scenarios where, for example, there is just an all args
+    constructor, which means that the dependencies need to be injected for the
+    respective bean to work
 
-	Creating an immutable bean is a good practice; helps minimize issues. This
-	is a practice that is followed for most of the beans in Spring.
-	
-	The idea is that when Spring tries to create a bean and finds that there is
-	a dependency, and if there is a single constructor with the dependency as a
-	parameter, then it tries to find a reference of that type in the context. If
-	it finds a bean in the context, then it uses that or else it tries to create
-	one. If there is no reference in the context of that class or if there is an
-	issue in creation then it throws an exception.
-	
-	➤ Exception - Rare case where we are dealing with multiple constructors
+    Creating an immutable bean is a good practice; helps minimize issues. This
+    is a practice that is followed for most of the beans in Spring.
 
-•	Advantages of using autowiring on constructors
-	○ We can use automatic code generation tools like Lombok and reduce the
-	verbosity of code; this is because we can skip the auto-wire annotation 
-	completely
-	○ Immutability
-	○ Creating 'mocks' for the Parrot
+    The idea is that when Spring tries to create a bean and finds that there is
+    a dependency, and if there is a single constructor with the dependency as a
+    parameter, then it tries to find a reference of that type in the context. If
+    it finds a bean in the context, then it uses that or else it tries to create
+    one. If there is no reference in the context of that class or if there is an
+    issue in creation then it throws an exception.
+
+    ➤ Exception - Rare case where we are dealing with multiple constructors
+
+•   Advantages of using autowiring on constructors
+    ○ We can use automatic code generation tools like Lombok and reduce the
+    verbosity of code; this is because we can skip the auto-wire annotation
+    completely
+    ○ Immutability
+    ○ Creating 'mocks' for the Parrot
 
 ╭─────────────────────────╮
 │  Circular Dependencies  │
 ╰─────────────────────────╯
 
-•	Remedy: Refactor and De-Couple the code so that there are no circular 		
-	dependencies between each other
-	
-	Circular dependency does not happen with field injection because it first 
-	creates the instances and then creates the value
-	
-	Circular Dependencies reveal a Design Issue
-	
-	Circular Dependencies are generally exposed when we use field injections
+•   Remedy: Refactor and De-Couple the code so that there are no circular
+    dependencies between each other
+
+    Circular dependency does not happen with field injection because it first
+    creates the instances and then creates the value
+
+    Circular Dependencies reveal a Design Issue
+
+    Circular Dependencies are generally exposed when we use field injections
 
 
 Loose Coupling - Common Use Cases
-	○	Different Environments
-	○	Mocking
+    ○   Different Environments
+    ○   Mocking
 
 
 🧠 Abstract Classes are NOT the way in which contracts are specified in the Java
@@ -325,29 +332,29 @@ without having to repeat them.
 Contracts are always specified through interfaces
 
 
-Service classes - implement the business logic and also represent the complete 
+Service classes - implement the business logic and also represent the complete
 transformation of data from one form to another
 
 Repository classes - storing data
 
-Decoupling are mostly required for classes where the implementation needs to be 
+Decoupling are mostly required for classes where the implementation needs to be
 replaced or presented with multiple choices
 
 👉 Standard for Implementing an Interface/Contract
 
-	○ 	Appending Impl at the end of the implementation class
-	○ 	Append the contract name at the end of a concrete class
-		Examples:
-		EmailService 	← OutlookEmailService
-						← GoogleEmailService
-						← AppleEmailService
-	○ 	
-	
+    ○   Appending Impl at the end of the implementation class
+    ○   Append the contract name at the end of a concrete class
+        Examples:
+        EmailService    ← OutlookEmailService
+                        ← GoogleEmailService
+                        ← AppleEmailService
+    ○
+
 
 Stereotypes like Controller, Service and Repositories add a "Documentation"
 layer to an application
 
-👉 Stereotype annotations should only be placed on Conrete types. Stereotype 
+👉 Stereotype annotations should only be placed on Conrete types. Stereotype
 annotations tell the Spring Container to create an instance of the class below.
 
 
@@ -355,69 +362,1023 @@ annotations tell the Spring Container to create an instance of the class below.
 │ Bean Scopes and Lifecycles │
 └────────────────────────────┘
 
-•	Bean Lifecycle concepts are required for memory management
-•	Focus is on how and when Spring creates the beans
+•   Bean Lifecycle concepts are required for memory management
+•   Focus is on how and when Spring creates the beans
 
 Singleton Bean
-‾‾‾‾‾‾‾‾‾‾‾‾‾‾ 
-	- Not related to the Singleton Design Pattern
-	- There can be multiple instances of the same type in the context
-	  This behavior conflicts with the definition of "Singleton Pattern"
-	- A unique name for a unique bean
-	- Whenever we fetch a "singleton" bean by its name, we get the same instance
-	- Spring creates a singleton bean when it loads the context and assigns 
-	  the bean a name (sometimes also referred to as bean ID).
-	
-	🧠 Never use mutable attributes on Singleton instances because there can 
-	be race conditions, wherein multiple threads try to modify the Bean at the 
-	same time
-	
-	○ By default, Singleton bean instantiation is eager. Beans are created when
-	the ApplicationContext is instantiated with the respective configuration
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    - Not related to the Singleton Design Pattern
+    - There can be multiple instances of the same type in the context
+      This behavior conflicts with the definition of "Singleton Pattern"
+    - A unique name for a unique bean
+    - Whenever we fetch a "singleton" bean by its name, we get the same instance
+    - Spring creates a singleton bean when it loads the context and assigns
+      the bean a name (sometimes also referred to as bean ID).
+
+    🧠 Never use mutable attributes on Singleton instances because there can
+    be race conditions, wherein multiple threads try to modify the Bean at the
+    same time
+
+    ○ By default, Singleton bean instantiation is eager. Beans are created when
+    the ApplicationContext is instantiated with the respective configuration
 
 
 Prototype Bean
 ‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-	- New Instance everytime we lookup a bean in the Application Context
+    - New Instance everytime we lookup a bean in the Application Context
 
 
-┌───────┐
-│  AOP  │
-└───────┘
+╔═══════════════════════════════╗
+║ Using Aspects with Spring AOP ║
+╚═══════════════════════════════╝
 
 Examples of services provided with Aspects:
-	○ Security - Pre Authorize, Post Authorize
-	○ Transactions
-	○ Logging
-	○ Circuit-Breaking
+    ○ Security - Pre Authorize, Post Authorize
+    ○ Transactions
+    ○ Logging
+    ○ Circuit-Breaking
 
 
 Aspects
-	○ Aspect: 	"What" 	- Piece of logic attached to method(s)
-	○ Advice: 	"When" 	- Before, After, Instead Of 
-	○ PointCut:	"Which" - What all methods
-	
-	Join Point - an event which triggers an Aspect; in the Spring world, it is 
-	always a method call
+    ○ Aspect:   "What"  - Piece of logic attached to method(s)
+    ○ Advice:   "When"  - 
+		•	@Before
+		•	@After
+		•	@AfterReturning
+		•	@AfterThrowing
+		•	@Around
+    ○ PointCut: "Which/Where" - What all methods, packages, etc.
+		-	Examples: Method signatures, Class/Package, Annotations
 
-Aspects are implemented using proxies. Spring never gives us the reference to 
+
+	Join Point
+	——————————
+    Join Point - an event which triggers an Aspect; in the Spring world, it is
+    always a method call
+	
+	A "Join Point" can be thought of as a concrete, single occurrence in the 
+	program's execution
+	
+	A joinpoint is a very specific moment during the execution of your program where AOP can potentially step in and apply an aspect. It's a single, identifiable event in the program's flow.
+
+	Examples of potential joinpoints:
+	
+	•	The exact moment a particular method starts executing.
+	•	The exact moment a particular method finishes executing (successfully or 
+		with an error).
+	•	The exact moment an exception is thrown from a particular method.
+	•	The exact moment a specific field of an object is accessed or modified 
+		(less common in Spring AOP, more so in full AspectJ).
+	•	The exact moment an object is initialized.
+	
+	Pointcut
+	————————
+	
+	A pointcut, on the other hand, is not a specific moment in time. Instead, it's a description or a pattern that matches one or more potential joinpoints. It's how you tell AOP which of those many possible moments in your application's execution you are interested in.
+
+	•	Joinpoints are like individual appointments in your calendar. Each 
+		method execution, each exception thrown, is a specific appointment.
+	•	A pointcut is like a search query or a filter you apply to your 
+		calendar. For example:
+	•	"All appointments scheduled for the 'UserService' on any day." (Matches 
+		multiple method execution joinpoints within the UserService class).
+	•	"Any event that is a 'meeting' and occurs after 3 PM." (Could match 
+		multiple method execution joinpoints that are annotated as 'meetings').
+	•	"Any event that involves throwing an 'IOException'." (Matches multiple 
+		exception handling joinpoints).
+
+	
+		┌────────────┬─────────────────────────┬───────────────────────────────┐
+		│ Feature    │ Joinpoint               │ Pointcut                      │
+		├────────────┼─────────────────────────┼───────────────────────────────┤
+		│ Nature     │ A specific instance,    │ A description, a pattern,     │
+		│            │ a moment in execution   │ an expression                 │
+		├────────────┼─────────────────────────┼───────────────────────────────┤
+		│ Quantity   │ Many occur throughout   │ Typically defined once in     │
+		│            │ program execution       │ your aspect                   │
+		├────────────┼─────────────────────────┼───────────────────────────────┤
+		│ Purpose    │ A potential place for   │ Selects which joinpoints      │
+		│            │ aspect intervention     │ will trigger advice           │
+		├────────────┼─────────────────────────┼───────────────────────────────┤
+		│ Analogy    │ A single appointment    │ A search filter for           │
+		│            │ in a calendar           │ appointments in a calendar    │
+		└────────────┴─────────────────────────┴───────────────────────────────┘
+
+
+
+Aspects are implemented using proxies. Spring never gives us the reference to
 the actual bean. Instead, it provides us with a proxy which intercepts method
 calls and manages the aspect logic. We can think of the proxy as an object which
 contains a reference to the object in the memory
 
-	a. 	Add @AspectJAutoProxy to the @Configuration class
-	b. 	Create the implementation class and add an instance in the Spring Ctx.
-		The implementation class needs to be marked as @Aspect; the method 
-		needs to be annotated as ??????
-		
-		The @Aspect annotation does not mark the class as a bean; it needs to be
-		configured as such.
-		The @Aspect class is not automatically treated as a Bean becuase Spring 
-		wants to decouple the Bean and Aspect capabilities. The developer can
-		choose the way — configuration or stereotyping — the bean needs to be 
-		defined
-	c. 	Join Points - around, before, after, after returning, after throwing
+    a.  Add @EnableAspectJAutoProxy to the @Configuration class
+    b.  Create the implementation class and add an instance in the Spring Ctx.
+        The implementation class needs to be marked as @Aspect; the method
+        needs to be annotated as ??????
+
+        The @Aspect annotation does not mark the class as a bean; it needs to be
+        configured as such.
+        The @Aspect class is not automatically treated as a Bean becuase Spring
+        wants to decouple the Bean and Aspect capabilities. The developer can
+        choose the way — configuration or stereotyping — the bean needs to be
+        defined
+    c.  Join Points - around, before, after, after returning, after throwing
 
 Annotations were introduced in Java 1.5 | They are an enhanced marker interface
-@Retention(RetentionPolicy.RUNTIME) - makes the annotation visible during 
+@Retention(RetentionPolicy.RUNTIME) - makes the annotation visible during
 runtime
+
+
+╭─────────────────╮
+| All Annotations |
+╰─────────────────╯
+    •   @SpringBootApplication
+    •   @Controller
+    •   @RequestMapping
+    •   @RequestParam
+    •   @PathVariable
+    •   @Service
+    •   @GetMapping
+    •   @PostMapping
+    •   @Component
+    •   @RequestScope
+
+
+
+╔══════════════════════════════════════════╗
+║ Understanding Spring Boot and Spring MVC ║
+╚══════════════════════════════════════════╝
+
+A web app is composed of two parts
+    ○   Client Side | Frontend
+        - Presented by the Web Browser
+        - Direct User Interaction
+        - Send Req.
+        - Receive Res.
+    ○   Server Side | Backend
+        - Receives Requests
+        - Sends Responses
+        - Logic to Process & Store data
+        - Communicate with ext. services
+    ○   A Web App. receives concurrent requests
+
+    ○   A Servlet Container, sometimes referred to as a Web Server, is a
+        translator of the HTTP messages for your Java app.
+    ○   A servlet is a Java object that directly interacts with the servlet
+        container.
+    ○   A Servlet Container has a context of servlet instances it controls
+
+    ○   Critical Spring Boot features
+        Simplified project creation — empty but configured skeleton app
+
+        Dependency starters — groups certain dependencies used for a specific
+        purpose with dependency starters
+
+        Autoconfiguration based on dependencies — Dependency based default
+        configurations.
+        Only change the ones provided by Spring Boot that don’t match what you
+        need. Changing the config likely requires less code (if any).
+
+    ○   5 Components are set by the initializer for a Spring Starter project -
+            a. @SpringBootApplication
+            b. spring-boot-starter-parent
+            c. dependencies chosen
+            d. Spring Boot maven plugin
+            e. application.properties
+
+    ○   spring-boot-starter-parent: Compatible versions for project
+        dependencies
+
+    ○   spring-boot-maven-plugin: Add part of the default configurations
+
+    ○   Dependency Starter:
+            - Note that this doesn't provide a version
+            - A group of dependencies added to configure for a specific purpose
+            - "spring-boot-starter-" + <capability>
+            - capability-oriented groups of compatible dependencies
+            * The "External Libraries" folder has all dependency JAR archives
+
+    ○   Autoconfiguration
+            - Convention-over-configuration principle
+            - Spring Boot provides the configurations which are generally used
+            based for the capabilities added to the project
+            - Convention → most-used configuration for a specific purpose
+
+    ○   resources/static folder : default place where the Spring Boot app
+        expects to find the pages to render
+
+    ○   📌 IMPORTANT
+        Web Apps need a "controller" component. This component links HTTP
+        request to the web-page/view that needs to be displayed
+        * To mark a class as a controller, we use the @Controller annotation
+        * The controller class will contain methods (actions) associated with
+          specific http requests
+        * Specific Controller methods are marked with the @RequestMapping
+          annotation
+        * The handler mapping finds the "controller action" you associated with
+          the request with the @RequestMapping annotation.
+        * Returns a ref. to the response web-page/view (along with data)
+
+    ○   @Controller:
+            - Web App component
+            - Methods specific to a http request
+            - Returns a reference to the web-page to be returned in the response
+
+    ○   @RequestMapping: path which maps to the desired web-page
+
+    ○   Mechanics
+            - HTTP Call ╌╌╌╌> Received by Container ╌╌╌╌> Passes to Dispatcher
+            <╌╌╌╌ finds Controller Action <╌╌╌╌ "Handler Mapping" <╌╌╌╌ "Servlet
+            Controller" returns name of "View" ╌╌╌╌> "View Resolver" ╌╌╌╌>
+            (𝘤𝘢𝘯 𝘢𝘭𝘴𝘰 𝘴𝘦𝘯𝘥 𝘥𝘢𝘵𝘢 𝘵𝘰 𝘣𝘦 𝘳𝘦𝘯𝘥𝘦𝘳𝘦𝘥)
+
+    ○   Handler Mapping: Component that finds the controller action by the HTTP
+        request path
+        NOTE: It can also search by HTTP methods
+
+    Spring (with Spring Boot) considerably simplifies the development of a web
+    app by arranging this setup.
+
+╔═══════════════════════════════════════════════════════╗
+║ Implementing web apps with Spring Boot and Spring MVC ║
+╚═══════════════════════════════════════════════════════╝
+
+    ○   Template Engine:
+            - Dependency
+            - Easily get + display variable data the controller sends
+    ○   Model - used to send data from the controller to the view
+    ○   resources/templates
+
+    ○   HTTP Data is commonly sent in one of the following ways
+        - HTTP Request Params
+        - HTTP Request Header
+        - Path Variable
+        - HTTP Request Body
+
+    Request Parameters
+        ○   @RequestParam: get the value of this param from the HTTP request
+            parameters
+        ○   A request parameter is mandatory by default
+        ○   Use cases:
+            - You need to send optional data.
+            - The quantity of data you send is not large
+
+    Path Parameters
+        ○   @PathVariable
+        ○   Precise position in the path
+        ○   Recommended to limit to maximum 2
+
+    Request Parameters              │  Path Parameters
+    ────────────────────────────────┼─────────────────────────────────
+    • Can be Optional               │ • Mandatory
+    • Should be limited to max-3    | • Should be limited to max-2
+    • May be difficult to read for  | • Easier than req params
+      some individuals              | • Easier to index by search sites
+                                        e.g. Google
+
+    ○   @RequestMapping
+            - Default - HTTP GET
+            - "method" attribute for specific HTTP methods
+
+    ○   @GetMapping
+            - Dedicate to HTTP GET
+
+    ○   @PostMapping
+            - Dedicate to HTTP POST
+
+    Get & Post HTTP Methods
+    ○   Path + Verb (GET, POST, PUT, PATCH, DELETE)
+    ❗   Although you can use an HTTP method against its intended purpose, but
+        it would be a very bad choice! As an example, you can implement a
+        functionality which uses GET to update a record, but it is WRONG!
+
+        If the client’s request only retrieves data, we implement the endpoint
+        with HTTP GET. But if the client’s request somehow changes data on the
+        server side, we use other verbs to represent the client’s intention
+        clearly.
+
+    ○   Same Path, when combined with HTTP verbs, provide us multiple actions.
+
+        ┌───────────────┬───────────────────────────────────────────────┐
+        │ HTTP Method   │ Desc.                                         │
+        ├───────────────┼───────────────────────────────────────────────┤
+        │ GET           │ Client → Only retrieve data                   │
+        ├───────────────┼───────────────────────────────────────────────┤
+        │ POST          │ Client → New Data to Server → 💾🛢           │
+        ├───────────────┼───────────────────────────────────────────────┤
+        │ PUT           │ Client → Replace Data → Server → 💾🛢        │
+        ├───────────────┼───────────────────────────────────────────────┤
+        │ PATCH         │ Client → Partial Change Data → Server → 💾🛢 │
+        ├───────────────┼───────────────────────────────────────────────┤
+        │ DELETE        │ Client → Delete Data → Server → 💾🛢        │
+        └───────────────┴───────────────────────────────────────────────┘
+
+╔═════════════════════════════╗
+║ Using the Spring Web Scopes ║
+╚═════════════════════════════╝
+
+    ○   HTTP request → Point of reference
+    ○   Web Scopes
+            → Relevant only to Web Applications
+
+            - Request Scope:
+                • One instance per request
+            - Session Scope:
+                • One instance for the full HTTP session
+                • In Server's memory
+                • Instance linked with the client's session
+            - Application Scope:
+                • One per applicaiton context
+                • Lasts application's lifetime
+
+    ○   Web Apps
+            ➜ HTTP Requests & Responses
+            ➜ Easier to manage scopes
+
+    ○   @RequestScope - mark a bean as request scoped
+            - This is to be used with a class that is marked as a bean using
+            @Bean or stereotype annotations
+            - Guarantees no concurrency-related problems
+
+    ○   @SessionScope - mark a bean as session scoped
+            - Spring creates an instance of a session-scoped bean when the HTTP
+            session is created for a specific client
+            - Available for all the client’s requests throughout an HTTP session
+            - The Spring framework makes sure to link each HTTP request to the
+            correct session.
+
+    𝗔 S𝗰𝗲𝗻𝗮𝗿𝗶𝗼 𝗼𝗻 𝗪𝗲𝗯-𝗦𝗰𝗼𝗽𝗲𝘀
+    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    The Setup:
+    You have a @Controller bean:
+
+    @Controller
+    public class MyController {
+        private final MyReqBean myReqBean;
+
+        @Autowired
+        public MyController(MyReqBean myReqBean) {
+            this.myReqBean = myReqBean;
+        }
+    }
+
+    And a @RequestScope bean:
+
+    @Component
+    @RequestScope
+    public class MyReqBean {
+        // fields and methods
+    }
+
+    💥 The Problem:
+    You observe that MyController is a singleton (one instance for the entire
+    app), and it's created at application startup, but MyReqBean is
+    request-scoped (new instance per HTTP request). So how does this work?
+
+    🎩 The Magic: Scoped Proxy
+    When Spring sees a @RequestScope bean being injected into a singleton, it
+    doesn’t inject the actual bean directly. Instead, Spring injects a proxy
+    object – a lightweight object that defers the actual bean resolution until
+    it's needed (i.e., at request time).
+
+    𝘼𝙩 𝙎𝙩𝙖𝙧𝙩𝙪𝙥
+
+    MyController is created.
+
+    The constructor receives a proxy of MyReqBean (not null and not the actual
+    instance).
+
+    This proxy is stored in the myReqBean field.
+
+    𝘼𝙩 𝙧𝙚𝙦𝙪𝙚𝙨𝙩 𝙩𝙞𝙢𝙚
+    When myReqBean is used (method call or access), the proxy kicks in and says:
+
+    "Hey Spring! Give me the actual MyReqBean for the current HTTP request."
+
+    So the real object is created at runtime, per request, and only when needed.
+
+    🔍 𝙊𝙥𝙩𝙞𝙤𝙣𝙖𝙡 𝘾𝙡𝙖𝙧𝙞𝙩𝙮: View the Proxy Bean in Action
+    If you printed the class at runtime:
+
+    System.out.println(myReqBean.getClass());
+    You might see something like:
+
+
+    class com.sun.proxy.$ProxyXXX
+    Or:
+
+
+    class org.springframework.aop.framework.CglibAopProxy$...
+    Depending on whether JDK or CGLIB proxies are used.
+
+    ✅ 𝘽𝙚𝙨𝙩 𝙋𝙧𝙖𝙘𝙩𝙞𝙘𝙚 𝙍𝙚𝙢𝙞𝙣𝙙𝙚𝙧
+    If you're doing constructor injection of a request-scoped bean into a
+    singleton, Spring must use a proxy. This works out of the box with:
+
+
+    @Component
+    @RequestScope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+    But Spring Boot auto-configures this by default if using annotations like
+    @RequestScope.
+
+
+    ○   @ApplicationScope
+            - One instance shared by all requests
+            - Differences with Singleton
+                ▫   Only one instance of the type in the context
+                ▫   Life Cycle is based on HTTP requests
+            - Usage is discouraged; use DB instead
+
+  _  _ _   _
+ | || | |_| |_ _ __
+ | __ |  _|  _| '_ \
+ |_||_|\__|\__| .__/
+              |_|
+
+    ○   Stateless | Text Based | Req-Resp Protocol | Client-Server computing
+        Model
+    ○   Assumes - client makes a request and the server responds
+    ○   Describes what the Req and Resp looks like
+
+    ○   Http Request Considerations
+            1. URI:
+            2. Method
+            3. Req. Params (optional)
+            4. Headers (optional)
+            5. Body (optional)
+
+    ○   URI
+            -   Target resource
+            -   http://<server_location>:<application_port>/<resource_path>
+            ➜   URL + Path
+
+    ○   Method
+            -   Verb
+            -   GET | POST | PUT | PATCH | DELETE | OPTIONS
+
+    ○   URL ➜   Server + Application
+
+    ○   Action to be taken ➜ Resource + VERB
+
+    ○   Htp Response
+            -   Response Status: 100 - 599
+                • Convey how things proceeded with the request
+                • Important status groups
+                    ▫ 2xx - All good; server processes the request correctly
+                      200 : OK
+                      201 : Created; resource created successfully
+                      204 : No Content; client shouldn't expect a response
+                    ▫ 4xx - Resource not found; Client sent something unexpected
+                      400 - Bad Request; generic status for data validation
+                            problem, reading a request value, etc.
+                      401 - Unauthorized; not authenticated
+                      403 - Forbidden; authenticated but not allowed
+                      404 - Not Found; the resource doesn't exist
+                    ▫ 5xx - Something broke at the server side because the
+                    client sent something unexpected
+            -   Response Headers (optional)
+            -   Response Body (optional)
+
+    ○   Session
+            -   The backend (server side) assigns a unique identifier named
+                "session ID" to a client and then associates it with a place in
+                the app's memory
+            -   Each request the client sends after being assigned the session
+                ID needs to contain the session ID in a request header.
+
+╔════════════════════════════╗
+║ Implementing REST services ║
+╚════════════════════════════╝
+
+    ○   REST based communication
+            - App ⇔ App
+            - App ⇔ Backend
+            - Web App | Mobile App
+            - Backend ⇔ Backend
+
+    📌   Controller Action + (HTTP method + Path)
+
+    ○   a.k.a Web-Service | Exposed through a Web-Protocol
+
+    📌   MVC for Web-Apps without the View Resolver
+
+    ○   Important Considerations
+        -   Time
+        -   Volume
+        -   # Requests
+        -   Network reliability
+
+        -   Failed calls | Effect on Data | User intimation
+
+    ○   Code components
+            -   @Controller
+            -   @RequestMapping
+            -   HTTP Method
+            -   Path
+            -   @ResponseBody
+                    ▫   Means: this method/action returns data, not view name
+                    ▫   Method specific approach
+
+            Generic Approach
+            -   Mark the @Controller class as @RestController instead
+            -   No need to add the @ResponseBody annotation
+
+    ○   Popular Tools
+            -   Postman
+            -   cURL
+                    ▫ https://curl.se/
+                    ▫ Needs to be installed based on the OS
+
+    ○   HTTP Response
+            -   Header(s)
+            -   Body
+            -   Status
+
+    ○   Custom Response Status
+            -   ResponseEntity - can take
+                    ▫   Status
+                    ▫   Headers
+                    ▫   Body (value)
+            -   "return" a ResponseEntity object wrapping the actual object
+
+
+    ○   @RestControllerAdvice
+            -   Mark a class as REST controller advice
+            -   Exception Handler
+                    • Method to handle exceptions
+                    • @ExceptionHendler annotation w. Exception class
+
+
+    ○   @RequestBody
+            -   Send data using the request body
+            -   Annotate corresponding parameter of controller action
+            -   Spring, by default, expects data in JSON format
+            -   Controller action sends a response wit the status "400 bad
+                request" if it is unable to decode the request sent to the
+                sever
+
+    ○   @RequestHeader
+
+╔══════════════════════════╗
+║ Consuming REST endpoints ║
+╚══════════════════════════╝
+
+    ○   REST endpoint calling methods:
+            -   OpenFeign
+                    ▫   Spring Cloud Project
+                    ▫   Simple syntax
+                    >   Write an interface
+                    >   Declare methods that consume rest end-points
+                    >   Annotate with path, method,
+                    >   Method parameters contain the
+                            Req. Parameters
+                            Req. Header(s)
+                            Req. Body
+                    ▫   Implementation is automated
+                    ▫   Needs
+                            spring-cloud-starter-openfeign
+                            spring-cloud-starter-web
+            -   RestTemplate
+                    ▫   Since Spring 3
+                    ▫   Under maintenance since Spring 5
+                    ▫   Will be deprecated soon
+                    ▫   Used by most Existing apps
+            -   WebClient
+                    ▫   Uses Reactive Programming
+
+
+    𝗢𝗽𝗲𝗻 𝗙𝗲𝗶𝗴𝗻
+    ‾‾‾‾‾‾‾‾‾‾
+    ○   Feign Client Example
+
+
+        @FeignClient(name = "payments", url="${name.service.url}")
+        public interface PaymentProxy {
+
+            @PostMapping("/payment")
+            Payment createPayment (
+                @RequestHeader String requestID,
+                @RequestBody Payment payment
+            );
+
+        }
+
+
+    ○   @FeignClient
+            -   Instruct OpenFeign to create an implementation for this contract
+            -   name:
+                    ▫   Unique Feign Client Name
+                    ▫   Used internally in Feign
+    ○   @EnableFeignClients
+            -   Used on a @Configuration class
+                    ➜ This ENABLES the OpenFeign functionality
+
+    𝗥𝗲𝘀𝘁 𝗧𝗲𝗺𝗽𝗹𝗮𝘁𝗲
+    ‾‾‾‾‾‾‾‾‾‾‾‾‾
+    ○   Steps:
+            -   Register as a bean - org.springframework.web.client.RestTemplate
+            -   Add custom headers - org.springframework.http.HttpHeaders
+            -   Headers + Body     - org.springframework.http.HttpEntity
+            -   <RestTemplate>.exchange : Invoke external service
+
+
+    𝗪𝗲𝗯𝗖𝗹𝗶𝗲𝗻𝘁
+
+    ○   Reactive
+    ○   App. becomes tightly coupled for Reactive approach
+    ○   Dependency: spring-boot-starter-webflux | choose Reactive from initlzr
+
+
+╔═══════════════════════════════════╗
+║ Using Data Sources in Spring Apps ║
+╚═══════════════════════════════════╝
+
+    ○   Data Source
+            -   Manages connections to the DB server
+            -   User a JDBC driver
+            -   Reuse connections
+            -   Close connections
+            *   Requests for a connection only when needed
+    ○   JDK: Provides abstractions for contract to work with the DB
+    ○   JDBC Driver:
+            -   Runtime Dependency to connect to the DB
+            -   Specific drivers are provided by all DB vendors
+    ○   JdbcTemplate
+            -   Simple
+            -   Small scale apps
+            -   No need for any other specific persistence framework/dependency
+
+    ○   H2
+            -   Used in Eamples and Application Tests
+            -   Enables exclusion of dependency on a database during Testing
+
+    ○   In theoretical examples, it’s easy to create a database structure by
+        adding a file named “schema.sql” to the Maven project’s resources folder
+
+    ○   In a real-world examples, require dependencies that allow versioning
+        database scripts.
+        Flyway (https://flywaydb.org/) and
+        Liquibase (https:// www.liquibase.org/) are two highly appreciated
+        dependencies for database schema versioning.
+
+    ○   When operating with double and float values, you might lose precision
+        for even simple arithmetic operations such as addition or subtraction.
+        This effect is caused by the way Java stores such values in memory. When
+        you work with sensitive information such as prices, you should use the
+        BigDecimal type instead. Don’t worry about the conversion. All the
+        essential capabilities Spring provides know how to use BigDecimal.
+
+    ○   DataSource
+            -   Component that manages Connections to the DBMS server
+            -   Improves prerformance: the app. needs to request for a new
+                connection when it really needs it
+                Without an object taking the responsibility of a data source,
+                the app would have to request a new connection for each
+                operation with the data.
+
+    ○   If you use Spring but not Spring Boot, you need to define the DataSource
+        bean and the JdbcTemplate bean
+
+    ○   JdbcTemplate has an update() method you can use to execute any query for
+        data mutation: INSERT, UPDATE or DELETE.
+
+    ○   RowMapper: Tell JdbcTemplate how to transform queried data into Purchase
+        objects of your model class
+
+
+
+
+
+
+
+
+    ○   The DataSource is just a bean you add to the Spring context like any
+        other bean.
+    ○   Custom DataSource: We’ll create a configuration file and define a method
+        annotated with @Bean, which returns the DataSource instance we add to
+        the Spring context.
+
+╔═══════════════════════════════════╗
+║ Using Transactions in Spring apps ║
+╚═══════════════════════════════════╝
+
+    ○   Based on AOP
+
+    ○   Spring’s default behavior is only to roll back a transaction when it
+        encounters a runtime exception.
+        The method needs to propagate the exception
+
+    ○   @Transactional
+            -   Wraps the method that requires transactional behavior
+            -   Configures an aspect in the background
+            -   Applies the transactional logic
+            -   Can be applied directly to the class
+                    ▫   Applies to all the class methods
+                    ▫   Real-World apps applies on the class level because
+                        the service class contains methods that represent
+                        use cases which, in almost all cases, need to be
+                        transactional
+            -   Can be applied to both, the class and method
+                    ▫   Method level config overrides class level config
+
+
+╔════════════════════════════════════════════════╗
+║ Implementing Data Persistence with Spring Data ║
+╚════════════════════════════════════════════════╝
+
+    ○   Spring Data:
+            -   Spring ecosystem project
+            -   Implement the persistence layer of a Spring App. project with
+                minimal effort
+            -   Usage
+                    ▫   Declare Repositories via. Interfaces
+                    ▫   Framework provides Implementation
+                    ▫   Implementation beased on persistence technology used
+
+    ○   Why use Spring Data?
+            -   Multiple persistence technologies, e.g. Relational DB, NO SQL
+                DB, etc.
+            -   Multiple technologies to work with persisted data,
+                    ▫   Examples JDBC, ORM, etc.
+                    ▫   Some have multiple options, e.g. JdbcTemplate, JDK
+                        Interfaces like Connection, PreparedStatement,
+                        ResultSet, etc.
+
+            -   Multiple options add complexity
+
+    ○   What does Spring Data do?
+            -   Common interfaces → various persistence technologies
+            -   User only needs to provide the abstractions; Spring Data does
+                the impl.
+
+    ○   How to use?
+            -   Spring Data offers different modules for different
+                    ▫   Persistence fashions e.g. JDBC, ORM, etc.
+                    ▫   Databases - MySql , Mongo, etc.
+            -   All Modules are independent of each other
+
+    ○   What are the interfaces?
+
+            -   Repository
+                    ▫   Most Abstract
+                    ▫   Extending interface recognized as some Spring Data repo
+                    💡   Is a Marker interface
+                    ▫   No predefined operations inherited
+                    ▫   org.springframework.data.repository.Repository<T,ID>
+
+                        Type Parameters:
+                        T - model class
+                        ID - type of the entity id managed by the repository
+
+            -   CrudRepository
+                    ▫   Extends Repository
+                    ▫   Simple CRUD Methods inherited
+
+            -   PagingAndSortingRepository
+                    ▫   Extends CrudRepository
+                    ▫   Methods for sorting & paging (fetch in chunks)
+
+            -   Multiple interfaces
+                    ▫   a.k.a. Interface Segregation
+                    ▫   choose what we need
+
+    ○   More specific interfaces
+            -   Certain technologies have interfaces that are more specialized
+
+                        ┌────────────────────────────┐
+                        |          Repository        |
+                        |        <<interface>>       |
+                        └────────────────────────────┘
+                                       Ʌ
+                                       │
+                                       │
+                        ┌────────────────────────────┐
+                        |       CrudRepository       |
+                        |        <<interface>>       |
+                        └────────────────────────────┘
+                                       Ʌ
+                                       │
+                                       │
+                        ┌────────────────────────────┐
+                        | PagingAndSortingRepository |
+                        |        <<interface>>       |
+                        └────────────────────────────┘
+                            Ʌ                   Ʌ
+                            │                   │
+                            │                   │
+    ┌────────────────────────────┐           ┌────────────────────────────┐
+    |        JpaRepository       |           |       MongoRepository      |
+    |        <<interface>>       |           |        <<interface>>       |
+    └────────────────────────────┘           └────────────────────────────┘
+
+    ○   Spring Data JPA also allows custom repository operations
+
+CrudRepository
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    ○   Provides simple operations out of the box
+            -   Value by PK
+            -   Fetch all records
+            -   Delete records
+
+    ○   Custom queries need to be provided
+
+    ○   Automated SQL based on Naming Definition Rules
+            -   Find accounts by name
+
+                For a repository defined as follows -
+
+                public interface AccountRepository
+                    extends CrudRepository<Account, Long> {
+                }
+
+                ▫   findAccountsByName
+                OR
+                ▫   findByName.
+
+            -   By
+                ▫   Interpreted as WHERE
+
+            -   Disadvantages
+                ▫   Complex queries will have very long method names
+                ▫   Refactoring the method name can break the functionality
+                ▫   Requires learning new rules | Requires IDE hints to build
+                ▫   App initialization time is negatively affected because the
+                    name of the method needs to be translated
+
+    ○   @Query
+            -   Query in SQL
+            -   Parameterized query
+                ▫   :<variable name>
+
+    ○   @Modifying
+            -   Used to mark queries that change data
+
+
+╔═════════════════════════╗
+║ Testing your Spring app ║
+╚═════════════════════════╝
+
+    ○   Test
+            -   A small piece of code
+            -   Validates a specific capability
+
+    ○   Unit Tests
+            -   Test an isolated piece of logic
+
+    ○   Integration Tests
+            -   Test interaction of multiple components
+
+    ○   Benefits
+            -   Changes being implemented are tested
+            -   Serve as documentation
+            -   Can be repeated
+            -   Validate that new changes don't break existing functionalities
+            -   Early feedback
+            -   All scenarios, that were identified over time, is tested
+
+    ○   Developers hate writing tests 💀💀💀
+            -   Tests are not directly tied to the business logic
+            -   Takes time to prepare
+
+    ○   Regression Tests
+            -   Validating that existing functionality still works
+
+    ○   Why do we need regression tests?
+            -   Existing functionaliti(es) are vulnerable to inadvertent
+                changes when a new functionality is implemented; happens all
+                the time.
+
+    ○   What should be covered as a part of tests?
+            -   All Relevant scenarios
+            -   All Business test cases
+            -   Related modules
+
+    ○   CI
+            -   Continous Integration
+            -   Tests are a part of the build process
+
+    ○   Tests are placed in the project's "test" folder
+
+    💡   How tests work?
+    💡   Correct way to write a test?
+    💡   How to write code that is easy to test?
+
+    ○   Strong corelation between testable and maintainable apps.
+            -   KEEP METHODS SMALL
+                    ▫   Even simple logic generates various scenarios.
+                    ▫   Large methods with many code lines and parameters that
+                        focus on multiple things simultaneously, identifying the
+                        relevant test scenario becomes EXTREMELY DIFFICULT.
+
+
+    Tesitng a Method
+    ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+    ○   Validate Logic works as expected
+    ○   Generally involves testing multiple scenarios
+    ○   Scenarios are created/represented by inputs/dependencies
+    📌   Each scenario should have a "method" in a "test class"
+    📌   A test class should focus only on a particular method
+    ○   Strongly related to how the app should work
+
+
+    Qs. What are dependencies?
+    A.  Anything the method uses but doesn’t create itself
+
+    ○   Two very important techniques for testing methods
+            -   Unit Tests [logic]
+                    ▫   Short
+                    ▫   Fast
+                    ▫   Focus on a single flow
+                    ▫   Ignores all dependencies
+            -   Integration Tests [logic + framework specific capabilities]
+                    ▫   Effective & prominent during upgrades
+
+    ○   Parts of a Test
+            -   Assumptions
+                    ▫   Define Input(s)
+                    ▫   Identify Dependencies to eliminate (control)
+            -   Call/Execute
+                    ▫   Invoke the logic that we are testing
+            -   Validations
+                    ▫   What should happen?
+                    ▫   What should be returned?
+            -   a.k.a. Given, When, Then
+
+
+    ╭────────────╮
+    | Unit Tests |
+    ╰────────────╯
+
+    ○   Validation of Behavior | Components
+    ○   Use Case
+    ○   Specific Conditions
+    ○   Focus on the logic; dependencies are eliminated (controlled)
+    ○   Each scenario/condition involves a method which
+            -   Defines the "scenario/condition"
+            -   Validates the behavior
+    ○   Logic is tested in isolation
+
+    ○   What benefit do Unit Tests provide?
+            -   Identify logical failure(s)
+
+    ○   Happy Flows: execution that encountered no exceptions or errors.
+
+    ○   Dependencies are "assumed" to work in a certain way for a Test Scenario
+
+    ○   Mocks: Fake objects, whose behavior we can control
+
+    ○   JUnit 5 Jupiter
+            -   @Test
+            -   @DisplayName
+            -   mock()
+            -   given()     |   .willReturn
+            -   verify()
+            -   verify      |   .changeAmount
+            -   @ExtendWith(MockitoExtension.class)
+                    ▫   Enable an extension that allows the framework to read
+                        the @Mock and @InjectMocks annotations and control the
+                        annotated fields
+            -   @Mock
+            -   @InjectMocks
+            -   assertThrows(
+                    <Exception>.class,
+                    consumer
+                )
+            -   assertEquals
+
+    ╭───────────────────╮
+    | Integration Tests |
+    ╰───────────────────╯
+
+    ○   Validating Integration
+
+    ○   Very similar to a unit test; can be conducted through JUnit
+
+    ○   Focus on interaction on 2 or more components
+
+    ○   What benefit do Unit Integration provide?
+            -   Identify integration failures; when components work in silo but
+                do not communicate with each other
+
+    ○   Possible areas
+            -   2 or more components in the app.
+            -   A framework capibility that our app uses
+            -   App + Database
+
+    ○   Mocking is optional
+
+    ○   Mock scenario:
+            -   Use an in-memory database | Tests will be independent of infra
+
+    ○   Spring integration test
+            -   Validating proper interaction with Spring capabilities
+            -   Examples: version compatibility, transactions, caching,
+                security, etc.
+
+
+    ○   JUnit 5 Jupiter
+            -   @MockBean
+                ▫   Spring now knows the tested object and manages it as it
+                    would in a running app
+            -   @ExtendsWith(SpringExtension.class)
+

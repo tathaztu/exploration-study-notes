@@ -1,0 +1,391 @@
+Lambda functions are named after the concept of lambda calculus, which is a 
+formal system in mathematical logic and computer science for expressing 
+computation based on function abstraction and application. Here are some key 
+points about the term:
+
+Lambda Calculus: Developed by Alonzo Church in the 1930s, lambda calculus uses 
+the Greek letter lambda (λ) to denote anonymous functions. In this system, 
+functions can be defined without naming them, and the lambda symbol is used to 
+indicate that a function takes parameters.
+
+Anonymous Functions: In programming, a lambda function typically refers to a 
+small, unnamed function that is defined in-line. This is often used for short, 
+throwaway functions that are not reused elsewhere in the code.
+
+Syntax: Many programming languages that support lambda functions (like Python, 
+JavaScript, and others) use the lambda keyword or a similar syntax to define 
+these functions, emphasizing their connection to lambda calculus.
+
+In summary, lambda functions are named for their roots in lambda calculus, 
+reflecting their nature as anonymous functions that can be defined concisely.
+
+╭────────────────╮
+| Basic Concepts |
+╰────────────────╯
+
+Lambda
+	○	Serverless
+	○	Event driven
+
+Handler
+	○	handler ➜ method in function code that processes events
+	○	Invoke function ➜ λ ➜ handler
+	○	fn runs until handler returns a resp, exits or times out
+
+Functions
+	📌	Self-contained program
+	○	Fundamental building block to create applications
+	○	Runs in response to event(s)
+			-	specific task
+			-	only triggered by events
+					▫	"handler" method called
+					▫	event data directly passed to handler
+			-	automatically stop when finished
+	○	Multiple classes and methods permitted
+	○	Only one handler method allowed
+
+
+project setup, naming conventions, and best practices
+
+•	aws-lambda-java-core
+		-	
+
+
+•	com.amazonaws.services.lambda.runtime.RequestHandler
+•	com.amazonaws.services.lambda.runtime.RequestStreamHandler
+•	com.amazonaws.services.lambda.runtime.Context
+•	com.amazonaws.services.lambda.runtime.LambdaLogger
+
+Project Setup
+
+	Project Template
+		Option # 1
+		----------
+		mvn archetype:generate \
+		  -DarchetypeGroupId=software.amazon.awssdk \
+		  -DarchetypeArtifactId=archetype-lambda \
+		  -DarchetypeVersion=2.x
+
+		Option # 2
+		----------
+		$ sam init <options>
+
+		SAM - Serverless Application Model
+
+		Option # 3
+		----------
+
+		Standard Java Project setup with Maven
+
+	Content
+		• One file to contain handler method
+		• Additional Java classes as required
+		
+	Main Class
+		• Class containing the main handler method that should be invoked by λ
+
+	Packaging
+		• Zip file archives
+		• Container images
+
+
+Exn Env.
+	○	Secure | Isolated
+	○	Managed by lambda | Processes & Resources
+	○	1'st Invocation
+			-	New exn env.
+			-	Not immediately discarded post execution
+			-	Subsequent calls could get old environment
+	○	Runtime
+			-	Language specific env.
+			-	Info relay between Lambda and Language 
+			-	Automatic security updates and patching
+
+Triggers and event source mappings
+
+	○	Invoked from 
+			-	AWS CLI
+			-	AWS SDK
+			-	Lambda API
+			-	Another AWS service
+	
+	○	Trigger
+			-	Responding to events 
+			-	Invoked from other AWS services by pushing an "event" object 
+			-	One function can have multiple triggers
+	
+	○	Event Source Mapping 
+			-	For AWS services that cannot invoke the Trigger directly
+			-	Continuously poll stream or queue to check for new events
+			-	Messages "batched" to a single payload
+			-	Batch size is configurable 
+
+Event object
+
+	○	JSON-formatted document
+	○	Runtime converts this to an Object
+	○	Format varies based on Generating Service
+	○	Lambda runtime converts (and provides) event -> object 
+
+Lambda permissions
+	
+	○	Needed to access other AWS services
+	○	Needed to be accessed by Other AWS services and Users 
+
+	○	Execution Role
+			-	to access other resources
+			-	special IAM role with permissions based on policy
+
+	○	Resource Based Policy
+			-	Associated with a resource
+			-	Who can access 
+			-	What can be accessed
+			-	lambda:InvokeFunction
+					Access function through a trigger
+
+	○	Identity-Based Policy 
+			-	Permission(s) for user(s)
+
+	○	Least Privilege
+			- 	Best practice | least required permission(s)
+			
+Naming conventions 
+Best Practices
+
+○ Handler
+○ Invocation - who, when?
+○ Run duration 
+○ High level creation Process
+○ Depoyment bundles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html
+https://docs.aws.amazon.com/lambda/latest/dg/with-s3-example.html
+
+
+╭───────────────────╮
+| Programming Model |
+╰───────────────────╯
+
+
+	○	Common to all runtimes
+	○	Interface between code & lambda
+	○	Runtime passes event & context to the handler
+	○	Create reusable resources (like AWS SDK) during init
+	○	AWS X-Ray tracing - separate sub segments for init and execute
+	○	Runtime 
+			- Logging output to Cloud watch logs
+			- Start and End entries
+			- req. id, bill duration, init duration & other details
+	
+	○	Auto Scaling Effects
+			- Random order in executing Incoming requests 
+			- Functions state is not gauranteed to be persisted
+			- For better Performance
+				Use Local storage and class level objects 
+				Minimal deployable size
+				Amount of data on the execution env
+
+
+╭───────────────────────╮
+| Execution Environment |
+╰───────────────────────╯
+
+	○	Provides a secure & isolated "Runtime env."
+	○	Manages resources
+	○	Execution and Lifecycle support -> Runtime & Extn.
+	
+	○	Runtime API - runtime <-> lambda comm
+	○	Extn API - extensions <-> lambda comm
+	○	Telemetry API - extension <-> log + telemetry comm 
+	
+	○	Env. Configuation - memory info., max execution time, etc.
+	
+	○	Permission, resources, credentials, env. variables are shared between
+		functions and extn. in the execution env
+		
+	
+	○	Lambda -> Event -> Runtime + Reg. Extn.
+	○	Next API request
+	○	Freeze env. when runtime and extn are complete and no pending events
+	
+	
+	Lifecycle
+	‾‾‾‾‾‾‾‾‾
+	○	Phases
+			-	Init
+			-	Restore
+			-	Invoke
+			-	Shutdown
+	
+	○	Phase Start: Lambda -> event -> Runtime and Extn  
+	
+	○	Phase End: Runtime + Extn -> each sends a Next API req
+	○	Lambda freezez Exn. Env. <- All events processed + All extn. finished
+	
+	Init
+	‾‾‾‾
+	
+	○	Tasks
+		a. Extn. Init 
+		b. Runtime Init
+		c. Static Code Init.
+		d. Before Checkpoint runtime hooks (Snap Start only)
+	
+	○	Runtime + Extn -> Next API req
+	○	Limit 
+			
+			-	SnapStart and Provisioned Concurrency
+					▫	130secs or function timeout (max 15mins)
+			-	Others
+					▫	10 secs
+			-	If time exceeds 10 secs -> Retry at first function invocation, 
+				within the configured function timeout
+	○	SnapStart Init -> During Version Publication
+			-	Memory + Disk state is encrypted, persisted and cached for low
+				latency access
+			-	Before Checkpoint runtime hook, if configured
+	○	Provisioned Concurrency Init -> During Machine Cfg.
+
+
+	○	Lambda ensures 
+			-	Initialized exn. envs. are always available before execution
+			-	Gaps may be seen between init and invoke phases
+			-	Latency - first invocation , even in initialized env. can be 
+				attributed to runtime and memory confuguration
+
+	○	On-Demand Concurrency
+			-	Occasional Initialization of envs ahead of invocation requests
+					▫	Can cause time gap between function's init and invoke 
+			-	Recommended not depende on this behavior
+
+	INIT_REPORT log
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	
+	○	Always captures init crashes and failures
+	○	Successful inits -> logged for Snap-Start & Provisioned Concurrency
+	
+	Restore Phase
+	‾‾‾‾‾‾‾‾‾‾‾‾‾
+	
+	○	Snap-Start only
+	○	After Restore Hook 
+			- hook's execution time is charged  
+	○	Restore ( + Hook's duration) <= 10 secs | SnapStartTimeoutException
+	○	Failures in RESTORE_REPORT log
+	
+
+	Invoke phase
+	‾‾‾‾‾‾‾‾‾‾‾‾
+	
+	○	Timeout includes the limit to run the Function and Extensions
+	○	There is no Post-Invoke phase
+	○	Total time calculated after all functions and extns have called NEXT
+
+
+	Failure :
+	○	INVOKE WITH ERROR
+	○	reset
+	○	shutdown event (w. reason for shutdown) -> [runtime + extn]
+	○	resuse invoves a re-init of runtime and extn.
+	○	/tmp dir is not cleared until next init
+	
+	INVOKE After Failure
+	
+	○	Reinitilizes the env. by running the init phase
+	
+
+	TODO TODO TODO TODO TODO
+
+
+╭────────────────────────────╮
+| Event-driven architectures |
+╰────────────────────────────╯
+
+
+Features such as dead letter queues (DLQs) in Lambda are provided to ensure you can identify and retry failed events, without needing to notify the caller.
+
+a robust logging system is critical, and this is provided across AWS services and embedded in Lambda functions by Amazon CloudWatch.
+
+highly recommended to automate the parsing and analysis of logs by using a debugging and monitoring service like AWS X-Ray.
+
+
+While the potential for infinite loops exists in most programming languages, this anti-pattern has the potential to consume more resources in serverless applications.
+You can use recursive loop detection to find and avoid this anti-pattern.
+
+
+Lambda functions calling Lambda functions
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+the concept of code synchronously calling functions within a code base does not adapt well to serverless development
+
+In serverless applications, there are two common approaches to avoid this pattern. First, use an Amazon SQS queue between Lambda functions. If a downstream process is slower than an upstream process, the queue durably persists messages and decouples the two functions. In this example, the Create order function would publish a message to an SQS queue, and the Process payment function consumes messages from the queue.
+
+The second approach is to use AWS Step Functions. For complex processes with multiple types of failure and retry logic, Step Functions can help reduce the amount of custom code needed to orchestrate the workflow. As a result, Step Functions orchestrates the work and robustly handles errors and retries, and the Lambda functions contain only business logic.
+
+Synchronous waiting within a single Lambda function
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+Within a single Lambda, ensure that any potentially concurrent activities are not scheduled synchronously. For example, a Lambda function might write to an S3 bucket and then write to a DynamoDB table:
+
+event driven architectures figure 17
+
+In this design, wait times are compounded because the activities are sequential. In cases where the second task depends on the completion of the first task, you can reduce the total waiting time and the cost of execution by have two separate Lambda functions:
+
+event driven architectures figure 19
+
+In this design, the first Lambda function responds immediately after putting the object to the Amazon S3 bucket. The S3 service invokes the second Lambda function, which then writes data to the DynamoDB table. This approach minimizes the total wait time in the Lambda function executions.
+
+
+╭────────────────────╮
+| Application design |
+╰────────────────────╯
+Most architectures should prefer many, shorter functions over fewer, larger ones. The purpose of each function should be to handle the event passed into the function, with no knowledge or expectations of the overall workflow or volume of transactions.
+
+
+Any global-scope constants that change infrequently should be implemented as environment variables to allow updates without deployments.
+
+Any secrets or sensitive information should be stored in AWS Systems Manager Parameter Store or AWS Secrets Manager and loaded by the function
+
+
+While you can run cron tasks in serverless applications by using scheduled expressions for rules in Amazon EventBridge, these should be used sparingly or as a last-resort.
+
+
+╭────────────────────────────╮
+| Frequently asked questions |
+╰────────────────────────────╯
+
+
+
+
+
+
+
+
+
+
+
+All Lambda functions log three lines, even if there is no other explicit logging in the custom code of the function:
+
+
+
+
+
+
+
+
+
+

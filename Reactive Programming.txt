@@ -16,8 +16,8 @@
 •   Threads are Expensive!
 •   Expensive = Heavy/Consumes Memory
 
-👉   There was a need to make Network Calls more efficient without wasting System
-    resources
+👉 	There was a need to make Network Calls more efficient without wasting 
+	System resources
 
 𝙸/𝙾 𝙲𝚊𝚕𝚕𝚜
 ‾‾‾‾‾‾‾‾‾‾
@@ -47,7 +47,7 @@ Why?
     • Server should notify client about update(s)
 
 Reactive Streams:
-🧠   Standard for Asynchronous Stream Processing with Non-Blocking Back Pressure.
+🧠 	Standard for Asynchronous Stream Processing with Non-Blocking Back Pressure.
 
     Process streams of messages in a non-blocking and asynchronous manner while
     handling back-pressure
@@ -144,7 +144,8 @@ Subscriber  ---------------------------------------->   Publisher
 •   Subscriber has to subscribe and request for the producer to produce items.
     The idea is to be lazy
 •   Subscriber can cancel anytime.
-•   If there are no Subscribers left, then the Producer will not produce anything
+•   If there are no Subscribers left, then the Producer will not produce 
+	anything
 •   Producer will produce items via. onNext
 •   Producer will call onComplete after emitting 0...N data.
 
@@ -325,18 +326,274 @@ Subscriber  ---------------------------------------->   Publisher
     ╚═══════╝
 
 	○	𝗟𝗼𝗴 𝗨𝗻𝗯𝗼𝘂𝗻𝗱𝗲𝗱: 
-		Requesting for Integer.MAX_VALUE number of items cause the Log() method of Flux to print 'unbounded'
+		Requesting for Integer.MAX_VALUE number of items cause the Log() method 
+		of Flux to print 'unbounded'
 	○	The log method can only print what is happening between its producer and
 		its subscriber
-	○	𝗙𝗹𝘂𝘅 𝗳𝗿𝗼𝗺 𝗦𝘁𝗿𝗲𝗮𝗺𝘀
+	○	𝗙𝗹𝘂𝘅 𝗳𝗿𝗼𝗺 𝗦𝘁𝗿𝗲𝗮𝗺𝘀:
 		When creating a Flux from Streams, we need to be aware that Streams are
 		invalidated when they end
-	○	Flux Interval
+	○	𝗙𝗹𝘂𝘅 𝗜𝗻𝘁𝗲𝗿𝘃𝗮𝗹:
 		This carries on until explicitly told to stop
-	○	𝗙𝗹𝘂𝘅.𝗱𝗲𝗳𝗲𝗿
+	○	𝗙𝗹𝘂𝘅.𝗱𝗲𝗳𝗲𝗿:
 		Delay Execution. Operates similar to Supplier, Callable & Runnable.
 	○	Mono <—> Flux
 
+	𝗙𝗹𝘂𝘅 - 𝗘𝗺𝗶𝘁𝘁𝗶𝗻𝗴 𝗜𝘁𝗲𝗺𝘀 𝗣𝗿𝗼𝗴𝗿𝗮𝗺𝗺𝗮𝘁𝗶𝗰𝗮𝗹𝗹𝘆
 
+	This topic is about creating flux from things which are not already in the 
+	memory, etc.
+	
+	○	Flux.create(Consumer<? super FluxSink<T>>)
+	
+		→ Can generate items as we wish
+		→ e.g. Loop, Timer, Loop with condition, etc.
 
+	○	💡FluxSink is Thread Safe
+	
+	○	FluxSink does not wait for subscribers to subscribe and request for data
+		Operations, like loops,  inside a FluxSink are executed up front.
+		This enables creating the values to be generated and stored to meet 
+		future demands.
+	
+	○	The Flux Queue is an unbounded queue
+	
+	○	🧠 Maximum number of items that can be stored (for future emission) 
+		in the Flux Queue is Integer.MAX_VALUE
+		
+	○	Back-Pressure: More items in Flux Queue than what is consumed
 
+	𝗙𝗹𝘂𝘅 - 𝗘𝗺𝗶𝘁 𝗼𝗻 𝗗𝗲𝗺𝗮𝗻𝗱
+	
+	○	<fluxSink>.onRequest(LongConsumer) - the long value initiates the 
+		production
+	○	<fluxSink>.isCancelled - whether the fluxSink was cancelled
+
+	○	Points to remember about Flux.create and Flux.Sink
+		- Designed for a 𝙨𝙞𝙣𝙜𝙡𝙚 subscriber
+		- Thread Safe
+		- Allows perpetual (metaphorically speaking) production of data, without
+		  worrying about downstream demand
+		- Delivers data sequentially & safely
+		- Stores pre-generated data in a Queue
+
+	𝗧𝗮𝗸𝗲 𝗢𝗽𝗲𝗿𝗮𝘁𝗼𝗿
+	
+	○	take(long n) - take only the first n values from this stream, if 
+		available
+		Similar to the "limit" operator of java.util.Streams
+	○	takeWhile - as long as the condition is true
+	○	takeUntil - until the given condition occurs
+	
+	𝗙𝗹𝘂𝘅 - 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲
+	
+	○	Uses a SynchronousSink
+	○	Can only take one .next() method call per Flux.generate
+	○	Genarates data based on the downstream demand
+	○	Absence of a limiting method call would cause the generate method to run 
+		for ever
+	○	Examples of terminal operations
+		- take
+		- SynchronousSink.complete
+		- SynchronousSink.error
+	
+	
+	𝗙𝗹𝘂𝘅 𝗚𝗲𝗻𝗲𝗿𝗮𝘁𝗲 - 𝗣𝗿𝗼𝗯𝗹𝗲𝗺 𝘄𝗶𝘁𝗵 𝗦𝘁𝗮𝘁𝗲
+	
+	○	Flux.generate calls the generator function iteratively to generate 	
+		values. This prevents us from declaring any counter inside the 
+		generator block because the value would be reset in the next iteration.
+	
+	○	Use the overloaded generate method
+	
+		<T, S> Flux<T> generate(
+			Callable<S> stateSupplier, 
+			BiFunction<S, SynchronousSink<T>, S> generator, 
+			Consumer<? super S> stateConsumer
+		)
+		
+		The first parameter supplies the initial state value
+		
+	○	Create								  	Generate
+		• 	Accepts a 						| 	•	Accepts a 
+			Consumer<FluxSink<T>>			|		Consumer<Synchronous<T>>
+		•	Consumer is invoked only once	|	•	Consumer is invoked
+											|		multiple times
+		•	Consumer can emit any number of	|	•	Consumer can emit only one 
+			elements, irrespective of 		|		element; downstream demand
+			downstream demand				|		governs emission
+		•	Thread Safe						|	•	N/A - because we can emit 
+											|		only one item at a time
+	
+	
+	╔═══════════╗
+	║ Operators ║ [TODO: Not thorough/exhaustive]
+	╚═══════════╝
+	
+	○ 	Additional behaviors by the use of Operators require new subscriptions
+	
+		 ╭────────────────────╮
+	     │ ╭────────────────╮ │
+		 │ │  ╭──────────╮  │ │
+		 │ │  │	╭──────╮ │  │ │
+		 │ │  │	│      │ │  │ │
+		 │ │  │	╰──────╯ │  │ │
+		 │ │  ╰──────────╯  │ │
+		 │ ╰────────────────╯ │
+		 ╰────────────────────╯
+
+	○	Important methods
+
+		𝚍𝚘𝙰𝚏𝚝𝚎𝚛𝚃𝚎𝚛𝚖𝚒𝚗𝚊𝚝𝚎 	- Post Flux termination | completion or error
+		𝚍𝚘𝙵𝚒𝚗𝚊𝚕𝚕𝚢			- Post Flux termination | any reason, including cancellation
+		𝚍𝚘𝙵𝚒𝚛𝚜𝚝				- Before subscription 
+		𝚍𝚘𝙾𝚗𝙲𝚊𝚗𝚌𝚎𝚕			- Flux cancellation
+		𝚍𝚘𝙾𝚗𝙲𝚘𝚖𝚙𝚕𝚎𝚝𝚎		- Flux completion
+		𝚍𝚘𝙾𝚗𝙳𝚒𝚜𝚌𝚊𝚛𝚍		- Potentially modify the behavior of the whole chain 
+							  of operators upstream of this one to conditionally 
+							  clean up elements that get discarded by these 
+							  operators.
+		𝚍𝚘𝙾𝚗𝙴𝚊𝚌𝚑			- Item emission | Completion | Error
+
+		𝚍𝚘𝙾𝚗𝙴𝚛𝚛𝚘𝚛(𝙲𝚘𝚗𝚜𝚞𝚖𝚎𝚛<? 𝚜𝚞𝚙𝚎𝚛 𝚃𝚑𝚛𝚘𝚠𝚊𝚋𝚕𝚎> 𝚘𝚗𝙴𝚛𝚛𝚘𝚛) - On an Error
+		𝚍𝚘𝙾𝚗𝙴𝚛𝚛𝚘𝚛(𝙲𝚕𝚊𝚜𝚜<𝙴> 𝚎𝚡𝚌𝚎𝚙𝚝𝚒𝚘𝚗𝚃𝚢𝚙𝚎, 𝙲𝚘𝚗𝚜𝚞𝚖𝚎𝚛<? 𝚜𝚞𝚙𝚎𝚛 𝙴> 𝚘𝚗𝙴𝚛𝚛𝚘𝚛) 
+							- On an Error matching the given Exception Type
+		𝚍𝚘𝙾𝚗𝙴𝚛𝚛𝚘𝚛(𝙿𝚛𝚎𝚍𝚒𝚌𝚊𝚝𝚎<? 𝚜𝚞𝚙𝚎𝚛 𝚃𝚑𝚛𝚘𝚠𝚊𝚋𝚕𝚎> 𝚙𝚛𝚎𝚍𝚒𝚌𝚊𝚝𝚎, 𝙲𝚘𝚗𝚜𝚞𝚖𝚎𝚛<? 𝚜𝚞𝚙𝚎𝚛 
+		𝚃𝚑𝚛𝚘𝚠𝚊𝚋𝚕𝚎> 𝚘𝚗𝙴𝚛𝚛𝚘𝚛)  
+							- On error and given condintion
+		𝚍𝚘𝙾𝚗𝙽𝚎𝚡𝚝			- Emission
+		𝚍𝚘𝙾𝚗𝚁𝚎𝚚𝚞𝚎𝚜𝚝		- Longconsumer request
+		𝚍𝚘𝙾𝚗𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎		- On subscription: when a subscription is produced 
+							  by the publisher and is being passed to the 
+							  𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎𝚛.𝚘𝚗𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎(𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚙𝚝𝚒𝚘𝚗) method
+		𝚍𝚘𝙾𝚗𝚃𝚎𝚛𝚖𝚒𝚗𝚊𝚝𝚎		- On termination
+		
+		Direction of Call Flow
+		╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌
+		• Subscription calls move from the Subscriber to the Producer
+		• Completion and Error messages move from the Producer to the Subscriber
+		• doFinally moves from the Subscriber to the Producer
+		• Calls other than doXXX calls which come in the path of the calls 
+		  are taken into account and affect the subsequent calls
+		• Take calls for a cancel and it navigates upstream - to the Producer
+		• Take calls onComplete downstream
+		• Scenario: Producer.take(20).take(4).subscribe(...) will produce an 
+		  onRequest log of 4 for take(20) instead of 20 because the lower take
+		  call has a value of 4.
+	
+	○	Operator - Delay Elements
+	
+		• Delay the execution of emitting items
+		• When we use a delay, the items are emitted in a delayed manner
+	
+	○	Subscribe Method + Callback Methods
+	
+		- We can use subscribe method with preceding callbacks to create similar
+		  effect as that of implementing our own Subscriber
+		  
+		Example:
+		
+		Flux.range(1, 10)
+            .doOnNext(integer -> 
+				logger.info("Called doOnNext with value {}", integer)
+			)
+            .doOnComplete(() -> logger.info("doOnComplete-1"))
+            .doOnError(err -> logger.error("Error: ", err))
+            .subscribe(System.out::println);
+	
+	○	Error Handling - Flux and Mono
+	
+		👉 All flavors of should be placed after the error producing method
+	
+		.𝚘𝚗𝙴𝚛𝚛𝚘𝚛𝚁𝚎𝚝𝚞𝚛𝚗 - Fallback value when there is an error
+		.𝚘𝚗𝙴𝚛𝚛𝚘𝚛𝚁𝚎𝚝𝚞𝚛𝚗(𝙲𝚕𝚊𝚜𝚜<𝙴> 𝚝𝚢𝚙𝚎, 𝚃 𝚏𝚊𝚕𝚕𝚋𝚊𝚌𝚔𝚅𝚊𝚕𝚞𝚎)
+						 - Fallback value when there is an error of the given 
+						 type
+		.𝚘𝚗𝙴𝚛𝚛𝚘𝚛𝚁𝚎𝚝𝚞𝚛𝚗(
+			𝙿𝚛𝚎𝚍𝚒𝚌𝚊𝚝𝚎<? 𝚜𝚞𝚙𝚎𝚛 𝚃𝚑𝚛𝚘𝚠𝚊𝚋𝚕𝚎> 𝚙𝚛𝚎𝚍𝚒𝚌𝚊𝚝𝚎, 𝚃 𝚏𝚊𝚕𝚕𝚋𝚊𝚌𝚔𝚅𝚊𝚕𝚞𝚎
+		)
+						 - Fallback value when there is an error which matches
+						 the condition
+		
+		
+		❓VALIDATE .onErrorXXX methods go to the next error handling option in 
+		case the current and previous ones are not able to match the error 
+		handling condition.
+		The next available error option(s) are also considered if a fallback 
+		error handling method itself throws an error
+		
+		𝚘𝚗𝙴𝚛𝚛𝚘𝚛𝙲𝚘𝚖𝚙𝚕𝚎𝚝𝚎: Hide current error and go to .onComplete
+	
+	
+	○	Multiple Timeout Options
+	
+		Rule: The least .timeout() value that is closest to the producer 
+		effectively determines the timeout value
+	
+	○	Transform Options
+	
+		If there are multiple workflows with redundant subsequent steps, then 
+		these common steps can be resued by placing them in a common method.
+		
+		UnaryOperator<Flux<T>> commonSteps() {
+			return flux -> flux
+				.doThis(...)
+				.doThat(...)
+				.doSomethingElse(...)
+		}
+	
+		Related Topic: 
+			Function.identity() - 	return the value as is; do not perform any
+									changes
+	
+	○	
+
+	╔══════════════════════╗
+	║ Hot/Cold Subscribers ║
+	╚══════════════════════╝
+
+	2 types of Publishers - Hot & Cold
+	
+	Cold
+	‾‾‾‾
+	○	Publisher emits data only when a Subscriber subscribes to it
+	○	A Publisher provides completely 𝒊𝒏𝒅𝒆𝒑𝒆𝒏𝒅𝒆𝒏𝒕 data streams for each of 
+		its Subscriber(s) ─> No Conflicts
+
+	Hot
+	‾‾‾
+	○	Publisher emits data independent of subscriptions
+	○	Data is shared among the subscribers
+
+	Default behavior of a FluxSink
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	A FluxSink instance can be only shared with one subscriber at a time.
+	A FluxSink needs to attach itself to a Flux and this step is executed every 
+	time a new subscriber attaches subscribes to a involves the 
+	creation 
+	
+	FluxSink with Multiple Subscribers
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	If we want to have multiple subscribers to a FluxSink then we just need to
+	use call share() method on the 
+
+	○	𝙵𝚕𝚞𝚡.𝚜𝚑𝚊𝚛𝚎() is the same as 𝙵𝚕𝚞𝚡.𝚙𝚞𝚋𝚕𝚒𝚜𝚑().𝚛𝚎𝚏𝙲𝚘𝚞𝚗𝚝(𝟷)
+		The 𝚛𝚎𝚏𝙲𝚘𝚞𝚗𝚝(𝚒𝚗𝚝 𝚖𝚒𝚗𝚂𝚞𝚋𝚜𝚌𝚛𝚒𝚋𝚎𝚛𝚜) method sets the minimum number of
+		active subscribers required (to be subscribed) in order for the 
+		Publisher to emit items
+		
+	○	A Flux needs 𝗮𝘁 𝗹𝗲𝗮𝘀𝘁 𝗼𝗻𝗲 𝘀𝘂𝗯𝘀𝗰𝗿𝗶𝗯𝗲𝗿 for the Producer to emit data.
+	
+	Resubscription
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	○	Process of subscribing to a Publisher from which all previous 
+		subscribers had unsubscribled
+	○	Causes the Publisher to start streaming from the beginning
+
+	
+	𝙵𝚕𝚞𝚡.𝚙𝚞𝚋𝚕𝚒𝚜𝚑().𝚊𝚞𝚝𝚘𝙲𝚘𝚗𝚗𝚎𝚌𝚝() - doesn't wait for subscribers, keeps 
+	streaming
+	
+	Hot Publisher - Replay / Cache
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	use replay in place of publish

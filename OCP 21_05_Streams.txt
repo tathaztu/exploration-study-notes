@@ -1,0 +1,387 @@
+~ Primitive Streams
+~ decomposition
+~ reduction
+~ grouping 
+~ partitioning
+~ sequential and parallel streams.
+
+
+┌──────────┐
+| Optional |
+└──────────┘
+
+An Optional is created using a factory
+
+➜	Optional.empty()
+➜	Optional.of((double) sum / scores.length);
+
+○	An Optional can take a generic type
+
+➜	opt.isPresent()
+➜	opt.get() throws exception ...
+
+○	NoSuchElementException
+
+➜	Optional.ofNullable(value)
+
+➜	ifPresent(Consumer c)
+➜	isPresent()
+
+➜	orElse(T other)
+➜	orElseGet(Supplier s)
+➜	orElseThrow()
+➜	orElseThrow(Supplier s)
+
+○	you can chain Optional calls.
+
+
+┌─────────┐
+| Streams |
+└─────────┘
+
+○	stream vs. stream pipeline
+
+○	finite streams
+○	infinite streams
+
+○	lazy evaluation
+○	stream operations
+
+
+source | intermediate | terminal
+
+○	the intermediate operations do not run until the terminal operation runs.
+
+○	the stream is no longer valid after a terminal operation completes.
+
+➜	java.util.stream.Stream<T>
+
+
+🚨	Here is a cost in coordinating the work, so for smaller streams, it might 
+	be faster to do it sequentially.
+
+➜	Stream.generate
+➜	Stream.iterate(seed, unary)
+➜	Stream.iterate(seed, predicate, unary)
+
+
+○	the source doesn’t actually create
+○	the values until you call a terminal operation
+
+	┌────────────────────────────────────────┬────────────────────┐
+	│ Method                                 │ Finite / Infinite? │
+	├────────────────────────────────────────┼────────────────────┤
+	│ Stream.empty()                         │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ Stream.of(varargs)                     │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ coll.stream()                          │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ coll.parallelStream()                  │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ Stream.generate(supplier)              │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ Stream.iterate(seed, unaryOperator)	 │ F                  │
+	├────────────────────────────────────────┼────────────────────┤
+	│ Stream.iterate(                   	 │ F                  │
+	│ 	  seed, predicate, unaryOperator     │                    │
+	│ )										 │                    │
+	└────────────────────────────────────────┴────────────────────┘
+
+
+Reductions
+‾‾‾‾‾‾‾‾‾‾
+○	Reductions: special terminal operation | single primitive or object.
+	e.g. collection, int, etc.
+
+○	Can’t use a traditional for loop on a stream.
+
+○	When you don’t specify an identity, an Optional is returned because there 
+	might not be any data.
+
+○	Terms
+		-	identity
+		-	accumulator
+		
+○	The three-argument reduce() operation | parallel streams | decomposition and 
+	reassembly by separate threads
+	e.g. if we needed to count the length of four 100-character strings, the 
+	first two values and the last two values could be computed independently. 
+	The intermediate result (200 + 200) would then be combined into the final 
+	value.
+
+➜	Terminal Operations
+
+➜	public long count()		 		
+➜	public Optional<T> min(Comparator<? super T> comparator)
+➜	public Optional<T> max(Comparator<? super T> comparator)
+➜	public Optional<T> findAny()
+➜	public Optional<T> findFirst()
+➜	public boolean anyMatch(Predicate <? super T> predicate)
+➜	public boolean allMatch(Predicate <? super T> predicate)
+➜	public boolean noneMatch(Predicate <? super T> predicate)
+➜	public void forEach(Consumer<? super T> action)
+
+	Reduce
+	‾‾‾‾‾‾
+➜	public T reduce(T identity, BinaryOperator<T> accumulator)
+➜	public Optional<T> reduce(BinaryOperator<T> accumulator)
+➜	public <U> U reduce(
+		U identity,
+		BiFunction<U,? super T,U> accumulator,
+		BinaryOperator<U> combiner
+	)
+
+	Collect
+	‾‾‾‾‾‾‾
+	○	Specialized reduction | involves mutable object
+
+➜	public <R,A> R collect(Collector<? super T, A,R> collector)
+➜	public <R> R collect(
+		Supplier<R> supplier,
+		BiConsumer<R, ? super T> accumulator,
+		BiConsumer<R, R> combiner
+	)
+
+	supplier: where to collect
+	accumulator: take 2 params
+	combiner: take 2 data collections and merge them || parallel processing
+
+	Using Collectors
+	‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+	Stream<String> stream = Stream.of("w", "o", "l", "f");
+	TreeSet<String> set =
+	stream.collect(Collectors.toCollection(TreeSet::new));
+
+	Stream<String> stream = Stream.of("w", "o", "l", "f");
+	Set<String> set = stream.collect(Collectors.toSet());
+
+
+➜	Collectors.toCollection
+➜	Collectors.toSet()
+➜	Collectors.toList()
+
+
+○	Intermediate Operations
+
+➜	public Stream<T> filter(Predicate<? super T> predicate)
+➜	public Stream<T> distinct()
+➜	public Stream<T> limit(long maxSize)
+➜	public Stream<T> skip(long n)
+	
+➜	public <R> Stream<R> map(Function<? super T, ? extends R> mapper)
+	
+➜	public <R> Stream<R> flatMap(
+		Function<? super T, ? extends Stream<? extends R>> mapper
+	)
+		
+			List<String> zero = List.of();
+			var one = List.of("Bonobo");
+			var two = List.of("Mama Gorilla", "Baby Gorilla");
+			Stream<List<String>> animals = Stream.of(zero, one, two);
+			animals.flatMap(m -> m.stream())
+				.forEach(System.out::println);
+			Here’s the output:
+			Bonobo
+			Mama Gorilla
+			Baby Gorilla
+		
+			Concatenating Streams
+	
+			var one = Stream.of("Bonobo");
+			var two = Stream.of("Mama Gorilla", "Baby Gorilla");
+			
+			Stream.concat(one, two)
+				.forEach(System.out::println);
+
+
+➜	public Stream<T> sorted()
+➜	public Stream<T> sorted(Comparator<? super T> comparator)
+
+
+			Stream<String> s = Stream.of("brown-", "bear-");
+			s.sorted()
+				.forEach(System.out::print); // bear-brown-
+
+			Comparator.reverseOrder()
+			Stream<String> s = Stream.of("brown bear-", "grizzly-");
+			s.sorted(Comparator.reverseOrder())
+				.forEach(System.out::print); // grizzly-brown bear-
+
+➜	public Stream<T> peek(Consumer<? super T> action)
+
+┌───────────────────┐
+| Primitive Streams |
+└───────────────────┘
+
+○	IntStream: Has many of the same intermediate and terminal methods as a 
+	Stream but includes specialized methods for working with numeric data.
+
+○	IntStream
+○	LongStream
+○	DoubleStream
+
+○	Methods common to non-primitive streams; e.g. DoubleStream.empty, etc.
+	
+➜	xxxStream.empty()
+
+➜	xxxStream.of(value)
+➜ 	xxxStream.of(varargs)
+
+➜	xxxStream.generate(supplier)
+➜	xxxStream.iterate(seed, unary)
+
+➜	xxxStream.range(start, finish)
+➜	xxxStream.rangeClosed(start, finish)
+
+
+Common Methods
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+┌─────────────────────────────┬────────────────────┬────────────────────────┐
+│ Method                      │ Primitive Stream   │ Description            │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ OptionalInt min()           │ IntStream          │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ OptionalLong min()          │ LongStream         │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ OptionalDouble min()        │ DoubleStream       │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ OptionalInt max()           │ IntStream          │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ OptionalLong max()          │ LongStream         │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ OptionalDouble max()        │ DoubleStream       │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ int sum()                   │ IntStream          │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ long sum()                  │ LongStream         │                        │
+├─────────────────────────────┼────────────────────┤                        │
+│ double sum()                │ DoubleStream       │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ OptionalDouble average()    │ IntStream          │                        │
+│                             │ LongStream         │                        │
+│                             │ DoubleStream       │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ Stream<T> boxed()           │ IntStream          │                        │
+│                             │ LongStream         │                        │
+│                             │ DoubleStream       │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ IntStream range(            │ IntStream          │      					│
+│     int a, int b            │                    │      					│
+│ )                           │                    │  Returns primitive     │
+│                             │                    │  stream from a         │
+├─────────────────────────────┼────────────────────┤  (inclusive) to b     	│
+│ LongStream range(           │ LongStream         │  (exclusive)       	│
+│     long a, long b          │                    │                        │
+│ )         				  │                    │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ IntStream rangeClosed(      │ IntStream          │      					│
+│     int a, int b            │                    │      					│
+│ )                           │                    │  Returns primitive     │
+│                             │                    │  stream from a         │
+├─────────────────────────────┼────────────────────┤  (inclusive) to b     	┤
+│ LongStream rangeClosed(     │ LongStream         │  (inclusive)       	│
+│     long a, long b          │                    │                        │
+│ )         				  │                    │                        │
+├─────────────────────────────┼────────────────────┼────────────────────────┤
+│ IntSummaryStatistics        │ IntStream          │ 					    │
+│ summaryStatistics()         │                    │ 					    │
+│                             │                    │ Returns object      	│
+├─────────────────────────────┼────────────────────┤ with stats like avg,   │
+│ LongSummaryStatistics       │ LongStream         │ min, max, etc.      	│
+│ summaryStatistics()         │                    │						│
+├─────────────────────────────┼────────────────────┤      					│
+│ DoubleSummaryStatistics     │ DoubleStream       │						│
+│ summaryStatistics()         │                    │						│
+└─────────────────────────────┴────────────────────┴────────────────────────┘
+
+○ 	The primitive stream implementations also add two new methods as compared 
+	to non-primitive streams. 
+	
+	🚩 *** The sum() method does not return an optional. 
+	🚩 *** If you try to add up an empty stream, you simply get zero. 
+	🚩 *** The average() method always returns an OptionalDouble since an 
+		average can potentially have fractional data for any type.
+
+┌────────────────┬────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ Source stream  │ To create Stream   │ To create            │ To create            │ To create            │
+│                │                    │ DoubleStream         │ IntStream            │ LongStream           │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ Stream<T>      │ map()              │ mapToDouble()        │ mapToInt()           │ mapToLong()          │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ DoubleStream   │ mapToObj()         │ map()                │ mapToInt()           │ mapToLong()          │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ IntStream      │ mapToObj()         │ mapToDouble()        │ map()                │ mapToLong()          │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ LongStream     │ mapToObj()         │ mapToDouble()        │ mapToInt()           │ map()                │
+└────────────────┴────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+
+┌────────────────┬────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ Stream<T>      │ Function<T, R>     │ ToDoubleFunction<T>  │ ToIntFunction<T>     │ ToLongFunction<T>    │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ DoubleStream   │ DoubleFunction<R>  │ DoubleUnaryOperator  │ DoubleToIntFunction  │ DoubleToLongFunction │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ IntStream      │ IntFunction<R>     │ IntToDoubleFunction  │ IntUnaryOperator     │ IntToLongFunction    │
+├────────────────┼────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ LongStream     │ LongFunction<R>    │ LongToDoubleFunction │ LongToIntFunction    │ LongUnaryOperator    │
+└────────────────┴────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+
+
+○	Optionals with Primitive Streams
+
+			var stream = IntStream.rangeClosed(1,10);
+			OptionalDouble optional = stream.average();
+
+	Why not just use Optional<Double>? The difference is that OptionalDouble is 
+	for a primitive and Optional<Double> is for the Double wrapper class.
+	
+			optional.ifPresent(System.out::println); // 5.5
+			System.out.println(optional.getAsDouble()); // 5.5
+			System.out.println(optional.orElseGet(() -> Double.NaN)); // 5.5
+	
+	The only noticeable difference is that we called getAsDouble() rather than
+	get(). This makes it clear that we are working with a primitive. Also,
+	orElseGet() takes a 🚩 DoubleSupplier instead of a Supplier.
+
+
+
+							OptionalDouble 		OptionalInt 	  OptionalLong
+Getting as primitive 		getAsDouble() 		getAsInt() 		  getAsLong()
+
+orElseGet() parameter type 	DoubleSupplier 		IntSupplier 	  LongSupplier
+
+Return type of max() and	OptionalDouble 		OptionalInt 	  OptionalLong
+min()
+
+Return type of sum() 		double 				int 			  long
+
+Return type of average()	OptionalDouble 		OptionalDouble 	  OptionalDouble
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1726 @@
+
+All the various objects of all the
+different classes represent the state of your program
+
+A reference is a variable that points to an object.
+
+members = fields + methods
+
+The void
+keyword means that no value at all is returned
+
+parameter: Information required by the method
+
+method name and parameter types are called the method
+signature.
+
+A top-level type
+is a data structure that can be defined independently within a
+source file.
+
+at
+most one of the top-level types in the file is allowed to be public
+
+If you do have a public type, it needs to match the filename.
+
+The main() method lets the JVM call our code.
+
+To compile Java code with the javac command, 
+	the file must have the extension .java. 
+	file-name must match the name of the public class.
+
+it’s good practice to use void for methods that change an object’s
+state.
+
+public final static void main(final String[] args) {}
+In this example, both final modifiers are optional, and the
+main() method is a valid entry point with or without them.
+
+javac Zoo.java
+java Zoo "San Diego" Zoo
+
+there’s a shortcut. You can
+instead run this:
+	java Zoo.java Bronx Zoo
+When compiling first, you
+omitted the file extension when running java. When
+skipping the explicit compilation step, you include this
+extension. This feature is called launching single-file sourcecode
+programs and is useful for testing or for small
+programs. The name cleverly tells you that it is designed for
+when your program is one file.
+
+Package names
+website name in reverse.
+
+The * is a wildcard that matches all classes in the
+package.
+
+The import statement doesn’t
+bring in child packages, fields, or methods; it imports only
+classes directly under the package.
+
+including so many classes slows down
+your program execution, but it doesn’t. The compiler figures out
+what’s actually needed. if you are working with others
+on a team. Listing the classes used makes the code easier to
+read, especially for new programmers
+Java automatically
+looks in the current package for other classes
+
+If you explicitly import a class name, it takes
+precedence over any wildcards present.
+
+“ties” for
+precedence:
+the compiler tells you the
+imports are ambiguous.
+
+if the same class name from 2 or more packages are required
+
+package packagea;
+public class ClassA {}
+
+package packageb;
+import packagea.ClassA;
+public class ClassB {
+	public static void main(String[] args) {
+		ClassA a;
+		System.out.println("Got it");
+	}
+}
+
+use an asterisk to specify that you’d like to include
+all Java files in a directory
+javac packagea/*.java packageb/*.java
+
+The -d option
+specifies this target directory.
+
+The
+package structure is preserved under the requested target
+directory.
+
+CLASSPATH: To run the program, you specify the classpath so Java knows
+where to find the classes.
+
+java -cp 			classes packageb.ClassB
+java -classpath 	classes packageb.ClassB
+java --class-path 	classes packageb.ClassB
+
+constructors 
+object fields
+instance initializers
+
+the
+name of the constructor matches the name of the class, and
+there’s no return type.
+
+The code between the braces is called a code block. Anywhere you see braces is a 
+code block.
+
+Counting code blocks is easy: you just count the number of
+pairs of braces
+
+Order of Initialization
+
+Fields and instance initializer blocks are run in the order in
+which they appear in the file.
+The constructor runs after all fields and instance initializer
+blocks have run.
+
+Java has eight built-in data types
+all Java objects are just a
+complex collection of these primitive data types
+a primitive is not an object in Java, nor does it represent an
+object. A primitive is just a single value in memory, such as a
+number or character.
+
+Without an f or F, Java interprets a
+decimal value as a double.
+A long requires the letter l or L following the number so
+Java knows it is a long. Without an l or L, Java interprets a
+number without a decimal point as an int in most
+scenarios.
+
+what is the bit size of boolean? The answer is,
+it is not specified and is dependent on the JVM where the code
+is being executed.
+
+The primary difference is that short is
+signed, which means it splits its range across the positive
+and negative integers. Alternatively, char is unsigned, which
+means its range is strictly positive, including 0.
+Often, short and char values can be cast to one another
+because the underlying data size is the same.
+
+long max = 3123456789; // DOES NOT COMPILE
+
+please use the uppercase L. The lowercase l looks like the
+number 1.
+
+Octal (digits 0–7), 0 as a prefix
+Hexadecimal (digits 0–9 and letters A–F/a–f), which uses 0x or 0X as a prefix
+Binary (digits 0–1), which uses the number 0 followed by b or B as a prefix
+
+you can have underscores in numbers to make them easier to
+read
+You can add underscores anywhere except at the
+beginning of a literal, the end of a literal, right before a decimal
+point, or right after a decimal point.
+You can even place
+multiple underscore characters next to each other
+
+Reference Type: A reference type "refers" to an object
+storing the memory address where the object is
+located, a concept referred to as a pointer. Unlike other
+languages, Java does not allow you to learn what the physical
+memory address is. You can only use the reference to refer to
+the object.
+
+A reference can be assigned to another object of the same
+or compatible type.
+A reference can be assigned to a new object using the new
+keyword.
+
+
+The reference is a variable
+that has a name and can be used to access the contents of an
+object.
+
+
+************************
+All
+references are the same size, no matter what their type is.
+************************
+
+
+1. all the primitive types have lowercase type names
+2. Primitives do not have methods declared on them
+reference types can be assigned null. Primitive types will give you
+3. a compiler error if you attempt to assign them null
+
+Each primitive type has a wrapper class, which is an object type
+that corresponds to the primitive
+
+On Boolean, the valueOf(String str) method returns Boolean.TRUE for any value
+that matches "true" ignoring case, and Boolean.FALSE
+otherwise.
+
+(Byte, Short, Integer, and
+Long) include an overloaded valueOf(String str, int base)
+
+ALL of the numeric classes in Table 1.6 extend the Number class,
+which means they ALL come with some useful helper methods:
+byteValue(), shortValue(), intValue(), longValue(), floatValue(),
+and doubleValue(). The Boolean and Character wrapper classes
+include booleanValue() and charValue(), respectively
+
+Double apple = Double.valueOf("200.99");
+System.out.println(apple.byteValue()); // -56
+System.out.println(apple.intValue()); // 200
+System.out.println(apple.doubleValue()); // 200.99
+
+\n - newline
+
+text
+blocks, also known as multiline strings
+A text block starts and ends with three double quotes ("""), and
+the contents don’t need to be escaped.
+
+Imagine a vertical line drawn on the leftmost non-whitespace
+character in your text block. Everything to the left of it is
+incidental whitespace, and everything to the right is essential
+whitespace
+
+Text blocks require a line break after the opening
+
+
+Formatting 			Meaning in regular String		Meaning in	text block
+\" 					" 								"
+\""" 				n/a – Invalid 					"""
+\"\"\" 				""" 							"""
+Space (at end		Space 							Ignored
+of line) 
+\s					Two spaces (\s is a space and	Two spaces
+					preserves leading space on the
+					line)
+\ (at end of		n/a – Invalid 					Omits new line
+line) 
+on that line
+
+
+String block = """doe"""; // DOES NOT COMPILE
+
+String block = """ // One Line
+doe \
+deer""";
+
+This time we have four lines. Since the text block has the closing
+""" on a separate line, we have three lines for the lines in the
+text block plus the explicit \n.
+String block = """ // 
+doe \n
+deer
+""";
+
+String block = """
+"doe\"\"\"
+\"deer\"""
+""";
+System.out.println("*"+ block + "*");
+The answer is:
+* "doe"""
+"deer"""
+*
+All of the \" escape the ". There is one space of essential
+whitespace on the doe and deer lines.
+
+An identifier is the name of a
+variable, method, class, interface, or package+
+
+Identifiers must begin with a letter, a currency symbol, or a
+_ symbol. Currency symbols include dollar ($), yuan (¥),
+euro (€), and so on.
+Identifiers can include numbers but not start with them.
+A single underscore (_) is not allowed as an identifier.
+You cannot use the same name as a Java reserved word.
+
+how many variables do
+you think are declared and initialized in the following code?
+void paintFence() {
+	int i1, i2, i3 = 0;
+}
+As you should expect, three variables were declared: i1, i2, and
+i3. However, only one of those values was initialized: i3.
+
+
+
+int num, String value; // DOES NOT COMPILE
+
+
+Before you can use a variable, it needs a value.
+
+defaults for local, 
+defaults for instance, 
+defaults for class variables.
+
+
+A local variable is a variable defined within a constructor,
+method, or initializer block.
+
+An instance variable,
+often called a field, is a value defined within a specific instance
+of an object.
+
+On the other hand, a class variable is one that is defined on the
+class level and shared among all instances of the class.
+
+a variable is a
+class variable if it has the static keyword in its declaration
+
+keyword var: The formal name of this feature is local variable type inference.
+Let’s take that apart. First comes local variable. This means just
+what it sounds like. You can use this feature only for local
+variables.
+
+var tricky = "Hello"; // DOES NOT COMPILE
+
+In Java, var is still a specific type defined at compile
+time. It does not change type at runtime.
+
+Remember that for local variable
+type inference, the compiler looks only at THE LINE WITH THE
+DECLARATION.
+
+you can’t use var to define two
+variables on the same line.
+
+The compiler is being asked to infer the
+type of null. This could be any reference type. The only choice
+the compiler could make is Object. However, that is almost
+certainly not what the author of the code intended. The
+designers of Java decided it would be better not to allow var for
+null than to have to guess at intent.
+
+public int addition(var a, var b) { // DOES NOT COMPILE
+return a + b;
+}
+In this example, a and b are method parameters. These are NOT
+LOCAL VARIABLES.
+
+
+var is not a
+reserved word and allowed to be used as an identifier. It is
+considered a reserved type name. A reserved type name means
+it cannot be used to define a type, such as a class, interface, or
+enum.
+
+public class Var {
+public void var() {
+var var = "var";
+}
+public void Var() {
+Var var = new Var();
+}
+}
+
+When you see a set of braces ({}) in the code, it means you have
+entered a new block of code. Each block of code has its own
+scope. Each block of code has its own
+scope.
+
+smaller
+contained blocks can reference variables defined in the larger
+scoped blocks, but not vice versa.
+
+Java code exists inside of a JVM, which includes
+numerous processes independent from your application code.
+One of the most important of those is a built-in garbage
+collector.
+
+All Java objects are stored in your program memory’s heap.
+The heap, which is also referred to as the free store, represents a
+large pool of unused memory allocated to your Java application.
+
+eligible for garbage
+collection refers to an object’s state of no longer being accessible
+in a program and therefore able to be garbage collected.
+
+1. D, E
+2. C, D, E, 
+3. A, E, 
+4. B, E, G
+5. A, D, F
+
+20. 
+21. D
+22. C, E, G
+23. A, D,																
+
+
+
+Operator                            Symbols and examples    Evaluation
+------------------------------------------------------------------------
+Post-unary operators            |   expression++,           Left-toright	U
+                                |   expression--
+Pre-unary operators             |   ++expression,           Left-toright
+                                |   --expression
+Other unary operators           |   -, !, ~, +, (type)      Right-toleft
+								|
+Cast                            |   (Type)reference         Right-toleft	Cas
+                                |
+Multiplication/division/modulus |   *, /, %                 Left-toright	M
+Addition/subtraction            |   +, -                    Left-toright	A
+								|
+Shift operators                 |   <<, >>, >>>             Left-toright	S
+Relational operators            |   <, >, <=, >=,           Left-toright	R
+                                |   instanceof
+                                |
+Equal to/not equal to           |   ==, !=                  Left-toright	E
+Logical AND                     |   &                       Left-toright	L
+Logical exclusive OR            |   ^                       Left-toright
+Logical inclusive OR            |   |                       Left-toright
+Conditional AND                 |   &&                      Left-toright	A
+Conditional OR                  |   ||                      Left-toright	O
+Ternary operators               |   boolean expression      Right-toleft	T
+                                |   ? expression1 :
+                                |       expression2
+                                |
+Assignment operators            |   =, +=, -=, *=, /=, %=,  Right-toleft	As
+                                |   &=, ^=, |=, <<=, >>=,
+                                |   >>>=
+                                |
+Arrow operator                  |   ->                      Right-toleft	Ar
+
+
+┌───────────────────────────┐
+│  Numeric Promotion Rules	│
+└───────────────────────────┘
+
+1. 	Different data types → Automatically to the larger data type.
+2. 	Integer + Float 		→ Automatically promote to Float
+3. 	Smaller data types, namely, byte, short, and char, are first
+	promoted to int any time they’re used with a Java BINARY
+	arithmetic operator WITH A VARIABLE (as opposed to a value),
+	even if neither of the operands is int.
+
+	Note that unary increment/decrement operators are
+	excluded. For example, applying ++ to a short value results in a
+	short value.
+4. 	Resulting value will have the same data type as its promoted operands.
+
+Assignment Operator
+-------------------
+An assignment operator is a binary operator that modifies, or
+assigns, the variable on the left side of the operator with the
+result of the value on the right side of the equation.
+
+Java will automatically promote from SMALLER TO LARGER data
+types, but it will throw a compiler exception if it detects
+that you are trying to convert from LARGER TO SMALLER data types
+without casting.
+
+casting a numeric value may change the data type,
+while casting an object only changes the reference to the object,
+not the object itself.
+
+Casting Values vs. Variables
+Revisiting our third numeric promotional rule, the compiler
+doesn’t require casting when working with literal values that fit
+into the data type. When working with values, the compiler had enough
+information to determine the writer’s intent.
+Consider these examples:
+	byte hat = 1;
+	byte gloves = 7 * 10;
+	short scarf = 5;
+	short boots = 2 + 1;
+All of these statements compile without issue.
+
+
+Return Value of Assignment Operators
+
+result of an assignment is an expression in and of itself equal to
+the value of the assignment.
+
+For object comparison, the equality operator is applied to the
+references to the objects, not the objects they point to. Two
+references are equal if and only if they point to the same object
+or both point to null.
+
+System.out.print(null == null); // true
+
+Invalid instanceof
+------------------
+One area the exam might try to trip you up on is using
+instanceof with incompatible types. For example, Number cannot
+possibly hold a String value, so the following causes a
+compilation error:
+public void openZoo(Number time) {
+if(time instanceof String) // DOES NOT COMPILE
+System.out.print(time);
+}
+IF THE COMPILER CAN DETERMINE that a variable cannot possibly be
+cast to a specific class, it reports an error.
+
+Calling instanceof on the null literal
+--------------------------------------
+Or a null reference always returns false.
+System.out.print(null instanceof Object); // false
+
+String noObjectHere = null;
+System.out.print(noObjectHere instanceof String); // false
+
+System.out.print(null instanceof null); // DOES NOT COMPILE
+
+
+The logical operators, (&), (|), and (^), may be applied to both
+numeric and boolean data types; they are listed in Table 2.9.
+When they’re applied to boolean data types, they’re referred to
+as logical operators. Alternatively, when they’re applied to
+numeric data types, they’re referred to as bitwise operators, as
+they perform bitwise comparisons of the bits that compose the
+number.
+
+Logical exclusive OR
+e ^ f 
+The value is true only if one value is true and the other is false.
+
+
+
+
+
+Shortening Code with Pattern Matching
+—————————————————————————————————————
+TODO
+
+
+
+
+
+
+Using the Arrow Operator with switch Statements
+———————————————————————————————————————————————
+If you do use the arrow operator,
+then you must use it for all clauses. For example, the
+following switch statement does not compile:
+switch (type) {
+	case 0 : System.out.print("Lion");
+	case 1 -> System.out.print("Elephant");
+}
+
+With
+switch expressions, a default clause is OFTEN required, as the
+expression must return a value.
+
+Unlike a switch statement, a switch expression often requires a
+semicolon (;) after it, such as when it is used with the
+assignment operator (=) or a return statement.
+
+A switch statement is not required to contain any case
+clauses. This is perfectly valid:
+switch (month) {}
+
+The following is a list of all data types supported by switch:
+	• byte and Byte
+	• int and Integer
+	• char and Character
+	• short and Short
+	• var (if the type resolves to one of the preceding types)
+	• All Object types (when used with pattern matching)
+	• String
+	• enum values
+
+
+****************** think of an enum as a class type with predefined
+object values known at compile time
+
+you can’t have a case clause value that requires executing a method at
+runtime, even if that method always returns the same value
+
+enum Season { SPRING, SUMMER, FALL, WINTER }
+boolean shouldGetACoat(Season s) {
+	return switch (s) {
+		case SPRING -> false;
+		case Season.SUMMER -> false;
+		case FALL -> true;
+		case Season.WINTER -> true;
+	};
+}
+For an enum value, you can specify just the value, as shown
+with SPRING and FALL. Starting with Java 21, you can
+optionally specify the name with the value, such as
+Season.SPRING and Season.FALL.
+
+void printSeasonForMonth(int month) {
+	switch (month) {
+		case 1, 2, 3: System.out.print("Winter-"); break;
+		case 4, 5, 6: System.out.print("Spring-"); break;
+		default: System.out.print("Unknown-"); break;
+		case 7, 8, 9: System.out.print("Summer-"); break;
+		case 10, 11, 12: System.out.print("Fall-"); break;
+	} 
+}
+The last case clause does not actually require a break, as the
+switch statement is over, but we add it for consistency.
+
+When Is a switch Expression Not a switch
+Expression?
+
+Unlike a switch statement, a switch expression must return a
+value. Why? Let’s try an illustrative example.
+
+All switch expressions must be exhaustive, which means they
+must handle all possible values.
+
+There are
+three ways to write an exhaustive switch:
+1. Add a default clause.
+2. If the switch takes an enum, add a case clause for every
+possible enum value.
+3. Cover all possible types of the switch variable with pattern
+matching.
+
+When writing switch expressions, it may be a good idea to
+add a default branch, even if you cover all possible values.
+This means that if someone modifies the enum with a new
+value, your code will still compile.
+
+the yield statement, allows the case
+clause to return a value.
+Think of the yield keyword as a return statement within a switch
+expression.
+Because a switch expression must return a value, a
+yield is often required within a case block. The one “exception”
+to this rule is if the code throws an exception, as shown in the
+previous example.
+
+When writing a case expression, a semicolon is required, but
+when writing a case block, it is prohibited.
+
+structure of pattern matching with a switch
+expression. It can also be used with a switch statement that does
+not return a value.
+
+One advantage of guards is that now switch can do something
+it’s never done before: it can handle ranges.
+
+what if you combine
+different solutions?
+Number zooPatrons = Integer.valueOf(1_000);
+switch (zooPatrons) {
+	case Integer count -> System.out.print("Welcome: " + count);
+	case Number count -> System.out.print("Too many people at the zoo!");
+	default -> System.out.print("The zoo is closed");
+}
+In this case, the code does not compile, regardless of how you
+order the branches. The compiler is smart enough to realize the
+last two statements are redundant, as one always dominates the
+other.
+
+While case null can
+appear almost anywhere in switch, it cannot be used after a
+default statement.
+
+The right side of the
+for-each loop must be one of the following:
+A built-in Java array
+An object whose type implements java.lang.Iterable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Extending two interfaces is permitted because interfaces are not initialized as part of a class hierarchy.
+
+Interfaces do not support protected members, as a class
+cannot extend an interface.
+
+
+They also do not support
+package access members, although more likely for syntax
+reasons and backward compatibility. Since interface
+methods without an access modifier have been considered
+implicitly public, changing this behavior to package access
+would break many existing programs!
+
+
+If a class inherits two or more default methods with the
+same method signature, then the class must override the
+method.
+
+static interface methods are not inherited
+
+When
+declaring an annotation, any element without a default value is
+considered required.
+
+
+an annotation element cannot be
+declared with just any type. It must be a primitive type, a String, a
+Class, an enum, another annotation, or an array of any of these types.
+
+The type
+String[] is supported, as it is an array of String values, but
+String[][] is not.
+
+annotation elements are implicitly
+abstract and public and cannot be marked final
+
+just like interface variables, annotation variables are implicitly
+public, static, and final.
+
+
+shorthand notation,
+where the array braces ( {}) are dropped for convenience
+the
+compiler is just inserting the missing array braces for you.
+Annotations support a shorthand notation for providing an array that
+contains a single element
+
+
+public @interface Rhythm {
+	String[] value();
+}
+
+public class Capybara {
+	@Rhythm(value={"Swing"}) String favorite;
+	@Rhythm(value="R&B") String secondFavorite;
+	@Rhythm({"Classical"}) String mostDisliked;
+	@Rhythm("Country") String lastDisliked;
+}
+
+Even though the java.lang package is imported automatically
+by the compiler, the java.lang.annotation package is not.
+
+
+The TYPE_USE parameter can be
+used anywhere there is a Java type.
+
+
+When working with simple enums, the semicolon
+at the end of the list is optional.
+
+One thing that you can’t do is extend an enum.
+
+The values in an enum are fixed. You cannot add more by
+extending the enum nor can you mark an enum final. On the
+other hand, an enum can implement an interface
+
+
+Enums have the unique
+property that they do not require a default branch for an
+exhaustive switch if all enum values are handled.
+
+Also notice that within each case
+clause, the name of the enum, Season, is now optional.
+
+(;). While this is optional
+for a simple enum, it is required if there is anything in the
+enum besides the values.
+
+
+For complex
+enums (and trivially simple enums), the list of values always
+comes first.
+
+All enum constructors are implicitly private, with the modifier
+being optional. This is reasonable since you can’t extend an
+enum and the constructors can be called only within the enum
+itself.
+
+The first
+time we ask for any of the enum values, Java constructs all of
+the enum values. After that, Java just returns the already
+constructed enum values.
+
+Like a class, an enum can contain static and instance methods.
+An enum can even implement an interface as we saw on lines
+
+define different methods for each
+Enum
+
+a sealed class needs to
+be declared (and compiled) in the same package as its direct
+subclasses.
+
+named modules, which allow sealed classes and their
+direct subclasses in different packages, provided they are in
+the same named module.
+
+Every class that directly
+extends a sealed class must specify exactly one of the following
+three modifiers: final, sealed, or non-sealed.
+
+Omitting the permits Clause
+	Classes in the Same file
+	Nested Classes
+
+public sealed class Snake permits Snake.Cobra {
+final class Cobra extends Snake {}
+}
+
+interfaces
+that extend a sealed interface can only be marked sealed or nonsealed.
+They cannot be marked final.
+
+if a switch uses a sealed class with
+pattern matching that all possible types are covered or a default
+clause is included
+
+it is legal to have a record without any fields. It is
+simply declared with the record keyword and parentheses:
+public record Crane() {}
+
+Java will execute the full constructor after the
+compact constructor. You should also remember that a compact
+constructor is declared without parentheses,
+
+Java calls the full
+constructor after the compact constructor but with the modified
+constructor parameters.
+
+you can’t extend or inherit a record
+
+a record can implement a regular or sealed
+interface
+
+While instance members of a record are final, the static
+members are not required to be
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

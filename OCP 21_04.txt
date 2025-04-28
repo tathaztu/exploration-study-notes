@@ -1,0 +1,210 @@
+Concurrent Code Execution
+	•	Platform
+	•	Virtual
+	•	Runnable
+	•	Callable
+	•	LifeCycle
+	•	Executor
+	•	Concurrent API
+Streams & Lambda Expressions
+
+╭─────────╮
+| Process |
+╰────┬────╯
+	 |	  ╭───────────╮
+	 ╰────┤ Thread(s) |
+		  ╰─────┬─────╯
+		  	    |     ╭─────────╮
+                ╰─────┤ Task(s) |
+		  			  ╰─────────╯
+•	A process contains one or more threads.
+•	A thread executes one or more tasks.
+
+
+Process
+•	Instance of a running program.
+•	Own memory space, file descriptors, environment, etc.
+•	Don't share memory with other processes
+•	One or more threads executing in a Shared Environment
+
+Thread
+📌	Smallest unit of execution that the OS is capable of scheduling
+•	Executes within a process
+•	Lightweight
+		-	Runs independently like a process (own execution path).
+		-	Shared Environment: Shares memory and resources (like heap, file 
+			handles) with other threads in the same process
+		-	Creating and switching between threads is faster and uses less 
+			system overhead than full processes.
+•	Every process has at least one thread — the main thread.
+
+Single Threaded Process ➜ process comprises one Thread
+
+Single Threaded Process ➜ process comprises multiple Threads
+
+Task
+•	A unit of work — Runnable / Callable / method 
+•	Typically executed by Threads
+•	In concurrent programming, tasks are often submitted to executors (like a 
+	thread pool).
+•	A Thread can execute only one task at a time
+
+🧠 A task is not tied to a specific thread forever — in thread pools, tasks can be picked up by any available thread.
+
+🧠 With virtual threads (Java 19+), this separation becomes even clearer — tasks are decoupled from the underlying platform threads.
+
+
+•	Context Switch 
+		-	Process of - CPU saving the execution state of the currently running 
+			thread/process
+		-	Restoring the previously saved state of another thread/process to 
+			resume its execution.
+		
+		-	There’s a cost to context switch due to lost time and having to
+			reload a thread’s state
+		
+		-	Saving the context 
+				▫	A complete context switch consists of two steps
+						Save the context of the current thread/process
+							a. Program counter (where it paused)
+							b. CPU registers
+							c. Stack pointer, etc.
+						Restore the context of the next scheduled thread/process
+							a. Load its saved program counter
+							b. Restore registers, etc.
+
+		⏱	Why it's costly:
+				▫	Involves memory operations to save/restore state
+				🚨	Can evict useful data from CPU caches
+				▫	Introduces latency, especially for OS-managed threads
+
+
+•	OS manages OS Threads using underlying CPU hardware (threads mapped to CPU)
+•	Platform Threads
+		-	One to one mapping with OS threads
+		-	A Java "process" can have multiple Platform Threads
+		-	Mapped to an arbitrary number of CPUs
+		-	JVM creates 2 types of Platform threads
+				▫	System Threads (jvm)
+				▫	User-Defined Threads (developer)
+		👉	Scheduled by the OS
+
+•	Virtual Thread
+		-	Lightweight thread 
+		-	Managed by the JVM (not the OS)
+		-	Not tied to a specific OS-level thread.
+		-	Introduced with Project Loom
+		👉	Scheduled by the JVM
+		⚡️ 	Fewer Expensive (OS-level) Context Switches
+			▫	The JVM can suspend and resume virtual threads more efficiently
+			▫	No need to involve the OS unless it's a carrier thread switching.
+		-	Suspending/resuming at known safe points (e.g., I/O waits) without 
+			touching OS thread state
+
+•	Carrier Thread
+		- 	(OS-level) thread, temporarily executes the code of a virtual thread
+		▪	Virtual threads don't have a dedicated OS thread.
+		▪	When a virtual thread is ready to run, the JVM assigns it to a 	
+			carrier thread, which actually executes the code
+		▪	If the virtual thread blocks (e.g. waits on I/O), it can unmount 
+			from the carrier thread, allowing the carrier to serve another virtual thread.
+		-	Benefits
+				▫	Efficient resource use: A small pool of carrier threads can 
+					serve thousands of virtual threads.
+				▫	Makes concurrent programming scalable without wasting memory 
+					or context-switching overhead.
+		❗	Carrier threads are often refferred as Platform Threads. The intent
+			is to convey that they are OS Level threads. 
+			Carrier threads and Platform threads have different underlying code
+			and also not the same things.
+
+•	Thread Priority
+		-	Numeric value associated with a thread that could be considered by 
+			the thread scheduler when determining which threads should execute.
+		-	Numeric Value 1 - 10 | Default 5
+		-	JVM never guarantees the execution order
+
+•	Shared memory inludes
+		-	Static variables 
+		-	Instance and local variables 
+		passed to a thread
+
+•	OS Thread
+•	Platform Thread
+•	System Thread
+•	User-Defined Thread
+•	A thread can complete multiple independent tasks but
+only one task at a time.
+•	Carrier Thread
+•	Virtual Threads
+From a code point of view, platform
+threads and carrier threads are different things.
+•	Thread.ofPlatform()
+•	Stream.generate(Supplier)
+The property of executing multiple threads and processes at the
+same time is referred to as concurrency.
+•	
+A thread scheduler
+determines which threads should be currently executing
+•	getState()
+•	NEW
+•	RUNNABLE
+•	BLOCKED
+•	WAITING
+•	TIMED_WAITING
+•	
+•	
+•	
+If an operation that is not supported is called on a
+thread, such as interrupting a suspended thread, an
+IllegalThreadStateException will be thrown.
+•	
+ExecutorService interface	
+•	Executors
+•	
+•	With a singlethread
+executor, tasks are guaranteed to be executed
+sequentially.
+•	
+try (ExecutorService service =
+Executors.newSingleThreadExecutor()) {
+System.out.println("begin");
+service.execute(printInventory);
+service.execute(printRecords);
+service.execute(printInventory);
+System.out.println("end");
+}
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	
+•	

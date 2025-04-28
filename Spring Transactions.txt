@@ -1,0 +1,332 @@
+
+
+
+○   @Repository classes contain direct DB operations, SQLs, etc.
+○   @Service classes
+        -   Implement use cases
+        -   @Transactional abilities are generally declared here
+
+@TransactionaManager
+    ○   Manages the transaction abilities
+
+PlatformTransactionManager
+    ○   Interface that needs to be implemented by any object that implements
+        a Transaction Manager in Spring
+
+            -   good to know
+                package org.springframework.transaction;
+
+                public interface PlatformTransactionManager {
+                    TransactionStatus getTransaction (
+                        TransactionDefinition definition
+                    ) throws TransactionException;
+
+                    void commit(TransactionStatus status) throws
+                        TransactionException;
+
+                    void rollback(TransactionStatus status) throws
+                        TransactionException;
+                }
+
+
+                public interface TransactionStatus extends SavepointManager {
+                    boolean isNewTransaction();
+
+                    boolean hasSavepoint();
+
+                    void setRollbackOnly();
+
+                    boolean isRollbackOnly();
+
+                    void flush();
+
+                    boolean isCompleted();
+                }
+
+
+    ○   Example: DataSourceTransactionManager(ds)
+
+@Transactional
+    ○   Works together with the PlatformTransactionManager implementation
+    ○   Rollback works by default only for 🚩 Runtime Exceptions
+            -   Can be customized
+            -   @Transactional(noRollbackFor...)
+            -   @Transactional(rollbackFor...)
+    ○   Rollback does not work by default for 🚩 Checked Exceptions
+
+    ○   Based on AOP
+
+            📌   The transaction feature is implemented by a proxy and therefore
+                internal method call(s) will not be benifitted from this
+                feature, even if the method(s) involved have the @Transactional
+                annotation
+
+            📌   The @Transactional annotation will only take effect on 'public'
+                methods  because methods other than public are not proxied
+
+    📌   Although it is commonly stated that Spring rolls back transactions when
+        a Runtime exception is thrown, we must remember that the exception needs
+        to be propagated. If the thrown Runtime exception is caught inside the
+        method then it will not be able to rollback the transaction.
+
+
+
+Enabling Transaction Abilities
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+○   Beans in Context
+○   Platform Transaction Manager in Context
+○   Data Source
+○   @EnableTransactionManagement
+
+┌─────────────────────────┐
+| Transaction Propagation |
+└─────────────────────────┘
+
+○   When is a transaction created?
+○   When does the transaction commit/rollback?
+○   Is there a single transaction?
+○   Are there multiple transactions?
+○   Is there a transaction created?
+○   Is there no transaction at all?
+
+○   Levels
+        -   REQUIRED
+                ▫   If there is  an active transaction ➜ use it
+                ▫   If there are no active transaction(s) ➜ create one
+        -   REQUIRES_NEW
+                ▫   If there is an active transaction ➜ suspend it
+                ▫   Create a new Transaction ➜ use it
+        -   MANDATORY
+                ▫   If there is  an active transaction ➜ use it
+                ▫   If there are no active transaction(s) ➜ Throw an Exception
+        -   NEVER
+                ▫   If there is an active transaction ➜ Throw an Exception
+        -   SUPPORTS
+                ▫   If there is  an active transaction ➜ use it
+                ▫   If there are no active transaction(s) ➜ proceed without it
+        -   NOT_SUPPORTED
+                ▫   If there is an active transaction ➜ suspend it
+                ▫   Execute code without a transaction
+        -   NESTED
+                ▫   If there is  an active transaction ➜ mark a checkpoint
+                ▫   If there are no active transaction(s) ➜ create one
+                ▫   The nested transaction can be rolled back independently of
+                    the outer transaction.
+                🚩   The outer transaction controls the final outcome. If the
+                    outer transaction rolls back, the nested transaction will
+                    also be rolled back, even if it committed.
+
+○   Can be specified at a class level as well as a method level
+        -   Format:
+                ▫   @Transactional
+                ▫   @Transactional(propagation = Propagation.REQUIRED)
+        -   @Transactional annotation placed over the method level overrides
+            that at the class level
+
+○   Transaction Propagation can occur between the call of 2 methods
+
+○   Default level is "REQUIRED"
+        -   @Transactional
+        -   @Transactional(propagation = Propgation.REQUIRED)
+
+
+┌───────────────────────┐
+| Transaction Isolation |
+└───────────────────────┘
+
+○   Isolation and Consistency are interrelated
+○   Isolation levels affect performance inversely
+○   Format:
+        -   @Transactional
+        -   @Transactional(isolation = Isolation.READ_COMMITTED)
+
+○   Problems
+        -   Dirty Reads: Reading uncommitted
+        -   Non Repeatable Reads
+
+            𝗧𝗵𝗲 𝐍𝐨𝐧-𝐑𝐞𝐩𝐞𝐚𝐭𝐚𝐛𝐥𝐞 𝐑𝐞𝐚𝐝 𝗣𝐫𝐨𝐛𝐥𝐞𝐦
+
+            A Non-Repeatable Read occurs within a 𝒔𝒊𝒏𝒈𝒍𝒆 𝒕𝒓𝒂𝒏𝒔𝒂𝒄𝒕𝒊𝒐𝒏 when
+            reading the same row multiple times yields different results. This
+            happens because another concurrent transaction modifies that row
+            and commits its changes between the read operations of the first
+            transaction.
+
+            Scenario illustrating Non-Repeatable Read:
+
+            •   Transaction A starts and reads a row from the Accounts table.
+                Let's say it reads the balance of account ID 123 and finds it
+                to be $100.
+            •   Transaction B starts, updates the balance of account ID 123 to
+                $150, and commits its transaction.
+
+            •   Transaction A later in its execution reads the same row
+                (account ID 123) again. Now, it sees the updated balance of
+                $150.
+
+                In this scenario, Transaction A has experienced a
+                non-repeatable read because the value of the same row changed
+                between its two read operations due to the action of another
+                committed transaction.
+
+            Why is Non-Repeatable Read a problem?
+
+            Inconsistent Calculations, Business Logic Errors, Auditing Issues and other similar.
+
+            How REPEATABLE_READ Solves the Non-Repeatable Read Problem:
+
+            The REPEATABLE_READ isolation level prevents non-repeatable reads
+            by ensuring that once a transaction reads a row, other transactions
+            cannot modify that row until the first transaction is complete. The
+            read locks (or the consistent snapshot mechanism in MVCC) held by
+            the REPEATABLE_READ transaction guarantee that subsequent reads
+            within the same transaction will always see the same data.
+
+        -   Phantom Read
+
+            𝗧𝗵𝗲 𝗣𝗵𝗮𝗻𝘁𝗼𝗺 𝗥𝗲𝗮𝗱 𝗣𝗿𝗼𝗯𝗹𝗲𝗺
+
+            A Phantom Read is a concurrency issue that can occur within a
+            transaction when a query that returns a set of rows is executed
+            multiple times, and the number or the rows themselves change due to
+            insertions made by another committed transaction. The "phantom"
+            refers to the newly inserted rows that appear in the subsequent
+            reads but were not present in the initial read.  
+
+            Scenario illustrating Phantom Read:
+
+            •   Transaction A starts and executes a query that selects all
+                customers with a balance greater than $1000. Let's say this
+                query initially returns 5 customers.
+            •   Transaction B starts, inserts a new customer with a balance of
+                $1200, and commits its transaction.
+            •   Transaction A later in its execution runs the exact same query
+                again (select all customers with a balance greater than $1000).
+                This time, it will now see 6 customers, including the newly
+                inserted one.
+
+            The newly inserted customer is the "phantom" row because it appeared between the two identical query executions within Transaction A due to the action of another committed transaction.  
+
+            Why is Phantom Read a problem?
+
+            Phantom reads can disrupt the consistency and correctness of transactions, especially those that involve: Business Rule Enforcement, Data Aggregation and Referential Integrity Checks
+
+
+○   Isolation Levels
+        -   DEFAULT
+        -   READ_UNCOMMITTED
+        -   READ_COMMITTED
+        -   REPEATABLE_READ
+
+            Consistent Snapshot:
+            When a transaction starts under REPEATABLE_READ, the database takes
+            a snapshot of the data that the transaction reads.
+
+            Read Locks:
+            The database typically places read locks on all the
+            rows that the transaction reads. These locks prevent other
+            transactions from updating or deleting these rows until the current
+            transaction completes (commits or rolls back).
+
+            No Dirty Reads:
+            Like higher isolation levels, REPEATABLE_READ
+            prevents dirty reads. A transaction will only see committed data.
+
+            No Non-Repeatable Reads:
+            This is the key characteristic. If a
+            transaction reads the same row multiple times within its scope, it
+            will see the same data each time, regardless of whether other
+            committed transactions have modified that row in the interim. The
+            read locks held by the first transaction ensure this consistency.
+
+            Phantom Reads Possible (in some implementations):
+            While REPEATABLE_READ prevents changes to existing rows, it doesn't
+            always prevent the insertion of new rows that would match the
+            transaction's query if executed again. This phenomenon is known as
+            a phantom read. Some database systems, like PostgreSQL, implement
+            REPEATABLE_READ in a way that also prevents phantom reads by using
+            multi-version concurrency control (MVCC).
+
+            REPEATABLE_READ guarantees that data read within a transaction will
+            not be changed by other committed transactions during the lifetime
+            of that transaction.
+
+
+        -   SERIALIZABLE
+
+            SERIALIZABLE is the highest level of transaction isolation. It aims
+            to provide complete isolation between concurrent transactions,
+            making them appear as if they were executed one after another in
+            some serial order.
+
+            How SERIALIZABLE works:
+
+            Strongest Locking: Databases implementing SERIALIZABLE typically
+            employ very strict locking mechanisms. This can involve range locks
+            or other techniques to prevent not only the modification of
+            existing rows read by a transaction but also the insertion of new
+            rows that would affect the outcome of subsequent reads within the
+            transaction.
+
+            No Dirty Reads, No Non-Repeatable Reads, No Phantom Reads:
+            SERIALIZABLE inherently prevents all three of these concurrency
+            problems. Because transactions are effectively executed serially, a
+            transaction will have a completely consistent view of the data
+            throughout its execution, unaffected by any other concurrent
+            transactions.  
+
+            Consequences of using SERIALIZABLE:
+
+            While SERIALIZABLE provides the highest level of data consistency,
+            it often comes with a significant performance cost due to the
+            increased contention for locks. This can lead to:  
+
+
+            Reduced Concurrency: Fewer transactions can execute concurrently
+            because of the restrictive locking.  
+
+            Increased Deadlocks: The likelihood of deadlocks might increase as
+            transactions hold locks for longer periods and request locks held
+            by other transactions.
+
+            Performance Bottlenecks: Applications might experience performance
+            degradation under high load if SERIALIZABLE is used extensively.  
+
+            When to use SERIALIZABLE:
+
+            SERIALIZABLE is typically reserved for critical transactions where absolute data consistency is paramount and the potential performance impact is acceptable. Examples include:
+
+            ➤   Financial transactions where accuracy is crucial (e.g.,
+                transferring large sums of money).
+            ➤   Operations that must maintain strict referential integrity
+                across multiple tables.
+            ➤   Scenarios where the risk of concurrency anomalies outweighs the
+                need for high throughput.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

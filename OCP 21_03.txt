@@ -1,0 +1,3636 @@
+Chapter 4: Core APIs
+
+String.codePoint...
+
+String.substring: endIndex is the ending index - exclusive
+
+String.indexOf: endIndex is the ending index - exclusive
+
+replace(char oldChar, char newChar)	
+Returns a string resulting from replacing all occurrences of oldChar in this 
+string with newChar.
+
+replace(CharSequence target, CharSequence replacement)	
+Replaces each substring of this string that matches the literal target sequence
+with the specified literal replacement sequence.
+
+replaceAll(String regex, String replacement)	
+Replaces each substring of this string that matches the given regular expression 
+with the given replacement.
+
+replaceFirst(String regex, String replacement)	
+Replaces the first substring of this string that matches the given regular 
+expression with the given replacement.
+
+
+public String strip()
+public String stripLeading()
+public String stripTrailing()
+public String trim()
+
+
+indent(): n > 0, n == 0, n < 0
+normalizing
+	whitespace at end
+	\r\n are converted to \n
+
+
+stripIndent
+	For each non-blank line (as defined by isBlank()), the leading white space 
+	characters are counted.
+	The leading white space characters on the last line are also counted even 
+	if blank.
+
+public boolean isEmpty()
+public boolean isBlank()
+
+public static String format(String format, Object… args)
+public static String format(Locale loc, String format, Object…
+args)
+public String formatted(Object… args)
+
+Mixing data types may cause exceptions at runtime.
+var str = "Food: %d tons".formatted(2.0); //
+IllegalFormatConversionException
+
+
+format()
+	By default, %f displays exactly six digits past the decimal.
+	relies on rounding rather than truncating
+	var pi = 3.14159265359;
+	System.out.format("[%f]",pi); // [3.141593]
+	System.out.format("[%12.8f]",pi); // [ 3.14159265]
+	System.out.format("[%012f]",pi); // [00003.141593]
+	System.out.format("[%12.2f]",pi); // [ 3.14]
+	System.out.format("[%.3f]",pi); // [3.142]
+
+
+StringBuilder: Not Thread-Safe
+StringBuffer: Thread-Safe
+
+
+4: StringBuilder a = new StringBuilder("abc");
+5: StringBuilder b = a.append("de");
+6: b = b.append("f").append("g");
+7: System.out.println("a=" + a);
+8: System.out.println("b=" + b);
+
+
+
+StringBuilder.substring() returns a String rather than a StringBuilder
+StringBuilder.appendCodePoint(int codePoint)
+
+the authors of StringBuilder did not implement equals().
+
+The String Pool
+
+The string pool, also known as the intern
+pool, is a location in the Java Virtual Machine (JVM)
+literal values and constants that
+appear in your program
+
+The purpose of the string pool is to maintain a set of unique strings.
+
+
+📌 In fact, when you do new String("hello"); two String objects are created 
+instead of just one if this is the first time the string "hello" is used in the 
+anywhere in program - one in the string pool because of the use of a quoted 
+string, and one in the regular heap space because of the use of new keyword.
+
+It is possible to get a string from the string pool by using String’s
+intern method. It is called "interning" of string objects.
+
+When the intern method is invoked, if the pool already contains a string equal 
+to this String object as determined by the equals(Object) method, then the 
+string from the pool is returned. Otherwise, this String object is added to the 
+pool and a reference to this String object is returned.
+
+String str1 = "hello"; //str1 points to a String created in the string pool
+String str2 = new String("hello"); //str2 points to a String created in the heap
+String str3 = str2.intern(); //gets an interned string referred to by str2
+System.out.println(str1 == str2); //prints false
+System.out.println(str1 == str3); //prints true
+
+
+A String is implemented as an array of characters
+
+
+
+
+int[] ids, types;
+The correct answer is two variables of type int[].
+
+What about this example?
+int ids[], types;
+All we did was move the brackets, but it changed the
+behavior. This time we get one variable of type int[] and one
+variable of type int.
+
+The equals() method on
+arrays does not look at the elements of the array.
+String[] bugs = { "cricket", "beetle", "ladybug" };
+String[] anotherArray = { "cricket", "beetle", "ladybug" };
+System.out.println(bugs.equals(anotherArray)); // false
+
+Arrays.toString(bugs) would print [cricket, beetle, ladybug].
+Arrays.sort().
+
+Numbers sort before letters, and uppercase sorts
+before lowercase.
+
+
+Binary search rules
+
+Target element
+not found in
+sorted array
+Negative value showing one smaller than
+the negative of the index, where a match
+needs to be inserted to preserve sorted
+order
+
+What do you think happens in this example?
+5: int[] numbers = new int[] {3,2,1}; // NOT A SORTED ARRAY
+6: System.out.println(Arrays.binarySearch(numbers, 2));
+7: System.out.println(Arrays.binarySearch(numbers, 3));
+Note that on line 5, the array isn’t sorted. 
+Unpredictable output.
+
+Arrays includes
+overloaded versions of equals() that lets you check if the arrays
+are the same size and contain the same elements, in the same
+order.
+
+Arrays.compare - think dictionary/alphabetical order/similar
+When comparing two arrays, they must be the same
+array type.
+
+Arrays.mismatch
+If the arrays are equal, mismatch() returns -1.
+Otherwise, it returns the first index where they differ.
+
+
+public static double min(double a, double b)
+public static float min(float a, float b)
+public static int min(int a, int b)
+public static long min(long a, long b)
+
+public static long round(double num)
+public static int round(float num)
+
+The Math.ceil() method takes a double value.
+public static double ceil(double num)
+public static double floor(double num)
+
+The Math.pow() method handles exponents.
+
+public static double pow(double number, double exponent)
+The following shows how to use this method:
+double squared = Math.pow(5, 2); // 25.0
+
+double random()
+
+
+BigInteger and BigDecimal are immutable
+	it is recommended to use the valueOf() method where possible
+
+System.out.println(12345123451234512345L);
+
+𝗠𝗮𝗻𝗶𝗽𝘂𝗹𝗮𝘁𝗶𝗻𝗴 𝗗𝗮𝘁𝗲𝘀 𝗮𝗻𝗱 𝗧𝗶𝗺𝗲𝘀
+
+import java.time.*; // import time classes
+
+The date and time classes are
+immutable
+
+
+System.out.println(LocalDate.now());		// 2025–07–25
+System.out.println(LocalTime.now());		// 09:13:07.768
+System.out.println(LocalDateTime.now());	// 2025–07–25T09:13:07.768
+System.out.println(ZonedDateTime.now());	// 2025–07–25T09:13:07.769–04:00[America/New_York]
+
+The output uses T to separate the date and time when
+converting LocalDateTime to a String.
+
+Greenwich Mean Time is a time zone in Europe that is used as
+time zone zero when discussing offsets. You might have also
+heard of Coordinated Universal Time, which is a time zone
+standard. It is abbreviated as UTC, as a compromise between
+the English and French names. (That’s not a typo. UTC isn’t
+actually the proper acronym in either language!) UTC uses the
+same time zone zero as GMT.
+
+Month constants
+
+public static LocalDate of(int year, int month, int dayOfMonth)
+public static LocalDate of(int year, Month month, int dayOfMonth)
+
+public static LocalTime of(int hour, int minute)
+public static LocalTime of(int hour, int minute, int second)
+public static LocalTime of(int hour, int minute, int second, int nanos)
+
+public static LocalDateTime of(int year, int month, int dayOfMonth, int hour, int minute)
+public static LocalDateTime of(int year, int month, int dayOfMonth, int hour, int minute, int second)
+public static LocalDateTime of(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanos)
+
+Others take a Month reference:
+
+public static LocalDateTime of(int year, Month month, int dayOfMonth, int hour, int minute)
+public static LocalDateTime of(int year, Month month, int dayOfMonth, int hour, int minute, int second)
+public static LocalDateTime of(int year, Month month, int dayOfMonth, int hour, int minute, int second, int nanos)
+public static LocalDateTime of(LocalDate date, LocalTime time)
+
+public static ZonedDateTime of(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanos, ZoneId zone)
+public static ZonedDateTime of(LocalDate date, LocalTime time, ZoneId zone)
+public static ZonedDateTime of(LocalDateTime dateTime, ZoneId zone)
+
+
+date.plusDays(2)
+date.plusWeeks(1)
+date.plusMonths(1)
+date.plusYears(5)
+
+dateTime.minusDays(1)
+dateTime.minusHours(10)
+dateTime.minusSeconds(30)
+
+
+
+┌─────────────────────┬─────────────┬─────────────┬──────────────────────┐
+│ 		              │ Can call on │ Can call on │ Can call on 		 │
+│ Method              │ LocalDate? 	│ LocalTime?  │ LocalDateTime/Zoned? │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusYears()         │ Yes         │ No          │ Yes                  │
+│ minusYears()        │ Yes         │ No          │ Yes                  │
+│                     │             │             │                      │
+│ withYear()          │ Yes         │ No          │ Yes                  │
+│ withDayOfYear()     │ Yes         │ No          │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusMonths()        │ Yes         │ No          │ Yes                  │
+│ minusMonths()       │ Yes         │ No          │ Yes                  │
+│                     │             │             │                      │
+│ withMonth()         │ Yes         │ No          │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusWeeks()         │ Yes         │ No          │ Yes                  │
+│ minusWeeks()        │ Yes         │ No          │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusDays()          │ Yes         │ No          │ Yes                  │
+│ minusDays()         │ Yes         │ No          │ Yes                  │
+│                     │             │             │                      │
+│ withDayOfMonth()    │ Yes         │ No          │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusHours()         │ No          │ Yes         │ Yes                  │
+│ minusHours()        │ No          │ Yes         │ Yes                  │
+│                     │             │             │                      │
+│ withHour()          │ No          │ Yes         │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusMinutes()       │ No          │ Yes         │ Yes                  │
+│ minusMinutes()      │ No          │ Yes         │ Yes                  │
+│                     │             │             │                      │
+│ withMinute()        │ No          │ Yes         │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusSeconds()       │ No          │ Yes         │ Yes                  │
+│ minusSeconds()      │ No          │ Yes         │ Yes                  │
+│                     │             │             │                      │
+│ withSecond()        │ No          │ Yes         │ Yes                  │
+├─────────────────────┼─────────────┼─────────────┼──────────────────────┤
+│ plusNanos()         │ No          │ Yes         │ Yes                  │
+│ minusNanos()        │ No          │ Yes         │ Yes                  │
+│                     │             │             │                      │
+│ withNano()          │ No          │ Yes         │ Yes                  │
+└─────────────────────┴─────────────┴─────────────┴──────────────────────┘
+
+Datatype Conversion
+┌────────────────────┬────────────────────┬───────────────────────────────────┐
+│ From Type          │ To Type            │ Method Signature                  │
+├────────────────────┼────────────────────┼───────────────────────────────────┤
+│ LocalDate          │ LocalDateTime      │ atStartOfDay()                    │
+│                    │                    │ atTime(int hour, int minute)      │
+│                    │                    │ atTime(int hour, int minute,      │
+│                    │                    │        int second)                │
+│                    │                    │ atTime(int hour, int minute,      │
+│                    │                    │        int second, int nanos)     │
+│                    │                    │ atTime(LocalTime time)            │
+├────────────────────┼────────────────────┼───────────────────────────────────┤
+│ LocalTime          │ LocalDate          │ atDate(LocalDate date)            │
+├────────────────────┼────────────────────┼───────────────────────────────────┤
+│ LocalDateTime      │ ZonedDateTime      │ atZone(ZoneId zoneId)             │
+└────────────────────┴────────────────────┴───────────────────────────────────┘
+
+Period.ofYears(1); // every 1 year
+Period.ofMonths(3); // every 3 months
+Period.ofWeeks(-3); // every 3 weeks going backwards
+Period.ofDays(2); // every 2 days
+var everyYearAndAWeek = Period.of(1, 0, 7); // every year plus 1 week
+
+of() method takes only years, months, and days
+
+System.out.println(Period.between(xmas, newYears)); // P7D
+System.out.println(Period.between(newYears, xmas)); // P-7D
+
+
+Duration, you can specify the number of days, hours, minutes, seconds, or 
+nanoseconds.
+
+var daily = Duration.ofDays(1); // PT24H
+var hourly = Duration.ofHours(1); // PT1H
+var everyMinute = Duration.ofMinutes(1); // PT1M
+var everyTenSeconds = Duration.ofSeconds(10); // PT10S
+var everyMilli = Duration.ofMillis(1); // PT0.001S
+var everyNano = Duration.ofNanos(1); // PT0.000000001S
+
+Duration doesn’t have a factory method that takes multiple units
+like Period does. If you want something to happen every hour
+and a half, you specify 90 minutes
+
+TemporalUnit
+
+TemporalUnit (interface)
+	 Ʌ
+	 │
+	 │
+ChronoUnit (interface)
+
+var daily = Duration.of(1, ChronoUnit.DAYS);
+var hourly = Duration.of(1, ChronoUnit.HOURS);
+var everyMinute = Duration.of(1, ChronoUnit.MINUTES);
+var everyTenSeconds = Duration.of(10, ChronoUnit.SECONDS);
+var everyMilli = Duration.of(1, ChronoUnit.MILLIS);
+var everyNano = Duration.of(1, ChronoUnit.NANOS);
+
+var one = LocalTime.of(5, 15);
+var two = LocalTime.of(6, 55);
+var date = LocalDate.of(2025, 1, 20);
+System.out.println(ChronoUnit.HOURS.between(one, two)); // 1
+System.out.println(ChronoUnit.MINUTES.between(one, two)); // 100
+System.out.println(ChronoUnit.MINUTES.between(one, date)); // DateTimeException
+
+LocalTime time = LocalTime.of(3,12,45);
+System.out.println(time); // 03:12:45
+LocalTime truncated = time.truncatedTo(ChronoUnit.MINUTES);
+
+var date = LocalDate.of(2025, 1, 20);
+var time = LocalTime.of(6, 15);
+var dateTime = LocalDateTime.of(date, time);
+var duration = Duration.ofHours(6);
+System.out.println(dateTime.plus(duration)); // 2025–01–20T12:15
+System.out.println(time.plus(duration)); // 12:15
+System.out.println(date.plus(duration)); // UnsupportedTemporalTypeException
+
+
+					Can use with			Can use with
+					Period?                 Duration?
+LocalDate 			Yes 					No
+LocalTime 			No 						Yes
+LocalDateTime 		Yes 					Yes
+ZonedDateTime 		Yes 					Yes
+
+import java.time.ZoneId;
+
+If you have a ZonedDateTime, you can turn it into an Instant:
+
+	var date = LocalDate.of(2025, 5, 25);
+	var time = LocalTime.of(11, 55, 00);
+	var zone = ZoneId.of("US/Eastern");
+	var zonedDateTime = ZonedDateTime.of(date, time, zone);
+	var instant = zonedDateTime.toInstant(); // 2025–05–25T15:55:00Z
+	System.out.println(zonedDateTime); // 2025–05–25T11:55–04:00[US/Eastern]
+	System.out.println(instant); // 2025–05–25T15:55:00Z
+
+
+
+
+trying to create a time that doesn’t exist just rolls
+forward:
+var date = LocalDate.of(2025, Month.MARCH, 9);
+var time = LocalTime.of(2, 30);
+var zone = ZoneId.of("US/Eastern");
+var dateTime = ZonedDateTime.of(date, time, zone);
+System.out.println(dateTime); // 2025–03–09T03:30–
+04:00[US/Eastern]
+
+
+
+
+
+
+
+
+
+
+
+Chapter 9
+Collections and Generics
+
+SequencedSet, SequencedCollection, and SequencedMap
+
+In Java, Generics → Parameterized type
+e.g. a
+List<Integer> is a list of numbers, while Set<String> is a set of strings.
+
+• Do away with required casts
+• Prevent unrelated objects types
+
+Code for existing collections (and Maps) do not change based on the Generic 
+Type.
+
+
+Diamond Operator → Omit generic type from RHS when type can be inferred
+
+The diamond operator cannot be used as the type in
+a variable declaration.
+List<> list = new ArrayList<Integer>(); // DOES NOT COMPILE
+class InvalidUse {
+	void use(List<> data) {} // DOES NOT COMPILE
+}
+
+
+var infers the type from the right side of the declaration
+○ var list = new ArrayList<Integer>();
+○ var mapOfLists = new HashMap<Long,List<Integer>>();
+
+this does compile
+○ var map = new HashMap<>();
+you get Object as the
+generic type. This is equivalent to the following:
+HashMap<Object, Object> map = new HashMap<Object, Object>();
+
+public boolean add(E element)
+	   ^^^^^^^
+For some Collection types, add() always returns true.
+
+public boolean remove(Object object)
+
+The contains() method calls equals() on elements of the ArrayList to
+see whether there are any matches.
+
+The removeIf() method removes all elements that match a condition
+• Block of code 
+• Method reference.
+
+
+
+Determining Equality
+There is a custom implementation of equals() so you can compare two
+Collections to compare the type and contents. The implementation
+will vary. For example, ArrayList checks order, while HashSet does not.
+
+
+two classes that
+implement the List interface: ArrayList and LinkedList.
+
+The main benefit of an ArrayList is that you can look up any element
+in constant time.
+Adding or removing an element is slower than
+accessing an element.
+
+The main benefits of a LinkedList are that you can access, add to, and
+remove from the beginning and end of the list in constant time.
+The
+trade-off is that dealing with an arbitrary index takes linear time. This
+makes a LinkedList a good choice when you’ll be using it as Deque.
+
+31: var list = new LinkedList<Integer>();
+32: list.add(3);
+33: list.add(2);
+34: list.add(1);
+35: list.remove(2); // Removes the element at index 2 
+36: list.remove(Integer.valueOf(2)); // Deleting the value 2.
+37: System.out.println(list);
+
+
+The remove() method that takes an element will return false if the
+element is not found. Contrast this with the remove() method that
+takes an int, which throws an exception if the element is not
+found:
+var list = new LinkedList<Integer>();
+list.remove(Integer.valueOf(100)); // Returns false
+list.remove(100);
+
+
+Converting from List to an Array
+13: List<String> list = new ArrayList<>();
+14: list.add("hawk");
+15: list.add("robin");
+16: Object[] objectArray = list.toArray();
+17: String[] stringArray = list.toArray(new String[0]);
+18: list.clear();
+19: System.out.println(objectArray.length); // 2
+20: System.out.println(stringArray.length); // 2
+Line 16 shows that a List knows how to convert itself to an array. The
+only problem is that it defaults to an array of class Object. This isn’t
+usually what you want. Line 17 specifies the type of the array and
+does what we want.The advantage of specifying a size of 0 for the
+parameter is that Java will create a new array of the proper size for
+the return value.
+line 18 clears the original List. This does not affect
+either array. The array is a newly created object with no relationship
+to the original List. It is simply a copy.
+
+immutable Set in one line or make a
+copy of an existing one.
+Set<Character> letters = Set.of('c', 'a', 't');
+Set<Character> copy = Set.copyOf(letters);
+
+The hashCode() method is used to know which bucket to look in so that
+Java doesn’t have to look through the whole set to find out whether
+an object is there.
+
+
+All queues have specific
+requirements for adding and removing the next element.
+
+the Deque interface, inherits Queue.
+
+The main benefit of a LinkedList is that it implements both the List
+and Deque interfaces. The trade-off is that it isn’t as efficient as a
+“pure” queue. You can use the ArrayDeque class if you don’t need the
+List methods.
+
+
+Queue
+  ↑
+Deque 
+
+Queue methods
+						Queue				Deque
+┌───────────────────┬───────────────────┬────────────────────────────────┐
+│  Add 			  	│  boolean add (E e)│  addFirst, addLast             │
+│  				  	│  offer (E e)      │  offerFirst, offerLast         │
+├───────────────────┼───────────────────┼────────────────────────────────┤
+│  Read 			│  E element ()     │  getFirst, getLast	         │
+│  				  	│  E peek ()        │  peekFirst, peekLast           │
+├───────────────────┼───────────────────┼────────────────────────────────┤
+│  Get and remove	│  E remove ()    	│  removeFirst, removeLast	     │
+│  					│  E poll ()        │  pollFirst, pollLast           │
+└───────────────────┴───────────────────┴────────────────────────────────┘
+
+
+You can also sort objects that you create yourself. Java provides an
+interface called Comparable. If your class implements Comparable, it can
+be used in data structures that require comparison.
+
+There is also a class called Comparator, which is used to specify
+that you want to use a different order than the object itself provides.
+
+
+Next, we can sort the ducks as follows:
+11: var ducks = new ArrayList<Duck>();
+12: ducks.add(new Duck("Quack"));
+13: ducks.add(new Duck("Puddles"));
+14: Collections.sort(ducks); // sort by name
+15: System.out.print(ducks); // [Duck[name=Puddles],
+Duck[name=Quack]]
+If we didn’t implement the Comparable interface, all we have is a
+method named compareTo(), and line 14 would not compile.
+
+both records and classes can implement
+Comparable.
+
+A natural ordering that uses compareTo()
+is said to be consistent with equals if, and only if, x.equals(y) is true
+whenever x.compareTo(y) equals 0.
+Similarly, x.equals(y) must be false whenever x.compareTo(y) is not 0.
+You are strongly encouraged to make your Comparable classes
+consistent with equals because not all collection classes behave
+predictably if the compareTo() and equals() methods are not consistent.
+
+
+Comparing Data with a Comparator
+Sometimes you want to sort an object that did not implement
+Comparable, or you want to sort objects in different ways at different
+times.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
