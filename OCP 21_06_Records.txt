@@ -1,0 +1,112 @@
+┌─────────┐
+| Records |
+└─────────┘
+
+
+○	Data-oriented classes
+
+○	Removes boilerplate code
+
+○	Encapsulation 
+		-	protect class members by restricting access
+		-	prevents unexpected usage
+		-	common technique is to mark as "private"
+		-	allows behavioral modification without allowing access to fields
+
+○	Syntax:
+
+		public record <record-name>() {
+		}
+		
+		or
+		
+		public record <record-name>(<data type> <param name> ... ) {
+		}
+
+○	Implicitly final
+
+○	Can implement a regular or sealed interface
+
+○	Can have static members and methods
+
+○	static members need not be final
+
+○	static initializers are supported
+
+○	Automatic/Impilicitly added code
+		-	equals() | hashCode() | toString()
+		-	A constructor with parameters in the same order as record definition
+		- 	Accessor method matching the field name + empty parentheses
+
+○	Constructors
+
+	
+		-	Long (all parameters | same order)
+				▫	Equivalent to the automatically inserted constructor
+				▫	The compiler won't insert a constructor if this is declared
+				▫	Contains all parameters 
+				▫	Same order
+				▫	Has to set all the fields 
+						•	fields are referred as this.<field name>
+				▫	Can have custom logic
+		-	Overloaded
+				▫	Has parameter(s)  | NOT MATCHING long constructor
+				▫	Any number/type/order of parameters
+				▫	First line has to call "another" constructor 
+					(overloaded/long) - using "this."
+				▫	One of the Overloaded Constuctors must invoke the canonical 
+					(long) constructor — either directly or indirectly
+				▫	Compiler can detect cyclic constructor calls
+				▫	Cannot change the fields after line # 1 - after which 
+					the object becomes immutable
+		-	Compact 
+				▫	No Parameters
+				▫	No Parentheses
+				▫	Long constructor is implicitly called after this 
+					constructor execution
+				▫	Cannot modify the fields of the record
+	
+	NOTE: Only the long constructor, with fields that match the record 
+	declaration, supports setting "field" values with a this reference. Compact 
+	and overloaded constructors do not.
+
+
+
+
+○	Pattern Mathcing
+
+		-	If any field declared in the record is included, then all fields
+			must be included.
+		-	The order of fields must be the same as in the record.
+		-	The names of the fields do not have to match.
+		-	At compile time, the type of the field must be compatible with the 
+			type declared in the record.
+		-	The pattern may not match at runtime if the record supports 
+			elements of various types.
+		-	Numeric promotion is not supported
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -250,6 +250,8 @@ Dependency Injection & Wiring of Beans
 │  Autowiring │
 └─○─○─○─○─○─○─┘
 
+	Injection of a bean by means of it's type along with methods and fields. 
+
     This technique is used to "link" beans in the Spring Context when we have
     the ability to change the class, which defines the object, into which we
     want Spring to inject the Dependency
@@ -400,8 +402,12 @@ Examples of services provided with Aspects:
 
 
 Aspects
-    ○ Aspect:   "What"  - Piece of logic attached to method(s)
-    ○ Advice:   "When"  - 
+    ○ Aspect:
+		-	A class that implements cross-cutting concerns
+			Examples: Transactions, logging, etc.
+    ○ Advice:   "What" and "When" 
+		- 	Piece of logic attached to method(s)
+		
 		•	@Before
 		•	@After
 		•	@AfterReturning
@@ -591,6 +597,19 @@ A web app is composed of two parts
             <╌╌╌╌ finds Controller Action <╌╌╌╌ "Handler Mapping" <╌╌╌╌ "Servlet
             Controller" returns name of "View" ╌╌╌╌> "View Resolver" ╌╌╌╌>
             (𝘤𝘢𝘯 𝘢𝘭𝘴𝘰 𝘴𝘦𝘯𝘥 𝘥𝘢𝘵𝘢 𝘵𝘰 𝘣𝘦 𝘳𝘦𝘯𝘥𝘦𝘳𝘦𝘥)
+
+	○   Dispatcher Servlet: The front controller in Spring MVC. It receives all 
+		incoming HTTP requests and dispatches them to the appropriate handler. 
+
+	○   Request Handler: A component (typically a method in a Spring 
+		Controller) responsible for processing a specific incoming web request. 
+		It receives input, performs business logic, and prepares data for the 
+		view.
+
+	○   View Resolver: An object that determines the actual view (e.g., a JSP, 
+		Thymeleaf template) to be rendered based on the logical view name 
+		returned by the Request Handler. It bridges the logical name to a 
+		concrete view technology.
 
     ○   Handler Mapping: Component that finds the controller action by the HTTP
         request path

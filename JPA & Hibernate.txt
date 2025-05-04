@@ -1,0 +1,279 @@
+
+𝐉𝐏𝐀 
+‾‾‾
+→ 	Is a Specification | Guideline to Implement a Persistence Layer
+
+→ 	Previously known as Java Persistence API, modern Java Applications using JPA
+	refer to it as Jakarta Persistence API because Java EE was moved to the Eclipse foundation (open sourced) and was renamed to Jakarta EE
+
+→ 	JPA - Java Persistence API
+→ 	ORM - Object Relational Mapping
+→ 	Hibernate is an Implementation of JPA
+
+○	Context: 
+	Instances of Objects that can be accessed and controlled by the framework 
+	can be imagined to exist in a bucket/collection, whcih is called a Context 
+	
+	Hibernate/JPA, the objects managed by the persistence context (i.e., the 
+	first-level cache or session) are called Entities — specifically - Managed 
+	Entities.
+	
+	👉 The context should be as small as possible
+	
+💡 Spring Data JPA uses Hibernate as an Implementation
+	
+○	Maven Dependency
+
+	<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>6.6.13.Final</version>
+		<type>pom</type>
+	</dependency>
+
+○	persistence.xml
+	-	Specifies how to connect to the DB
+	-	Can co-exist with a Java Class equivalent
+	-	Contents (tags)
+			▫	perisitence-unit
+					•	name: a unique name to identify the perisitence-unit
+					•	transaction-type
+							a. RESOURCE_LOCAL: Independent Applications
+							b. JTA:	Example would be an Application Server 
+									that controls the transactions
+			▫	provider: 	main class of the framework that is implementing 
+							JPA. This required because implementations vary across providers
+			▫	properties:
+					•	jakarta.persistence.jdbc.driver
+					•	jakarta.persistence.jdbc.url
+					•	jakarta.persistence.jdbc.user
+					•	jakarta.persistence.jdbc.password
+
+
+
+                                        transaction-type    
+                            RESOURCE_LOCAL              JTA
+Who creates and manages     Developer                   Container
+the EntityManager?
+
+How?                        Get EntityManager           Injected using 
+                            instance using              @PersistenceContext
+                            EntityManagerFactory        
+                                    
+Relation with               Equivalent                  Tied to 
+PersistenceContext/Cache                                PersistenceContext
+                                                        associated with current
+                                                        JTA transaction
+
+How to get the              Injected via 
+EntityManagerFactory?       @PersistentUnit                                 
+                                                        
+Not allowed?                @PersistenceContext         @PersistenceUnit
+                                                        
+Mode of Transaction         Manually - e.g.             Completely dependent
+Mgmt.?                      begin(), commit()           on the existence of 
+                            rollback(), etc.            a JTA transaction
+
+Multiple Instances?         Every call to               Multiple references to
+                            entityManagerFactory        refer to the same
+                            .createEntityManager()      PersistenceContext
+                            creates a disinct           
+                            EntityManager instance      
+
+                            Bad Practice to have        Persistence Context is 
+                            multiple instances          flushed and cleared at
+                                                        commit time
+
+┌────────────────────────────┬────────────────────────┬────────────────────────┐
+│ Property                   │ RESOURCE_LOCAL         │ JTA                    │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Who creates and manages  	 │ Developer              │ Container              │
+│ the EntityManager?         │                        │                        │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ How?                       │ Use 				      │ Injected using         │
+│                            │ EntityManagerFactory   │ @PersistenceContext    │
+│                            │ to call                │ @PersistenceContext    │
+│                            │ createEntityManager()  │                        │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Relation with              │ Each EntityManager is a│ EntityManager is tied  │
+│ PersistenceContext/Cache   │ separate Persistence-  │ to the Persistence-    │
+│                            │ Context                │ Context of the current │
+│                            │                        │ JTA transaction        │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ How to get the             │ Injected using         │ Not typically injected;│
+│ EntityManagerFactory?      │ @PersistenceUnit       │ managed internally     │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Not allowed?               │ @PersistenceContext    │ @PersistenceUnit       │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Mode of Transaction Mgmt.  │ Manual — use           │ Automatic — tied to    │
+│                            │ EntityTransaction API  │ JTA transaction        │
+│                            │ (begin, commit, etc.)  │                        │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Multiple Instances?        │ Each call to           │ All references in the  │
+│                            │ createEntityManager()  │ same transaction refer │
+│                            │ creates a new instance │ to the same context    │
+├────────────────────────────┼────────────────────────┼────────────────────────┤
+│ Best Practice?             │ Avoid multiple active  │ Context is flushed and │
+│                            │ EntityManagers         │ cleared at commit      │
+└────────────────────────────┴────────────────────────┴────────────────────────┘
+
+○	RESOURCE_LOCAL
+
+	-	How to get the entity manager?
+		EntityManagerFactory emFactory = 	
+			Persistence.createEntityManagerFactory(<name of persistence unit>)
+		
+		EntityManager em = emFactory.createEntityManager();
+		
+○	Entity
+
+	-	What are entities?
+		▫	Tables with attributes and characteristics. 
+		▫	Join Tables are NOT entities
+	
+○	PersistenceUnitInfo
+	-	Interface to implement a class equivalent of persistence-unit 
+	-	Requires the DataSource information. We can think of the following 
+		reasons
+			▫	The implementation (custom) is taking ownership of bootstrapping
+				JPA outside the container i.e. standalone Java apps, Spring 
+				Boot, etc.
+			▫	Without a container or metadata (e.g. xml), Hibernate cannot 
+				resolve the DB connection by itself. 
+				We have to provide the DataSource and configure it with the 
+				necessary database connection properties such as the JDBC 
+				driver, URL, username, and password.
+
+• 	Session
+• 	SessionFactory
+• 	Context - A collection of instances/entities
+	○ We can create as many contexts as we want
+• Auto-Increment strategy varies by databases
+• JoinColumn annotation is used exclusively for relationships
+  JoinColumn is used in the owner of the relationship; we need the annotation
+  only if we need to customize the column name
+  Remember - the owner of the relationship always has the foreign key
+
+• Non Collection child types are by default fetched eagerly because in most
+cases, fetching the child, together with the parent, is faster than firing 
+separate queries for each
+
+○ @OneToOne(mappedBy = "passport")
+  The value of mappedBy is the name of the FIELD of this entity on the owner
+
+Persistence unit as RESOURCE_LOCAL or JTA?
+==========================================
+
+https://stackoverflow.com/questions/1962525/persistence-unit-as-resource-local-or-jta
+
+
+JPA implementations have the choice of managing transactions themselves 
+(RESOURCE_LOCAL), or having them managed by the application server's JTA 
+implementation.
+
+In most cases, RESOURCE_LOCAL is fine. This would use basic JDBC-level 
+transactions. The downside is that the transaction is local to the JPA 
+persistence unit, so if you want a transaction that spans multiple persistence 
+units (or other databases), then RESOURCE_LOCAL may not be good enough.
+
+JTA is also used for managing transactions across systems like JMS and JCA, 
+but that's fairly exotic usage for most of us.
+
+To use JTA, you need support for it in your application server, and also 
+support from the JDBC driver.
+
+--------------------------------------------
+
+Comparing RESOURCE_LOCAL and JTA persistence contexts
+With <persistence-unit transaction-type="RESOURCE_LOCAL"> YOU are responsible 
+for EntityManager (PersistenceContext/Cache) creating and tracking...
+
+You must use the EntityManagerFactory to get an EntityManager
+The resulting EntityManager instance is a PersistenceContext/Cache
+An EntityManagerFactory can be injected via the @PersistenceUnit annotation 
+only (not @PersistenceContext)
+You are not allowed to use @PersistenceContext to refer to a unit of type 
+RESOURCE_LOCAL
+You must use the EntityTransaction API to begin/commit around every call to 
+your EntityManger
+Calling entityManagerFactory.createEntityManager() twice results in two 
+separate EntityManager instances and therefor two separate 
+PersistenceContexts/Caches.
+It is almost never a good idea to have more than one instance of an 
+EntityManager in use (don't create a second one unless you've destroyed the 
+first)
+
+
+With <persistence-unit transaction-type="JTA"> the CONTAINER will do 
+EntityManager (PersistenceContext/Cache) creating and tracking...
+
+You cannot use the EntityManagerFactory to get an EntityManager
+You can only get an EntityManager supplied by the container
+An EntityManager can be injected via the @PersistenceContext annotation only 
+(not @PersistenceUnit)
+You are not allowed to use @PersistenceUnit to refer to a unit of type JTA
+The EntityManager given by the container is a reference to the 
+PersistenceContext/Cache associated with a JTA Transaction.
+If no JTA transaction is in progress, the EntityManager cannot be used because 
+there is no PersistenceContext/Cache.
+Everyone with an EntityManager reference to the same unit in the same 
+transaction will automatically have a reference to the same 
+PersistenceContext/Cache
+The PersistenceContext/Cache is flushed and cleared at JTA commit time
+
+
+
+Entity
+
+• Represents a Table where every record uniquely represents an entity
+• Has to have an Id
+• If the Table doesn't have a Primary Key then we need to have a Composite Key,
+e.g. combining columns. Worst case, we need to combine all the columns.
+
+
+
+One to Many
+-----------
+
+One Directional:
+
+• The owner of the relationship is on the child table, the one with "many"; this
+is where the foreign key is
+
+The table with the foreign key column is said to be the owner of the 
+relationship - this is on the side of many
+
+• If the entity is mentioned on the parent then we need to mention the join 
+column name
+
+Bi-Directional relationship always requires a "mapped_by" attribute on the 
+OneToMany annotation
+
+In a Bi-Directional relationship, each side has its own cascading logic
+
+Many to Many
+------------
+
+Join table does not map to anything in the ORM; it is used behind the scenes to
+create the relationships
+
+
+You will have to choose an owner; doesn't matter which table is chosen as the 
+owner
+
+In a bi-directional relationship, we can have different cascading operations on
+both sides.
+
+We shoud only use cascading operations that we need
+
+When you add the Join Table to an Entity, that class behaves like the owner of 
+the relationship. Configuring an @Entity class as an owner does not make a 
+change in the Underlying Tables (in case we are doing an auto ddl).
+
+
+👉 Mapped By 	is on the Opposite Side of the Ownership of the relation
+👉 Join Table 	is on the Side of the Ownership 
+
+MyAwesomePassword
+C:\Users\tatha

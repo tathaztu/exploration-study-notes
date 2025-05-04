@@ -314,6 +314,1415 @@ Note that Topic "test-1" is associated with Leaders 2 & 3
 
 
 
-╭───────────────────────────────────────────────────────────────────────╮
-│  Udemy: Kafka Event Driven Microservices With Java + Spring [Part-1]  │
-╰───────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────╮
+│  Udemy:                                                       │
+│                                                               │
+│  START HERE: Learn Apache Kafka 3.0 Ecosystem, Core Concepts, │
+│  Real World Java Producers/Consumers & Big Data Architecture  │
+╰───────────────────────────────────────────────────────────────╯
+
+╔═════════════════════════╗
+║ Section 4: Kafka Theory ║
+╚═════════════════════════╝
+
+Primary Goal:
+
+    ○   Source —————➤ Target
+    ○   Type of Data
+    ○   Size of payload
+    ○   Volume of transactions
+
+╭───────────────╮   ╭───────────────╮   ╭───────────────╮   ╭───────────────╮
+| Source System |   | Source System |   | Source System |   | Source System |
+╰───────┬───────╯   ╰───────┬───────╯   ╰───────┬───────╯   ╰───────┬───────╯
+        │                   │                   │                   │
+        ╰——————————╮        │                   │       ╭———————————╯
+                   V        V                   V       V
+                  ╔════════════════════════════════════════╗
+                                    ○ o
+                                    |/  ᴀᴘᴀᴄʜᴇ
+                                    Ｏ  ｋａｆｋａ
+                                    |\
+                                    ○ o
+                  ╚════════════════════════════════════════╝
+                    Ʌ       Ʌ                   Ʌ       Ʌ
+        ╭———————————╯       │                   │       ╰———————————╮
+        │                   │                   │                   │
+        │                   │                   │                   │
+┌───────┴───────┐   ┌───────┴───────┐   ┌───────┴───────┐   ┌───────┴───────┐
+| Target System |   | Target System |   | Target System |   | Target System |
+└───────────────┘   └───────────────┘   └───────────────┘   └───────────────┘
+
+    ○   Examples
+            -   Source System
+                    ▫   Website Events
+                    ▫   Pricing Data
+                    ▫   Financial Transactions
+                    ▫   User Interactions
+                    ▫   Car Position Tracking
+            -   Target System
+                    ▫   Databases
+                    ▫   Analytics
+                    ▫   Audit
+                    ▫   eMail
+    ○   High Performance
+
+Use Cases
+    ○   As a Messaging System
+    ○   Gathering Data
+            -   Activity Tracking
+            -   Gathering Logs
+            -   Metrics from disparate locations
+    ○   Decouplig systems
+    ○   Microservices Pub/Sub
+    ○   Integration with Spark, Flink, Storm, Hadoop & other Big Data Tech.
+    ○   Stream Processing
+    ○   Real Life Examples:
+            -   Netflix: Recommendations in Real-Time when user is viewing shows
+            -   Uber:
+                    ▫   Gather user, taxi, trip data in real-time to
+                        forecast demand and compute surge-pricing in real time
+            -   LinkedIn:
+                    ▫   Prevent spam, collect user interactions to make
+                        better recommendations in real time
+    *   Kafka is only used as a Transport mechanism
+
+
+                                                                                                ┌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐
+                                                                                                ╎ + topics                                      ╎
+                                                                                                ╎ + partitions                                  ╎
+                                                                                                ╎ + partition leader & in-sync-replicas (ISR)   ╎
+                                                                                                ╎ + offset topic                                ╎
+                                                                                                └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘
+┌───────────────┐       ┌───────────┐                       ╔═══════════════════════╗           ┌───────────┐           ┌───────────────┐
+| Source System |  ╌╌╌> | Producers |               ╌╌╌>    ║     kafka Cluster     ║   ╌╌╌>    | Consumers |   ╌╌╌>    | Target System |
+└───────────────┘       └───────────┘                       ║                       ║           └───────────┘           └───────────────┘
+                        ┌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐            ║    ╭────────────╮     ║
+                        ╎ + round robin        ╎            ║    | Broker 101 |     ║           ┌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐
+                        ╎ + key based ordering ╎            ║    ╰────────────╯     ║           ╎ + consumer offsets    ╎
+                        ╎ + acks strategy      ╎            ║    ╭────────────╮     ║           ╎ + consumer groups     ╎
+                        └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘            ║    | Broker 102 |     ║           ╎ + at least once       ╎
+                                                            ║    ╰────────────╯     ║           ╎ + at most once        ╎
+                                                            ║          ▪▪▪          ║           └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘
+                                                            ║    ╭────────────╮     ║
+                                                            ║    | Broker 109 |     ║
+                                                            ║    ╰────────────╯     ║
+                                                            ║                       ║
+                                                            ╚═══════════════════════╝
+                                                                       Ʌ
+                                                                       ╎
+                                                                       ╎
+                                                                       V
+                                                            ┌───────────────────────┐
+                                                            |       Zookeeper       |
+                                                            └───────────────────────┘
+
+                                                            ┌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┐
+                                                            ╎ + leader follower     ╎
+                                                            ╎ + beoker management   ╎
+                                                            └╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┘
+
+
+
+Kafka Topic
+
+    ○   Particular stream of data
+    ○   Identified by "Name"
+    ○   Any number
+    ○   Loosely comparable to a DB Table | there are no constraints
+    ○   Accepts data without any verification
+    ○   Any message format - json, avro, text, binary, etc.
+    ○   Data Stream: Sequence of messages | Streaming through "topics"
+    ○   Cannot be queried. We use -
+            -   Producers to send data
+            -   Consumers to read data
+
+Partitions
+
+    ○   Topic are split to Partition(s)
+    ○   Any number of Partitions
+    ○   Messages are "ordered" in a partition | Order of Insertion
+    ○   Offset: Incremental ID assigned to every message in a partition
+    ○   Data in a partition are immutable
+    ○   Data is retained in Kafla for a limited time | 1 week default
+    ○   Offsets can make sense only in conjunction with a partition
+            -   Offset 1 Partition # 2 is not the same as Offset 1 Partition # 3
+    ○   Offsets are not reused (recycled) when the associated message gets
+        deleted
+    ○   Ordering across partitions is not as straightforward as ordering within
+        a partition
+    ○   Data is assigned randomly to a partition except when a key is provided
+
+
+Producer
+    ○   Writes to Topics
+    ○   Decides the target Partition in advance
+    ○   Automatic recovery from broker/partitin failure
+    ○   Load Balancing
+    ○   Producers can optionally send a "key" with each message
+            -   messages with a "key" are always stored in the same partition
+            -   keys are typically used when we need to order messages
+    ○   Messages with "null" keys are stored on a round-robin basis
+
+
+➤   Each Partition receives massages from one or more producers
+
+Messages
+        ┌───────────────┬───────────────────┐
+        |               |                   |
+        | key (binary)  | value (binary)    |
+        |   nullable    |    nullable       |
+        |               |                   |
+        ├───────────────┴───────────────────┤
+        |                                   |
+        |        Compression Type           |
+        | (none, gzip, snappy, lz4, etc.)   |
+        |                                   |
+        ├───────────────────────────────────┤
+        |       Headers (optional)          |
+        |                                   |
+        |           key1:value1             |
+        |              ...                  |
+        |           key1:value1             |
+        |                                   |
+        ├───────────────────────────────────┤
+        |       Partition + Offset          |
+        ├───────────────────────────────────┤
+        | Timestamp (set by user/system)    |
+        └───────────────────────────────────┘
+
+
+    ○   Kafka only accepts bytes
+    ○   Kefka only produces bytes
+    ○   Key and value are "serialized" into bytes
+
+Producers
+    ○   Kafka producers have serializers which serialize objects to bytes
+    ○   Kafka Partitioner
+            -   Code Logic in Producer
+            -   Determines a message's partition destination
+            -   Process known as "key hashing"
+            -   Default algorithm is "murmur2
+                    targetPartition =
+                        Math.abs(Utils.murmur2(keyBytes))
+
+                        %
+
+                        (numPartitions - 1)
+
+Consumers
+    ○   Pull Model
+    ○   Know source broker
+    ○   May read from multiple partitions of the same topic
+    ○   Know how to recover on failure
+    ○   Data is read by sequentially by offset "within" a partition
+    ○   Needs to know the format/type expected by the Destination
+
+➤   serialization and deserializaton type should not change during a topic
+    lifecycle
+
+Consumer Groups
+    ○   Idea of scaling
+    ○   Multiple consumers grouped together
+    ○   Within a consumer group, a partition can be assigned to only one
+        consumer
+    ○   Multiple consumer groups on the same topic is allowed
+
+Consumer Offsets
+    ○   Storing offsets that are read by a consumer (group)
+    ○   Stored in a Kafka topic called __consumer_offsets
+    ○   Offset Commits
+            -   At least once
+                    ▫   Committed right after a message is processed
+                    ❗   Message read again if problem in processing
+                    ❗   Requires idempotency in design
+            -   At most once
+                    ▫   As soon as messages are received
+                    ❗   Won't be read again if there is a problem in processing
+            -   Exactly once
+                    ▫   For Kafka workflows, use the Transactional API
+                    ▫   For external workflows, use an idempotent consumer
+
+Brokers
+    ○   Identified by ID
+    ○   Each broker contains certain Topic partitions
+    ○   Each broker has metadata about all other brokers, topics & partitions
+    ○   Multiple brokers form a Kafka cluster
+    ○   Connect to any broker (bootstrap-server) to connect to the cluster
+			-	Recieves 
+					▫   Connection + Metadata
+					▫   List of all Brokers
+    ○   3 brokers is a good number to start with
+
+Replication
+    ○   Production topics should have a replication factor > 1
+    ○   A replication factor of n can withstand the broker loss of (n - 1)
+        replicas
+    ○   Partition Leader
+            -   Only one broker can be the leader for a partition
+            -   Producers can only send data to the leader
+            -   Brokers, other than the leader, replicate the data from the
+                leader
+            -   If the Brokers, other than the Leader, are in sync with the
+                leader, w.r.t. data, then they are called In-Sync-Replicas
+            -   Consumers can only read from the Leader
+                    **  there are some exceptions nowadays, starting from 2.4+,
+                        where the consumers can read from the closest replica
+
+Producer Acknowledgements
+
+    Data write acknowledgement values
+
+    ○   acks = 0
+            -   Producer won't wait for the leader's acknowledgement
+            -   Possibility of data loss
+    ○   acks = 1
+            -   Producer will wait for the leader's acknowledgement
+            -   Limited data loss
+    ○   acks = all
+            -   Producer will wait for the leader's & replica's acknowledgement
+            -   No data loss
+
+Zookeeper
+    ○   Legacy metadata system
+            -   List of Brokers
+            -   Broker Leader election
+            -   Monitor and Inform Kafka about new topic, broker
+                online/offline, topic delete, etc.
+    ○   Depricated and optional from 3.x
+    ○   Will not be supported from 4.x
+    ○   Has one leader(writes) and the rest are followers (reads)
+    ○   ZooKeeper by design, operates with an odd number of servers ─
+        1, 3, 5, 7...
+    ○   Does not store consumer offset data since v. 0.10
+
+    From the slides:
+
+    Should you use Zookeeper?
+
+        Q.  With Kafka Brokers?
+        A.  Yes, until Kafka 4.0 is out while waiting for Kafka without
+            Zookeeper to be production-ready
+
+        Q.  With Kafka Clients?
+        A.  Over time, the Kafka clients and CLI have been migrated to leverage
+            the brokers as a connection endpoint instead of Zookeeper
+
+            Since Kafka 0.10, consumers store offset in Kafka and Zookeeper and
+            must not connect to Zookeeper as it is deprecated
+
+            Since Kafka 2.2, the kafka-topics.sh CLI command references Kafka
+            brokers and not Zookeeper for topic management (creation, deletion,
+            etc ... ) and the Zookeeper CLI argument is deprecated.
+
+            All the APIs and commands that were previously leveraging Zookeeper
+            are migrated to use Kafka instead, so that when clusters are
+            migrated to be without Zookeeper, the change is invisible to
+            clients.
+
+            Zookeeper is also less secure than Kafka, and therefore Zookeeper
+            ports should only be opened to allow traffic from Kafka brokers,
+            and not Kafka clients
+
+            Therefore, to be a great modern-day Kafka developer, never ever use
+            Zookeeper as a configuration in your Kafka clients, and other
+            programs that connect to Kafka.
+
+
+    About Kafka KRaft
+
+        ○   In 2020, the Apache Kafka project started to work to remove the
+            Zookeeper dependency from it (KIP-500)
+
+        ○   Zookeeper shows scaling issues when Kafka clusters have > 100,000
+            partitions
+
+        ○   By removing Zookeeper, Apache Kafka can
+                -   Scale to millions of partitions, and becomes easier to
+                    maintain and set-up
+                -   Improve stability, makes it easier to monitor, support and
+                    administer
+                -   Single security model for the whole system
+                -   Single process to start with Kafka
+                -   Faster controller shutdown and recovery time
+
+        ○   Kafka 3.X now implements the Raft protocol (KRaft) in order to
+            replace Zookeeper
+                -   Production ready since Kafka 3.3.1 (KIP-833)
+                -   Kafka 4.0 will be released only with KRaft (no Zookeeper)
+
+╔═══════════════════════════╗
+║ Section 5: Starting Kafka ║ 😨😱😰😬😳
+╚═══════════════════════════╝
+
+URL:
+    ○   https://learn.conduktor.io/kafka/starting-kafka/
+    ➤   https://learn.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/
+
+
+    1.  WSL
+            •   Open PowerShell or Windows Command Prompt in administrator mode
+            •   wsl --install
+
+        Log
+        ---
+
+        Microsoft Windows [Version 10.0.26100.3775]
+        (c) Microsoft Corporation. All rights reserved.
+
+        C:\Windows\System32>wsl --install
+        Downloading: Windows Subsystem for Linux 2.4.13
+        Installing: Windows Subsystem for Linux 2.4.13
+        Windows Subsystem for Linux 2.4.13 has been installed.
+        The operation completed successfully.
+        Downloading: Ubuntu
+        Installing: Ubuntu
+        Distribution successfully installed. It can be launched via 'wsl.exe -d Ubuntu'
+
+    2.  Set up your Linux username and password
+
+        Open the distribution (Ubuntu by default) using the Start menu. You will be asked to create a Username and Password for your Linux distribution.
+
+        Log
+        ---
+
+        Provisioning the new WSL instance Ubuntu
+        This might take a while...
+        Create a default Unix user account: tatha
+        New password:
+        Retype new password:
+        passwd: password updated successfully
+        To run a command as administrator (user "root"), use "sudo <command>".
+        See "man sudo_root" for details.
+
+        Welcome to Ubuntu 24.04.2 LTS (GNU/Linux 5.15.167.4-microsoft-standard-WSL2 x86_64)
+
+        * Documentation:  https://help.ubuntu.com
+        * Management:     https://landscape.canonical.com
+        * Support:        https://ubuntu.com/pro
+
+        System information as of Sat May  3 04:00:05 EDT 2025
+
+        System load:  0.09                Processes:             31
+        Usage of /:   0.1% of 1006.85GB   Users logged in:       0
+        Memory usage: 3%                  IPv4 address for eth0: 172.30.147.215
+        Swap usage:   0%
+
+        This message is shown once a day. To disable it please create the
+        /home/tatha/.hushlogin file.
+
+    3a. Disable IPv6 on WSL2
+
+        WSL2 currently has a networking issue that prevents outside programs
+        to connect to Kafka running on WSL2 (for example your Java programs,
+        etc...);
+
+        To fix this, we recommend disabling IPv6 on WSL2. Your Windows
+        password will be prompted on the first command:
+
+        Log
+        ---
+
+        tatha@Tathaz-Lenovo:~$ sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
+        [sudo] password for tatha:
+        net.ipv6.conf.all.disable_ipv6 = 1
+
+        tatha@Tathaz-Lenovo:~$ sudo sysctl -w
+        net.ipv6.conf.default.disable_ipv6=1
+
+        net.ipv6.conf.default.disable_ipv6 = 1
+
+    3b. Change server.properties
+
+        NOTE: The following is just an example
+
+        listeners=PLAINTEXT://:9092
+        to
+        listeners=PLAINTEXT://localhost:9092
+
+    4a. Installing Java JDK 11
+
+        Install Apache Kafka on WSL2 Ubuntu, Java 11 is the only prerequisite.
+
+        Log
+        ---
+
+        tatha@Tathaz-Lenovo:~$ wget -O- https://apt.corretto.aws/corretto.key | sudo apt-key add -
+        --2025-05-03 04:10:13--  https://apt.corretto.aws/corretto.key
+        Resolving apt.corretto.aws (apt.corretto.aws)... Warning: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead (see apt-key(8)).
+        18.155.1.75, 18.155.1.49, 18.155.1.4, ...
+        Connecting to apt.corretto.aws (apt.corretto.aws)|18.155.1.75|:443... connected.
+        HTTP request sent, awaiting response... 200 OK
+        Length: 2459 (2.4K) [binary/octet-stream]
+        Saving to: ‘STDOUT’
+
+        -                     100%[=======================>]   2.40K  --.-KB/s    in 0s
+
+        2025-05-03 04:10:13 (435 MB/s) - written to stdout [2459/2459]
+
+        OK
+        tatha@Tathaz-Lenovo:~$ wget -O - https://apt.corretto.aws/corretto.key | sudo gpg --dearmor -o /usr/share/keyrings/corretto-keyring.gpg && \
+        echo "deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main" | sudo tee /etc/apt/sources.list.d/corretto.list
+        --2025-05-03 04:11:53--  https://apt.corretto.aws/corretto.key
+        Resolving apt.corretto.aws (apt.corretto.aws)... 18.155.1.20, 18.155.1.75, 18.155.1.4, ...
+        Connecting to apt.corretto.aws (apt.corretto.aws)|18.155.1.20|:443... connected.
+        HTTP request sent, awaiting response... 200 OK
+        Length: 2459 (2.4K) [binary/octet-stream]
+        Saving to: ‘STDOUT’
+
+        -                     100%[=======================>]   2.40K  --.-KB/s    in 0s
+
+        2025-05-03 04:11:54 (491 MB/s) - written to stdout [2459/2459]
+
+        deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main
+        tatha@Tathaz-Lenovo:~$ sudo apt-get update; sudo apt-get install -y java-11-amazon-corretto-jdk
+        Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+        Get:2 https://apt.corretto.aws stable InRelease [10.7 kB]
+        Hit:3 http://archive.ubuntu.com/ubuntu noble InRelease
+        Get:4 https://apt.corretto.aws stable/main amd64 Packages [21.4 kB]
+        Get:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+        Get:6 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [782 kB]
+        Get:7 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [147 kB]
+        Get:8 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+        Get:9 http://security.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [7068 B]
+        Get:10 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [833 kB]
+        Get:11 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en [181 kB]
+        Get:12 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [52.2 kB]
+        Get:13 http://security.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [17.0 kB]
+        Get:14 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [931 kB]
+        Get:15 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en [191 kB]
+        Get:16 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+        Get:17 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 c-n-f Metadata [468 B]
+        Get:18 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [17.6 kB]
+        Get:19 http://security.ubuntu.com/ubuntu noble-security/multiverse Translation-en [3792 B]
+        Get:20 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+        Get:21 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 c-n-f Metadata [380 B]
+        Get:22 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+        Get:23 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [15.0 MB]
+        Get:24 http://archive.ubuntu.com/ubuntu noble/universe Translation-en [5982 kB]
+        Get:25 http://archive.ubuntu.com/ubuntu noble/universe amd64 Components [3871 kB]
+        Get:26 http://archive.ubuntu.com/ubuntu noble/universe amd64 c-n-f Metadata [301 kB]
+        Get:27 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Packages [269 kB]
+        Get:28 http://archive.ubuntu.com/ubuntu noble/multiverse Translation-en [118 kB]
+        Get:29 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 Components [35.0 kB]
+        Get:30 http://archive.ubuntu.com/ubuntu noble/multiverse amd64 c-n-f Metadata [8328 B]
+        Get:31 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1057 kB]
+        Get:32 http://archive.ubuntu.com/ubuntu noble-updates/main Translation-en [227 kB]
+        Get:33 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [161 kB]
+        Get:34 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [13.5 kB]
+        Get:35 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1060 kB]
+        Get:36 http://archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [268 kB]
+        Get:37 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [376 kB]
+        Get:38 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [26.0 kB]
+        Get:39 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1062 kB]
+        Get:40 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [220 kB]
+        Get:41 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+        Get:42 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 c-n-f Metadata [492 B]
+        Get:43 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [21.7 kB]
+        Get:44 http://archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [4788 B]
+        Get:45 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+        Get:46 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 c-n-f Metadata [592 B]
+        Get:47 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Packages [39.1 kB]
+        Get:48 http://archive.ubuntu.com/ubuntu noble-backports/main Translation-en [8676 B]
+        Get:49 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7072 B]
+        Get:50 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 c-n-f Metadata [272 B]
+        Get:51 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Packages [27.1 kB]
+        Get:52 http://archive.ubuntu.com/ubuntu noble-backports/universe Translation-en [16.5 kB]
+        Get:53 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [16.4 kB]
+        Get:54 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 c-n-f Metadata [1304 B]
+        Get:55 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+        Get:56 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 c-n-f Metadata [116 B]
+        Get:57 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+        Get:58 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 c-n-f Metadata [116 B]
+        Fetched 33.8 MB in 4s (7691 kB/s)
+        Reading package lists... Done
+        Reading package lists... Done
+        Building dependency tree... Done
+        Reading state information... Done
+        The following additional packages will be installed:
+          java-common
+        Suggested packages:
+          default-jre
+        The following NEW packages will be installed:
+          java-11-amazon-corretto-jdk java-common
+        0 upgraded, 2 newly installed, 0 to remove and 99 not upgraded.
+        Need to get 196 MB of archives.
+        After this operation, 327 MB of additional disk space will be used.
+        Get:1 https://apt.corretto.aws stable/main amd64 java-11-amazon-corretto-jdk amd64 1:11.0.27.6-1 [196 MB]
+        Get:2 http://archive.ubuntu.com/ubuntu noble/main amd64 java-common all 0.75+exp1 [6798 B]
+        Fetched 196 MB in 13s (15.0 MB/s)
+        Selecting previously unselected package java-common.
+        (Reading database ... 40768 files and directories currently installed.)
+        Preparing to unpack .../java-common_0.75+exp1_all.deb ...
+        Unpacking java-common (0.75+exp1) ...
+        Selecting previously unselected package java-11-amazon-corretto-jdk:amd64.
+        Preparing to unpack .../java-11-amazon-corretto-jdk_1%3a11.0.27.6-1_amd64.deb ...
+        Unpacking java-11-amazon-corretto-jdk:amd64 (1:11.0.27.6-1) ...
+        Setting up java-common (0.75+exp1) ...
+        Setting up java-11-amazon-corretto-jdk:amd64 (1:11.0.27.6-1) ...
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/java to provide /usr/bin/java (java) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/keytool to provide /usr/bin/keytool (keytool) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/rmid to provide /usr/bin/rmid (rmid) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/rmiregistry to provide /usr/bin/rmiregistry (rmiregistry) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jjs to provide /usr/bin/jjs (jjs) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/pack200 to provide /usr/bin/pack200 (pack200) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/unpack200 to provide /usr/bin/unpack200 (unpack200) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/javac to provide /usr/bin/javac (javac) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jaotc to provide /usr/bin/jaotc (jaotc) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jlink to provide /usr/bin/jlink (jlink) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jmod to provide /usr/bin/jmod (jmod) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jhsdb to provide /usr/bin/jhsdb (jhsdb) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jar to provide /usr/bin/jar (jar) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jarsigner to provide /usr/bin/jarsigner (jarsigner) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/javadoc to provide /usr/bin/javadoc (javadoc) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/javap to provide /usr/bin/javap (javap) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jcmd to provide /usr/bin/jcmd (jcmd) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jconsole to provide /usr/bin/jconsole (jconsole) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jdb to provide /usr/bin/jdb (jdb) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jdeps to provide /usr/bin/jdeps (jdeps) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jdeprscan to provide /usr/bin/jdeprscan (jdeprscan) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jimage to provide /usr/bin/jimage (jimage) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jinfo to provide /usr/bin/jinfo (jinfo) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jmap to provide /usr/bin/jmap (jmap) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jps to provide /usr/bin/jps (jps) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jrunscript to provide /usr/bin/jrunscript (jrunscript) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jshell to provide /usr/bin/jshell (jshell) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jstack to provide /usr/bin/jstack (jstack) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jstat to provide /usr/bin/jstat (jstat) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/jstatd to provide /usr/bin/jstatd (jstatd) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/rmic to provide /usr/bin/rmic (rmic) in auto mode
+        update-alternatives: using /usr/lib/jvm/java-11-amazon-corretto/bin/serialver to provide /usr/bin/serialver (serialver) in auto mode
+        Processing triggers for man-db (2.12.0-4build2) ...
+        tatha@Tathaz-Lenovo:~$ java -version
+        openjdk version "11.0.27" 2025-04-15 LTS
+        OpenJDK Runtime Environment Corretto-11.0.27.6.1 (build 11.0.27+6-LTS)
+        OpenJDK 64-Bit Server VM Corretto-11.0.27.6.1 (build 11.0.27+6-LTS, mixed mode)
+
+    4b. JAVA_HOME
+
+        Log
+        ---
+
+        tatha@Tathaz-Lenovo:~$ echo $JAVA_HOME
+
+        tatha@Tathaz-Lenovo:~$ which javac
+        /usr/bin/javac
+        tatha@Tathaz-Lenovo:~$ which java
+        /usr/bin/java
+        tatha@Tathaz-Lenovo:~$ ls -l /usr/bin/java
+        lrwxrwxrwx 1 root root 22 Apr  9 14:28 /usr/bin/java -> /etc/alternatives/java
+        tatha@Tathaz-Lenovo:~$ ls -l /etc/alternatives/java
+        lrwxrwxrwx 1 root root 45 Apr  9 14:28 /etc/alternatives/java -> /usr/lib/jvm/java-11-amazon-corretto/bin/java
+        tatha@Tathaz-Lenovo:~$ export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto/bin/java
+        tatha@Tathaz-Lenovo:~$ echo $JAVA_HOME
+        /usr/lib/jvm/java-11-amazon-corretto/bin/java
+        tatha@Tathaz-Lenovo:~$
+
+
+        tatha@Tathaz-Lenovo:~$ cp ~/.bashrc ~/.bashrc_05_03_2025.bak
+        tatha@Tathaz-Lenovo:~$ echo $JAVA_HOME
+        /usr/lib/jvm/java-11-amazon-corretto/bin/java
+        tatha@Tathaz-Lenovo:~$ echo "export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto" >> ~/.bashrc
+        tatha@Tathaz-Lenovo:~$ tail -5 ~/.bashrc
+          elif [ -f /etc/bash_completion ]; then
+            . /etc/bash_completion
+          fi
+        fi
+        export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
+
+
+    5.  Install Apache Kafka
+
+        Log
+        ---
+
+        tatha@Tathaz-Lenovo:~$ wget https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
+        --2025-05-03 04:39:32--  https://dlcdn.apache.org/kafka/3.9.0/kafka_2.13-3.9.0.tgz
+        Resolving dlcdn.apache.org (dlcdn.apache.org)... 151.101.2.132, 2a04:4e42::644
+        Connecting to dlcdn.apache.org (dlcdn.apache.org)|151.101.2.132|:443... connected.
+        HTTP request sent, awaiting response... 200 OK
+        Length: 122037770 (116M) [application/x-gzip]
+        Saving to: ‘kafka_2.13-3.9.0.tgz’
+
+        kafka_2.13-3.9.0.tgz  100%[=======================>] 116.38M  17.1MB/s    in 6.6s
+
+        2025-05-03 04:39:38 (17.6 MB/s) - ‘kafka_2.13-3.9.0.tgz’ saved [122037770/122037770]
+
+        tatha@Tathaz-Lenovo:~$ ls
+        kafka_2.13-3.9.0.tgz
+        tatha@Tathaz-Lenovo:~$ tar xzf kafka_2.13-3.9.0.tgz
+        tatha@Tathaz-Lenovo:~$ ls
+        kafka_2.13-3.9.0  kafka_2.13-3.9.0.tgz
+        tatha@Tathaz-Lenovo:~$ mv kafka_2.13-3.9.0 ~
+        mv: 'kafka_2.13-3.9.0' and '/home/tatha/kafka_2.13-3.9.0' are the same file
+        tatha@Tathaz-Lenovo:~$ pwd
+        /home/tatha
+
+
+    6.  Start ZooKeeper
+
+        Make sure your JAVA_HOME environment variable is set first, as
+        instructed in the Install Java section, so that Java 11 is used when
+        doing java -version
+
+
+        ~/kafka_2.13-3.9.0/bin/zookeeper-server-start.sh ~/kafka_2.13-3.9.0/config/zookeeper.properties
+
+
+    7.  Start Kafka
+
+         ~/kafka_2.13-3.9.0/bin/kafka-server-start.sh ~/kafka_2.13-3.9.0/config/server.properties
+
+
+    8.  Add "bin" directory to $PATH
+
+        Last 3 lines of .bashrc
+        -----------------------
+
+        export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
+
+        export PATH="$PATH:~/kafka_2.13-3.0.0/bin"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
